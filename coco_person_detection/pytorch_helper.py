@@ -58,30 +58,51 @@ class PyTorchHelper:
 
     def train_model(self, model_name, model, train_loader, val_loader, loss, optimizer, num_epochs, scheduler=None):
 
-        if os.path.isfile(self.output + '/' + model_name):
-            return self.load_model(model_name, model)
+        #if os.path.isfile(self.output + '/' + model_name):
+         #   return self.load_model(model_name, model)
+
+        device = torch.device("cuda:0")
+        model.type(torch.cuda.FloatTensor)
+        model.to(device)
 
         loss_history = []
         train_history = []
         val_history = []
+        loss_function_xy = torch.nn.MSELoss()
+        loss_function_bce = torch.nn.BCELoss()
+
         for epoch in range(num_epochs):
             model.train()  # Enter train mode
 
             loss_accum = 0
-            correct_samples = 0
-            total_samples = 0
-            for i_step, (x, y) in enumerate(train_loader):
-                x_gpu = x.to(self.device)
-                y_gpu = y.to(self.device)
-                prediction = model(x_gpu)
-                loss_value = loss(prediction, y_gpu)
+            for i_step, (img, target) in enumerate(train_loader):
+
+                img = img.to(torch.float)
+                target['img_has_person'] = target['img_has_person'].to(torch.float)
+                target['box'] = target['box'].to(torch.float)
+
+                img = img.to(device)
+                target['img_has_person'] = target['img_has_person'].to(device)
+                target['box'] = target['box'].to(device)
+
+                prediction = model(img)
+
+                print('prediction')
+                print(prediction)
+                print('target')
+                print(target)
+                print('my_prediction_BCE')
+                print(prediction[:,0])
+
+                print('my_prediction_BBOX')
+                print(prediction[:,1:])
+
+                loss_value = loss_function_bce(prediction[:,0], target['img_has_person'])
+                if target['img_has_person'] == 1:
+                    loss_value + loss_function_xy(prediction[:,1:], target['box'])
                 optimizer.zero_grad()
                 loss_value.backward()
                 optimizer.step()
-
-                _, indices = torch.max(prediction, 1)
-                correct_samples += torch.sum(indices == y_gpu)
-                total_samples += y.shape[0]
 
                 loss_accum += loss_value
 
@@ -89,16 +110,12 @@ class PyTorchHelper:
                 scheduler.step()
 
             ave_loss = loss_accum / i_step
-            train_accuracy = float(correct_samples) / total_samples
-            val_accuracy = self.compute_accuracy(model, val_loader)
 
             loss_history.append(float(ave_loss))
-            train_history.append(train_accuracy)
-            val_history.append(val_accuracy)
 
-            print("Average loss: %f, Train accuracy: %f, Val accuracy: %f" % (ave_loss, train_accuracy, val_accuracy))
+            print("Average loss: %f" % (ave_loss))
 
-        self.save_model(model_name, model, loss_history, train_history, val_history)
+        #self.save_model(model_name, model, loss_history, train_history, val_history)
         return loss_history, train_history, val_history
 
     def compute_accuracy(self, model, loader):
