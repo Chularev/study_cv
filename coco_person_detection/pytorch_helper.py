@@ -73,17 +73,22 @@ class PyTorchHelper:
         loss_history = []
         train_history = []
         val_history = []
-        loss_function_xy = torch.nn.MSELoss()
-        loss_function_bce = torch.nn.BCELoss()
-        sigmoid = nn.Sigmoid()
+        loss_function_xy = torch.nn.L1Loss()
+        loss_function_bce = torch.nn.BCEWithLogitsLoss()
 
         for epoch in range(num_epochs):
             model.train()  # Enter train mode
 
-            loss_accum = 0
-            for i_step, (img, target) in enumerate(train_loader):
+            print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+            print('-' * 10)
 
+            loss_accum = 0
+            step_count = len(train_loader)
+            for i_step, (img, target) in enumerate(train_loader):
                 img = img.type(torch.cuda.FloatTensor)
+
+                indexes_with_label = (target['img_has_person'] == 1).nonzero(as_tuple=True)
+
                 target['img_has_person'] = target['img_has_person'].type(torch.cuda.FloatTensor)
                 target['box'] = target['box'].type(torch.cuda.FloatTensor)
 
@@ -93,6 +98,7 @@ class PyTorchHelper:
 
                 prediction = model(img)
 
+                ''''
                 print('prediction')
                 print(prediction)
                 print('target')
@@ -102,14 +108,18 @@ class PyTorchHelper:
 
                 print('my_prediction_BBOX')
                 print(prediction[:,1:])
+                '''
 
-                loss_value = loss_function_bce(sigmoid(prediction[:,0]), target['img_has_person'])
-                #loss_value += loss_function_xy(prediction[:,1:], target['box'])
+                loss_value = loss_function_bce(prediction[:,0], target['img_has_person'])
+
+                if len(indexes_with_label) > 0:
+                    loss_value += loss_function_xy(prediction[:,1:][indexes_with_label], target['box'][indexes_with_label])
 
                 optimizer.zero_grad()
                 loss_value.backward()
                 optimizer.step()
 
+                print('Step {}/{} Loss {}'.format(i_step, step_count, loss_value))
                 loss_accum += loss_value
 
             if scheduler is not None:
@@ -119,7 +129,9 @@ class PyTorchHelper:
 
             loss_history.append(float(ave_loss))
 
+            print('=' * 10)
             print("Average loss: %f" % (ave_loss))
+            print('=' * 10)
 
         #self.save_model(model_name, model, loss_history, train_history, val_history)
         return loss_history, train_history, val_history
