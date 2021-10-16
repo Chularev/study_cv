@@ -1,3 +1,5 @@
+CUDA_LAUNCH_BLOCKING=1
+
 import numpy as np
 
 import torch
@@ -8,6 +10,7 @@ import torchvision.datasets as dset
 from torch.utils.data.sampler import SubsetRandomSampler
 
 from torchvision import transforms
+
 
 class PyTorchHelper:
 
@@ -56,10 +59,12 @@ class PyTorchHelper:
 
         return 0
 
-    def train_model(self, model_name, model, train_loader, val_loader, loss, optimizer, num_epochs, scheduler=None):
+    def train_model(self, model_name, model, train_loader, val_loader, lossoooo, optimizer, num_epochs, scheduler=None):
 
         #if os.path.isfile(self.output + '/' + model_name):
          #   return self.load_model(model_name, model)
+
+        torch.cuda.empty_cache()
 
         device = torch.device("cuda:0")
         model.type(torch.cuda.FloatTensor)
@@ -70,6 +75,7 @@ class PyTorchHelper:
         val_history = []
         loss_function_xy = torch.nn.MSELoss()
         loss_function_bce = torch.nn.BCELoss()
+        sigmoid = nn.Sigmoid()
 
         for epoch in range(num_epochs):
             model.train()  # Enter train mode
@@ -77,9 +83,9 @@ class PyTorchHelper:
             loss_accum = 0
             for i_step, (img, target) in enumerate(train_loader):
 
-                img = img.to(torch.float)
-                target['img_has_person'] = target['img_has_person'].to(torch.float)
-                target['box'] = target['box'].to(torch.float)
+                img = img.type(torch.cuda.FloatTensor)
+                target['img_has_person'] = target['img_has_person'].type(torch.cuda.FloatTensor)
+                target['box'] = target['box'].type(torch.cuda.FloatTensor)
 
                 img = img.to(device)
                 target['img_has_person'] = target['img_has_person'].to(device)
@@ -97,9 +103,9 @@ class PyTorchHelper:
                 print('my_prediction_BBOX')
                 print(prediction[:,1:])
 
-                loss_value = loss_function_bce(prediction[:,0], target['img_has_person'])
-                if target['img_has_person'] == 1:
-                    loss_value + loss_function_xy(prediction[:,1:], target['box'])
+                loss_value = loss_function_bce(sigmoid(prediction[:,0]), target['img_has_person'])
+                #loss_value += loss_function_xy(prediction[:,1:], target['box'])
+
                 optimizer.zero_grad()
                 loss_value.backward()
                 optimizer.step()
