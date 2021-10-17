@@ -2,7 +2,7 @@ import torch
 class ResourceMonitor:
 
     def __init__(self):
-        return 0
+        return None
 
     def print_gpu_info(self):
         use_cuda = torch.cuda.is_available()
