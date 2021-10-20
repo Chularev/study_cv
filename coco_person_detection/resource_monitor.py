@@ -24,8 +24,20 @@ class ResourceMonitor:
         end = time.time()
         print("Run time [s]: ", end - self.start)
 
+    def memory_convert(self,memory, flag):
+        if flag == 'MB':
+            print("{:.2f} MB".format(memory / 1024 ** 2))
+            return
+        if flag == 'GB':
+            print("{:.2f} GB".format(memory / 1024 ** 3))
+            return
+        print("{:.2f} B".format(torch.cuda.memory_allocated()))
+
+    def get_cuda_memory_allocated(self, flag):
+        memory = torch.cuda.memory_allocated()
+        self.memory_convert(memory,flag)
 
 
-
-
-
+    def get_cuda_cached_memory(self, flag):
+        memory = torch.cuda.memory_reserved()
+        self.memory_convert(memory, flag)
