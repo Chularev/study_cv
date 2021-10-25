@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "reference_calc.h"
 #include "compare.h"
+#include "cputimer.h"
 
 void your_rgba_to_greyscale(const uchar4 * const h_rgbaImage, 
                             uchar4 * const d_rgbaImage,
@@ -79,7 +80,10 @@ int main(int argc, char **argv) {
   //check results and output the grey image
   postProcess(output_file, h_greyImage);
 
+  CpuTimer cpuTimer;
+  cpuTimer.start();
   referenceCalculation(h_rgbaImage, h_greyImage, numRows(), numCols());
+  cpuTimer.stop();
 
   postProcess(reference_file, h_greyImage);
 
