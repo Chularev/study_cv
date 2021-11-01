@@ -1,2 +1,3 @@
 /cuda/cuda cource/video
 /cuda/cuda cource/cs344/
+*.o
