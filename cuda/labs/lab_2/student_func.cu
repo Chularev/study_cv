@@ -130,6 +130,13 @@ void gaussian_blur(const unsigned char* const inputChannel,
   // to be within the bounds of the image. If this is not clear to you, then please refer
   // to sequential reference solution for the exact clamping semantics you should follow.
 
+  int row = blockIdx.x * blockDim.x + threadIdx.x;
+  int column = blockIdx.y * blockDim.y + threadIdx.y;
+  if (column >= numCols || row >= numRows)
+  {
+       return;
+  }
+
   unsigned char sum = 0;
   int index_i = -filterWidth/2;
   for (int i = 0; i < filterWidth; i++)
@@ -137,24 +144,17 @@ void gaussian_blur(const unsigned char* const inputChannel,
       int index_j = -filterWidth/2;
       for (int j = 0; j < filterWidth; j++)
       {
-          size_t blockId = blockIdx.x + blockIdx.y * gridDim.x;
-          size_t index = blockId * (blockDim.x * blockDim.y)
-           + ((threadIdx.y + index_i + i) * blockDim.x) + (threadIdx.x + index_j + j);
+          int X = row + i + index_i;
+          int Y = column + j + index_j;
 
-          if (index < 0)
-              index = 0;
+          X = min(max(X,0),numRows-1);
+          Y = min(max(Y,0),numCols-1);
 
-          if (index >= numRows * numCols)
-              continue;
-          sum += filter[i + j * filterWidth] * inputChannel[index];
+          sum += filter[j + i * filterWidth] * inputChannel[X * numCols + Y];
       }
 
   }
-  size_t blockId = blockIdx.x + blockIdx.y * gridDim.x;
-  size_t index = blockId * (blockDim.x * blockDim.y)
-   + (threadIdx.y * blockDim.x) + threadIdx.x ;
-
-  outputChannel[index] = sum;
+  outputChannel[row*numCols+column] = sum;
 }
 
 //This kernel takes in an image represented as a uchar4 and splits
