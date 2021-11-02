@@ -131,13 +131,18 @@ void gaussian_blur(const unsigned char* const inputChannel,
   // to sequential reference solution for the exact clamping semantics you should follow.
 
   unsigned char sum = 0;
+  int index_i = -filterWidth/2;
   for (int i = 0; i < filterWidth; i++)
   {
+      int index_j = -filterWidth/2;
       for (int j = 0; j < filterWidth; j++)
       {
           size_t blockId = blockIdx.x + blockIdx.y * gridDim.x;
           size_t index = blockId * (blockDim.x * blockDim.y)
-           + ((threadIdx.y + i) * blockDim.x) + (threadIdx.x + j);
+           + ((threadIdx.y + index_i + i) * blockDim.x) + (threadIdx.x + index_j + j);
+
+          if (index < 0)
+              index = 0;
 
           if (index >= numRows * numCols)
               continue;
@@ -246,7 +251,7 @@ void allocateMemoryAndCopyToGPU(const size_t numRowsImage, const size_t numColsI
   //on the GPU.  cudaMemcpy(dst, src, numBytes, cudaMemcpyHostToDevice);
   //Remember to use checkCudaErrors!
 
-  checkCudaErrors(cudaMemcpy(&d_filter, &h_filter, filterSize , cudaMemcpyHostToDevice));
+  checkCudaErrors(cudaMemcpy(d_filter, h_filter, filterSize , cudaMemcpyHostToDevice));
 
 }
 
@@ -280,15 +285,24 @@ void your_gaussian_blur(const uchar4 * const h_inputImageRGBA, uchar4 * const d_
   separateChannels<<<gridSize, blockSize>>>(d_inputImageRGBA,
                                             numRows,
                                             numCols,
-                                            d_redBlurred,
-                                            d_greenBlurred,
-                                            d_blueBlurred);
+                                            d_red,
+                                            d_green,
+                                            d_blue);
 
   // Call cudaDeviceSynchronize(), then call checkCudaErrors() immediately after
   // launching your kernel to make sure that you didn't make any mistakes.
   cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 
   //TODO: Call your convolution kernel here 3 times, once for each color channel.
+
+  gaussian_blur<<<gridSize, blockSize>>>(d_red, d_redBlurred,
+                      numRows, numCols, d_filter, filterWidth);
+
+  gaussian_blur<<<gridSize, blockSize>>>(d_green, d_greenBlurred,
+                      numRows, numCols, d_filter, filterWidth);
+
+  gaussian_blur<<<gridSize, blockSize>>>(d_blue, d_blueBlurred,
+                      numRows, numCols, d_filter, filterWidth);
 
   // Again, call cudaDeviceSynchronize(), then call checkCudaErrors() immediately after
   // launching your kernel to make sure that you didn't make any mistakes.
