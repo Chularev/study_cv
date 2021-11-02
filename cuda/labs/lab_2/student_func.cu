@@ -137,7 +137,7 @@ void gaussian_blur(const unsigned char* const inputChannel,
        return;
   }
 
-  unsigned char sum = 0;
+  float sum = 0.0f;
   int index_i = -filterWidth/2;
   for (int i = 0; i < filterWidth; i++)
   {
