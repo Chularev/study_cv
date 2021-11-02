@@ -203,24 +203,16 @@ void recombineChannels(const unsigned char* const redChannel,
                        int numRows,
                        int numCols)
 {
-  const int2 thread_2D_pos = make_int2( blockIdx.x * blockDim.x + threadIdx.x,
-                                        blockIdx.y * blockDim.y + threadIdx.y);
+    size_t blockId = blockIdx.x + blockIdx.y * gridDim.x;
+    size_t index = blockId * (blockDim.x * blockDim.y)
+     + (threadIdx.y * blockDim.x) + threadIdx.x;
 
-  const int thread_1D_pos = thread_2D_pos.y * numCols + thread_2D_pos.x;
+    if (index >= numRows * numCols)
+        return;
 
-  //make sure we don't try and access memory outside the image
-  //by having any threads mapped there return early
-  if (thread_2D_pos.x >= numCols || thread_2D_pos.y >= numRows)
-    return;
-
-  unsigned char red   = redChannel[thread_1D_pos];
-  unsigned char green = greenChannel[thread_1D_pos];
-  unsigned char blue  = blueChannel[thread_1D_pos];
-
-  //Alpha should be 255 for no transparency
-  uchar4 outputPixel = make_uchar4(red, green, blue, 255);
-
-  outputImageRGBA[thread_1D_pos] = outputPixel;
+    outputImageRGBA[index].x = redChannel[index];
+    outputImageRGBA[index].y = greenChannel[index];
+    outputImageRGBA[index].z = blueChannel[index];
 }
 
 unsigned char *d_red, *d_green, *d_blue;
