@@ -16,6 +16,13 @@ class ResourceMonitor:
         else:
             print('__CUDA is not available')
 
+    def print_statistics(self, flag):
+        print('memory_allocated:', self.get_cuda_memory_allocated(flag))
+        print('max_memory_allocated:', self.get_cuda_max_memory_allocated(flag))
+        print('memory_reserved:', self.get_cuda_cached_memory(flag))
+        print('max_memory_reserved:', self.get_cuda_max_cached_memory(flag))
+        return
+
     def cuda_start_timer(self):
         self.start = time.time()
 
@@ -26,18 +33,25 @@ class ResourceMonitor:
 
     def memory_convert(self,memory, flag):
         if flag == 'MB':
-            print("{:.2f} MB".format(memory / 1024 ** 2))
-            return
+            return memory / 1024 ** 2
         if flag == 'GB':
-            print("{:.2f} GB".format(memory / 1024 ** 3))
-            return
-        print("{:.2f} B".format(torch.cuda.memory_allocated()))
+            return memory / 1024 ** 3
+        return torch.cuda.memory_allocated()
 
     def get_cuda_memory_allocated(self, flag):
         memory = torch.cuda.memory_allocated()
-        self.memory_convert(memory,flag)
+        return self.memory_convert(memory,flag)
 
 
     def get_cuda_cached_memory(self, flag):
         memory = torch.cuda.memory_reserved()
-        self.memory_convert(memory, flag)
+        return self.memory_convert(memory, flag)
+
+    def get_cuda_max_memory_allocated(self, flag):
+        memory = torch.cuda.max_memory_allocated()
+        return self.memory_convert(memory,flag)
+
+
+    def get_cuda_max_cached_memory(self, flag):
+        memory = torch.cuda.max_memory_reserved()
+        return self.memory_convert(memory, flag)
