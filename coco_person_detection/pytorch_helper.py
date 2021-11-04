@@ -10,6 +10,7 @@ import torchvision.datasets as dset
 from torch.utils.data.sampler import SubsetRandomSampler
 
 from torchvision import transforms
+from resource_monitor import ResourceMonitor
 
 
 class PyTorchHelper:
@@ -62,19 +63,23 @@ class PyTorchHelper:
     def train_model(self, model_name, model, train_loader, val_loader, lossoooo, optimizer, num_epochs, scheduler=None):
 
         #if os.path.isfile(self.output + '/' + model_name):
-         #   return self.load_model(model_name, model)
+        #   return self.load_model(model_name, model)
 
         torch.cuda.empty_cache()
+        resourceMonitor = ResourceMonitor()
 
         device = torch.device("cuda:0")
         model.type(torch.cuda.FloatTensor)
         model.to(device)
 
-        loss_history = []
-        train_history = []
-        val_history = []
+        train_loss_history = []
+        val_loss_history = []
         loss_function_xy = torch.nn.L1Loss()
         loss_function_bce = torch.nn.BCEWithLogitsLoss()
+        print('=' * 30)
+        print("Start train:")
+        resourceMonitor.print_statistics('MB')
+        print('=' * 30)
 
         for epoch in range(num_epochs):
             model.train()  # Enter train mode
@@ -127,11 +132,10 @@ class PyTorchHelper:
 
             ave_loss = loss_accum / i_step
 
-            loss_history.append(float(ave_loss))
+            train_loss_history.append(float(ave_loss))
 
-            print('=' * 10)
-            print("Average loss test: %f" % (ave_loss))
-            print('=' * 10)
+            print('=' * 30)
+            print("Average loss train: %f" % (ave_loss))
 
             model.eval()
             ave_loss = 0
@@ -161,11 +165,15 @@ class PyTorchHelper:
 
             ave_loss = loss_accum / i_step
 
-            train_history.append(float(ave_loss))
-            print("Average loss train: %f" % (ave_loss))
+            val_loss_history.append(float(ave_loss))
+            print("Average loss test: %f" % (ave_loss))
+            print('=' * 30)
+            resourceMonitor.print_statistics('MB')
+            print('=' * 30)
 
         #self.save_model(model_name, model, loss_history, train_history, val_history)
-        return loss_history, train_history, val_history
+        model = model.to(torch.device('cpu'))
+        return model, train_loss_history, val_loss_history
 
     def compute_accuracy(self, model, loader):
         """
