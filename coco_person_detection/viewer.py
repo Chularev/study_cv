@@ -18,13 +18,14 @@ class Viewer:
             img = self.add_box(img, target)
         plt.title(label)
         plt.imshow(img)
+        plt.show()
 
     def add_box(self, img, target):
-        x_top_left = math.ceil(target['box'][0] * target['width'])
-        y_top_left = math.ceil(target['box'][1] * target['height'])
+        x_top_left = math.ceil(target['box'][0] * target['img_width'])
+        y_top_left = math.ceil(target['box'][1] * target['img_height'])
 
-        x_bottom_right = math.ceil(target['box'][2] * target['width'])
-        y_bottom_right = math.ceil(target['box'][3] * target['height'])
+        x_bottom_right = math.ceil(target['box'][2] * target['img_width'])
+        y_bottom_right = math.ceil(target['box'][3] * target['img_height'])
 
         img = self.convert_from_image_to_cv2(img)
         img = cv2.rectangle(img, (x_top_left, y_top_left), (x_bottom_right,y_bottom_right),
