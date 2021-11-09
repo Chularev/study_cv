@@ -60,6 +60,30 @@ class PyTorchHelper:
 
         return 0
 
+    def loss_calc(self, img, target, model):
+        loss_function_xy = torch.nn.L1Loss()
+        loss_function_bce = torch.nn.BCEWithLogitsLoss()
+
+        gpu_img = img.type(torch.cuda.FloatTensor)
+        gpu_img = gpu_img.to(self.device)
+        prediction = model(gpu_img)
+
+
+        gpu_img_has_person = target['img_has_person'].type(torch.cuda.FloatTensor)
+        gpu_img_has_person = gpu_img_has_person.to(self.device)
+
+
+        gpu_box = target['box'].type(torch.cuda.FloatTensor)
+        gpu_box = gpu_box.to(self.device)
+
+        loss_value = loss_function_bce(prediction[:, 0], gpu_img_has_person)
+
+
+        indexes_with_label = (gpu_img_has_person == 1).nonzero(as_tuple=True)
+        if len(indexes_with_label) > 0:
+            loss_value += loss_function_xy(prediction[:, 1:][indexes_with_label], gpu_box[indexes_with_label])
+        return loss_value
+
     def train_model(self, model_name, model, train_loader, val_loader, lossoooo, optimizer, num_epochs, scheduler=None):
 
         #if os.path.isfile(self.output + '/' + model_name):
@@ -89,35 +113,8 @@ class PyTorchHelper:
             loss_accum = 0
             step_count = len(train_loader)
             for i_step, (img, target) in enumerate(train_loader):
-                img = img.type(torch.cuda.FloatTensor)
 
-                indexes_with_label = (target['img_has_person'] == 1).nonzero(as_tuple=True)
-
-                target['img_has_person'] = target['img_has_person'].type(torch.cuda.FloatTensor)
-                target['box'] = target['box'].type(torch.cuda.FloatTensor)
-
-                img = img.to(self.device)
-                target['img_has_person'] = target['img_has_person'].to(self.device)
-                target['box'] = target['box'].to(self.device)
-
-                prediction = model(img)
-
-                ''''
-                print('prediction')
-                print(prediction)
-                print('target')
-                print(target)
-                print('my_prediction_BCE')
-                print(prediction[:,0])
-
-                print('my_prediction_BBOX')
-                print(prediction[:,1:])
-                '''
-
-                loss_value = loss_function_bce(prediction[:,0], target['img_has_person'])
-
-                if len(indexes_with_label) > 0:
-                    loss_value += loss_function_xy(prediction[:,1:][indexes_with_label], target['box'][indexes_with_label])
+                loss_value = self.loss_calc(img,target,model)
 
                 optimizer.zero_grad()
                 loss_value.backward()
@@ -137,29 +134,10 @@ class PyTorchHelper:
             print("Average loss train: %f" % (ave_loss))
 
             model.eval()
-            ave_loss = 0
             loss_accum = 0
-            step_count = len(val_loader)
             for i_step, (img, target) in enumerate(val_loader):
                 with torch.no_grad():
-                    img = img.type(torch.cuda.FloatTensor)
-
-                    indexes_with_label = (target['img_has_person'] == 1).nonzero(as_tuple=True)
-
-                    target['img_has_person'] = target['img_has_person'].type(torch.cuda.FloatTensor)
-                    target['box'] = target['box'].type(torch.cuda.FloatTensor)
-
-                    img = img.to(self.device)
-                    target['img_has_person'] = target['img_has_person'].to(self.device)
-                    target['box'] = target['box'].to(self.device)
-
-                    prediction = model(img)
-
-                    loss_value = loss_function_bce(prediction[:, 0], target['img_has_person'])
-
-                    if len(indexes_with_label) > 0:
-                        loss_value += loss_function_xy(prediction[:, 1:][indexes_with_label],
-                                                   target['box'][indexes_with_label])
+                    loss_value = self.loss_calc(img,target,model)
                     loss_accum += loss_value
 
             ave_loss = loss_accum / i_step
