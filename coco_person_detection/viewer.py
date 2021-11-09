@@ -29,9 +29,26 @@ class Viewer:
 
         img = self.convert_from_image_to_cv2(img)
         img = cv2.rectangle(img, (x_top_left, y_top_left), (x_bottom_right,y_bottom_right),
-                              (255, 0, 0), 2)
+                              (255, 0, 0), 4)
         return self.convert_from_cv2_to_image(img)
 
+    def print_prediction(self, img, target, prediction):
+        self.print_img(img, target)
+        label = "Yes" if prediction[0] > 0.5 else 'No'
+        if prediction[0] > 0.5:
+            x_top_left = math.ceil(prediction[1] * target['img_width'])
+            y_top_left = math.ceil(prediction[2] * target['img_height'])
+
+            x_bottom_right = math.ceil(prediction[3] * target['img_width'])
+            y_bottom_right = math.ceil(prediction[4] * target['img_height'])
+
+            img = self.convert_from_image_to_cv2(img)
+            img = cv2.rectangle(img, (x_top_left, y_top_left), (x_bottom_right, y_bottom_right),
+                                (0, 0, 255), 4)
+            img = self.convert_from_cv2_to_image(img)
+        plt.title(label)
+        plt.imshow(img)
+        plt.show()
 
     def visualize_samples(dataset, indices, title=None, count=10):
         # visualize random 10 samples
