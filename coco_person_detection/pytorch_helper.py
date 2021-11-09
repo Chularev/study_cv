@@ -19,7 +19,7 @@ class PyTorchHelper:
         self.output = 'output'
         self.batch_size = batch_size
         self.data = data
-        self.device = torch.device("cuda:0")  # Let's make sure GPU is available!
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     def split(self, validation_split):
 
@@ -68,9 +68,8 @@ class PyTorchHelper:
         torch.cuda.empty_cache()
         resourceMonitor = ResourceMonitor()
 
-        device = torch.device("cuda:0")
         model.type(torch.cuda.FloatTensor)
-        model.to(device)
+        model.to(self.device)
 
         train_loss_history = []
         val_loss_history = []
@@ -97,9 +96,9 @@ class PyTorchHelper:
                 target['img_has_person'] = target['img_has_person'].type(torch.cuda.FloatTensor)
                 target['box'] = target['box'].type(torch.cuda.FloatTensor)
 
-                img = img.to(device)
-                target['img_has_person'] = target['img_has_person'].to(device)
-                target['box'] = target['box'].to(device)
+                img = img.to(self.device)
+                target['img_has_person'] = target['img_has_person'].to(self.device)
+                target['box'] = target['box'].to(self.device)
 
                 prediction = model(img)
 
@@ -150,9 +149,9 @@ class PyTorchHelper:
                     target['img_has_person'] = target['img_has_person'].type(torch.cuda.FloatTensor)
                     target['box'] = target['box'].type(torch.cuda.FloatTensor)
 
-                    img = img.to(device)
-                    target['img_has_person'] = target['img_has_person'].to(device)
-                    target['box'] = target['box'].to(device)
+                    img = img.to(self.device)
+                    target['img_has_person'] = target['img_has_person'].to(self.device)
+                    target['box'] = target['box'].to(self.device)
 
                     prediction = model(img)
 
