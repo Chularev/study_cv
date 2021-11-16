@@ -11,9 +11,9 @@ class ExtendedModel:
         self.need_train = need_train
         self.model_name = model_name
 
-        self.loss_history = None
-        self.train_history = None
-        self.val_history = None
+        self.loss_history = []
+        self.train_history = []
+        self.val_history = []
 
     def add_history(self, train_history, val_history):
         #self.loss_history = loss_history
@@ -33,8 +33,7 @@ class ExtendedModel:
         val_history = checkpoint['val_history']
 
         for i in range(len(val_history)):
-            print("Average loss: %f, Train accuracy: %f, Val accuracy: %f"
-                  % (loss_history[i], train_history[i], val_history[i]))
+            print("Train loss: %f, Val loss: %f" % (train_history[i], val_history[i]))
 
         self.loss_history = loss_history
         self.train_history = train_history
