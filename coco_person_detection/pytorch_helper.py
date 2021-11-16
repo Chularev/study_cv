@@ -16,7 +16,6 @@ from resource_monitor import ResourceMonitor
 class PyTorchHelper:
 
     def __init__(self,  batch_size, data):
-        self.output = 'output'
         self.batch_size = batch_size
         self.data = data
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
