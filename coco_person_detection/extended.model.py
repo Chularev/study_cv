@@ -2,12 +2,13 @@ import torch
 import os
 
 class ExtendedModel:
-    def __init__(self, torch_model, need_train):
+    def __init__(self, torch_model, need_train, model_name):
 
         self.output = 'output'
 
         self.torch_model = torch_model
         self.need_train = need_train
+        self.model_name = model_name
 
         self.loss_history = None
         self.train_history = None
@@ -18,15 +19,12 @@ class ExtendedModel:
         self.train_history = train_history
         self.val_history = val_history
 
-    def load_model(self, model_name, model):
+    def load_model(self):
 
-        if not os.path.isfile(self.output + '/' + model_name):
-            self.need_train = True
-            return
+        if not os.path.isfile(self.output + '/' + self.model_name):
+            return False
 
-        self.torch_model = model
-
-        checkpoint = torch.load(self.output + '/' + model_name)
+        checkpoint = torch.load(self.output + '/' + self.model_name)
         self.torch_model.load_state_dict(checkpoint['model_state_dict'])
 
         loss_history = checkpoint['loss_history']
@@ -40,8 +38,9 @@ class ExtendedModel:
         self.loss_history = loss_history
         self.train_history = train_history
         self.val_history = val_history
+        return True
 
-    def save_model(self, model_name):
+    def save_model(self):
 
         if not os.path.exists(self.output):
             os.makedirs(self.output)
@@ -51,10 +50,12 @@ class ExtendedModel:
             'loss_history': self.loss_history,
             'train_history': self.train_history,
             'val_history': self.val_history
-        }, self.output + '/' + model_name)
+        }, self.output + '/' + self.model_name)
 
-    def load_best_model(self, model):
-        self.load_model('the_best', model)
+    def load_best_model(self):
+        self.model_name = 'the_best'
+        self.load_model()
 
     def save_best_model(self):
-        self.save_model('the_best')
+        self.model_name = 'the_best'
+        self.save_model()
