@@ -1,6 +1,7 @@
 import torch
 import time
 
+
 class ResourceMonitor:
 
     def __init__(self):

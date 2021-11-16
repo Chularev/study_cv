@@ -1,6 +1,7 @@
 import torch
 import os
 
+
 class ExtendedModel:
     def __init__(self, torch_model, need_train, model_name):
 
