@@ -32,34 +32,6 @@ class PyTorchHelper:
 
         return train_indices, val_indices
 
-    def load_model(self, model_name, model):
-
-        checkpoint = torch.load(self.output + '/' + model_name)
-        model.load_state_dict(checkpoint['model_state_dict'])
-
-        loss_history = checkpoint['loss_history']
-        train_history = checkpoint['train_history']
-        val_history = checkpoint['val_history']
-
-        for i in range(len(val_history)):
-            print("Average loss: %f, Train accuracy: %f, Val accuracy: %f" % (loss_history[i], train_history[i], val_history[i]))
-
-        return loss_history, train_history, val_history
-
-    def save_model(self, model_name, model, loss_history, train_history, val_history):
-
-        if not os.path.exists(self.output):
-            os.makedirs(self.output)
-
-        torch.save({
-            'model_state_dict': model.state_dict(),
-            'loss_history': loss_history,
-            'train_history' : train_history,
-            'val_history': val_history
-        }, self.output + '/' + model_name)
-
-        return 0
-
     def loss_calc(self, img, target, model):
         loss_function_xy = torch.nn.L1Loss()
         loss_function_bce = torch.nn.BCEWithLogitsLoss()
