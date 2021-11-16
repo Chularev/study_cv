@@ -15,8 +15,8 @@ class ExtendedModel:
         self.train_history = None
         self.val_history = None
 
-    def add_history(self, loss_history, train_history, val_history):
-        self.loss_history = loss_history
+    def add_history(self, train_history, val_history):
+        #self.loss_history = loss_history
         self.train_history = train_history
         self.val_history = val_history
 
