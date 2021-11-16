@@ -55,7 +55,7 @@ class PyTorchHelper:
             loss_value = loss_value + loss_function_xy(prediction[:, 1:][indexes_with_label], gpu_box[indexes_with_label])
         return loss_value
 
-    def train_model(self, model_name, model, train_loader, val_loader, lossoooo, optimizer, num_epochs, scheduler=None):
+    def train_model(self, model, train_loader, val_loader,  optimizer, num_epochs, scheduler=None):
 
         torch.cuda.empty_cache()
         resourceMonitor = ResourceMonitor()
