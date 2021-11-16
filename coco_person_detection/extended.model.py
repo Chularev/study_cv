@@ -20,6 +20,10 @@ class ExtendedModel:
 
     def load_model(self, model_name, model):
 
+        if not os.path.isfile(self.output + '/' + model_name):
+            self.need_train = True
+            return
+
         self.torch_model = model
 
         checkpoint = torch.load(self.output + '/' + model_name)

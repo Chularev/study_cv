@@ -57,9 +57,6 @@ class PyTorchHelper:
 
     def train_model(self, model_name, model, train_loader, val_loader, lossoooo, optimizer, num_epochs, scheduler=None):
 
-        #if os.path.isfile(self.output + '/' + model_name):
-        #   return self.load_model(model_name, model)
-
         torch.cuda.empty_cache()
         resourceMonitor = ResourceMonitor()
 
@@ -119,7 +116,6 @@ class PyTorchHelper:
             resourceMonitor.print_statistics('MB')
             print('=' * 30)
 
-        #self.save_model(model_name, model, loss_history, train_history, val_history)
         model = model.to(torch.device('cpu'))
         return model, train_loss_history, val_loss_history
 
