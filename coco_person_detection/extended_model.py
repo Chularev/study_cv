@@ -40,7 +40,7 @@ class ExtendedModel:
         val_metric_history = checkpoint['val_metric_history']
 
         for i in range(len(train_loss_history)):
-            print("Train loss: %f, Val loss: %f, Train metric: %f, Val metric: %f" % (train_loss_history[i], val_loss_history[i], train_metric_history[i], val_metric_history[i]))
+            print("epoch: %d, Train loss: %f, Val loss: %f, Train metric: %f, Val metric: %f" % (i, train_loss_history[i], val_loss_history[i], train_metric_history[i], val_metric_history[i]))
 
         self.train_loss_history = train_loss_history
         self.val_loss_history = val_loss_history
