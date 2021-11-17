@@ -8,18 +8,27 @@ class Metrics:
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         iou = 0
 
-        for i_step, (img, target) in enumerate(loader):
-            x = img.to(device)
-            predictions = model(x)
+        for i_step, (img, targets) in enumerate(loader):
+            gpu_img = img.type(torch.cuda.FloatTensor)
+            gpu_img = gpu_img.to(device)
+            predictions = model(gpu_img)
+
+            gpu_img_has_person = targets['img_has_person'].type(torch.cuda.FloatTensor)
+            gpu_img_has_person = gpu_img_has_person.to(device)
+
+            gpu_box = targets['box'].type(torch.cuda.FloatTensor)
+            gpu_box = gpu_box.to(device)
+
+
             for i in range(len(predictions)):
                 prediction = predictions[i]
                 if prediction[0] < 0.5:
-                    if not target['img_has_person']:
+                    if not gpu_img_has_person[i]:
                         iou += 1
                     continue
 
-                if target['img_has_person']:
-                    tmp = Iou.iou(prediction[1:], target['box'])
+                if gpu_img_has_person[i]:
+                    tmp = Iou.iou(prediction[1:], gpu_box[i])
                     if tmp > 0.5:
                         iou += 1
 

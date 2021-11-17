@@ -98,12 +98,13 @@ class PyTorchHelper:
 
             train_loss_history.append(float(ave_loss))
 
+            model.eval()
+
             print('=' * 30)
             print("Average loss train: %f" % (ave_loss))
             map = Metrics.iou(model,train_loader)
             print("Train map: %f" % (map))
 
-            model.eval()
             loss_accum = 0
             for i_step, (img, target) in enumerate(val_loader):
                 with torch.no_grad():
