@@ -65,8 +65,10 @@ class PyTorchHelper:
 
         train_loss_history = []
         val_loss_history = []
-        loss_function_xy = torch.nn.L1Loss()
-        loss_function_bce = torch.nn.BCEWithLogitsLoss()
+
+        train_metric_history = []
+        val_metric_history = []
+
         print('=' * 30)
         print("Start train:")
         resourceMonitor.print_statistics('MB')
@@ -103,6 +105,7 @@ class PyTorchHelper:
             print('=' * 30)
             print("Average loss train: %f" % (ave_loss))
             map = Metrics.iou(model,train_loader)
+            train_metric_history.append(map)
             print("Train map: %f" % (map))
 
             loss_accum = 0
@@ -116,11 +119,12 @@ class PyTorchHelper:
             val_loss_history.append(float(ave_loss))
             print("Average loss test: %f" % (ave_loss))
             map = Metrics.iou(model, val_loader)
+            val_metric_history.append(map)
             print("Test map: %f" % (map))
             print('=' * 30)
             resourceMonitor.print_statistics('MB')
             print('=' * 30)
 
         model = model.to(torch.device('cpu'))
-        return model, train_loss_history, val_loss_history
+        return model, train_loss_history, val_loss_history, train_metric_history, val_metric_history
 
