@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision.datasets as dset
 from torch.utils.data.sampler import SubsetRandomSampler
-
+from metrics import Metrics
 from torchvision import transforms
 from resource_monitor import ResourceMonitor
 
@@ -100,6 +100,8 @@ class PyTorchHelper:
 
             print('=' * 30)
             print("Average loss train: %f" % (ave_loss))
+            map = Metrics.iou(model,train_loader)
+            print("Train map: %f" % (map))
 
             model.eval()
             loss_accum = 0
@@ -112,6 +114,8 @@ class PyTorchHelper:
 
             val_loss_history.append(float(ave_loss))
             print("Average loss test: %f" % (ave_loss))
+            map = Metrics.iou(model, train_loader)
+            print("Test map: %f" % (map))
             print('=' * 30)
             resourceMonitor.print_statistics('MB')
             print('=' * 30)

@@ -1,5 +1,6 @@
 import torch
-from metrics.metrics import Iou
+from metrics.iou import Iou
+
 
 class Metrics:
     @staticmethod
@@ -9,16 +10,18 @@ class Metrics:
 
         for i_step, (img, target) in enumerate(loader):
             x = img.to(device)
-            prediction = model(x)
-            if prediction[0] < 0.5:
-                if not target['img_has_person']:
-                    iou += 1
-                continue
+            predictions = model(x)
+            for i in range(len(predictions)):
+                prediction = predictions[i]
+                if prediction[0] < 0.5:
+                    if not target['img_has_person']:
+                        iou += 1
+                    continue
 
-            if target['img_has_person']:
-                tmp = Iou.iou(prediction[1:], target['box'])
-                if tmp > 0.5:
-                    iou += 1
+                if target['img_has_person']:
+                    tmp = Iou.iou(prediction[1:], target['box'])
+                    if tmp > 0.5:
+                        iou += 1
 
         return iou / len(loader)
 
