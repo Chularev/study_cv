@@ -1,5 +1,5 @@
 import torch
-from metrics.iou import Iou
+from metrics_iou import Iou
 
 
 class Metrics:
