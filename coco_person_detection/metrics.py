@@ -1,5 +1,5 @@
 import torch
-import metrics.metrics
+from metrics.metrics import Iou
 
 class Metrics:
     @staticmethod
