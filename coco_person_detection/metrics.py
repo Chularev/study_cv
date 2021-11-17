@@ -9,7 +9,7 @@ class Metrics:
 
         for i_step, (img, target) in enumerate(loader):
             x = img.to(device)
-            prediction = model(img)
+            prediction = model(x)
             if prediction[0] < 0.5:
                 if not target['img_has_person']:
                     iou += 1
