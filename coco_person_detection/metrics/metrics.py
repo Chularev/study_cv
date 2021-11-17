@@ -13,14 +13,14 @@
 }
 '''
 
-class Metrics:
+class Iou:
     @staticmethod
     def iou(boxA, boxB):
         # if boxes dont intersect
-        if Metrics._boxesIntersect(boxA, boxB) is False:
+        if Iou._boxesIntersect(boxA, boxB) is False:
             return 0
-        interArea = Metrics._getIntersectionArea(boxA, boxB)
-        union = Metrics._getUnionAreas(boxA, boxB, interArea=interArea)
+        interArea = Iou._getIntersectionArea(boxA, boxB)
+        union = Iou._getUnionAreas(boxA, boxB, interArea=interArea)
         # intersection over union
         iou = interArea / union
         assert iou >= 0
@@ -51,10 +51,10 @@ class Metrics:
 
     @staticmethod
     def _getUnionAreas(boxA, boxB, interArea=None):
-        area_A = Metrics._getArea(boxA)
-        area_B = Metrics._getArea(boxB)
+        area_A = Iou._getArea(boxA)
+        area_B = Iou._getArea(boxB)
         if interArea is None:
-            interArea = Metrics._getIntersectionArea(boxA, boxB)
+            interArea = Iou._getIntersectionArea(boxA, boxB)
         return float(area_A + area_B - interArea)
 
     @staticmethod
