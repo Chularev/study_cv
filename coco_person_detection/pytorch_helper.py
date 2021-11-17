@@ -115,7 +115,7 @@ class PyTorchHelper:
 
             val_loss_history.append(float(ave_loss))
             print("Average loss test: %f" % (ave_loss))
-            map = Metrics.iou(model, train_loader)
+            map = Metrics.iou(model, val_loader)
             print("Test map: %f" % (map))
             print('=' * 30)
             resourceMonitor.print_statistics('MB')

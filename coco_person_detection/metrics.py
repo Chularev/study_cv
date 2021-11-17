@@ -5,10 +5,14 @@ from metrics_iou import Iou
 class Metrics:
     @staticmethod
     def iou(model, loader):
+
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         iou = 0
+        total_samples = 0
 
         for i_step, (img, targets) in enumerate(loader):
+            total_samples += img.shape[0]
+
             gpu_img = img.type(torch.cuda.FloatTensor)
             gpu_img = gpu_img.to(device)
             predictions = model(gpu_img)
@@ -32,7 +36,7 @@ class Metrics:
                     if tmp > 0.5:
                         iou += 1
 
-        return iou / len(loader)
+        return iou / total_samples
 
     @staticmethod
     def compute_accuracy(model, loader):
