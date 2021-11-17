@@ -11,14 +11,19 @@ class ExtendedModel:
         self.need_train = need_train
         self.model_name = model_name
 
-        self.loss_history = []
-        self.train_history = []
-        self.val_history = []
+        self.train_loss_history = []
+        self.val_loss_history = []
 
-    def add_history(self, train_history, val_history):
-        #self.loss_history = loss_history
-        self.train_history = train_history
-        self.val_history = val_history
+        self.train_metric_history = []
+        self.val_metric_history = []
+
+
+    def add_history(self, train_loss_history, val_loss_history, train_metric_history, val_metric_history):
+        self.train_loss_history = train_loss_history
+        self.val_loss_history = val_loss_history
+
+        self.train_metric_history = train_metric_history
+        self.val_metric_history = val_metric_history
 
     def load_model(self):
 
@@ -28,16 +33,21 @@ class ExtendedModel:
         checkpoint = torch.load(self.output + '/' + self.model_name)
         self.torch_model.load_state_dict(checkpoint['model_state_dict'])
 
-        loss_history = checkpoint['loss_history']
-        train_history = checkpoint['train_history']
-        val_history = checkpoint['val_history']
+        train_loss_history = checkpoint['train_loss_history']
+        val_loss_history = checkpoint['val_loss_history']
 
-        for i in range(len(val_history)):
-            print("Train loss: %f, Val loss: %f" % (train_history[i], val_history[i]))
+        train_metric_history = checkpoint['train_metric_history']
+        val_metric_history = checkpoint['val_metric_history']
 
-        self.loss_history = loss_history
-        self.train_history = train_history
-        self.val_history = val_history
+        for i in range(len(train_loss_history)):
+            print("Train loss: %f, Val loss: %f, Train metric: %f, Val metric: %f" % (train_loss_history[i], val_loss_history[i], train_metric_history[i], val_metric_history[i]))
+
+        self.train_loss_history = train_loss_history
+        self.val_loss_history = val_loss_history
+
+        self.train_metric_history = train_metric_history
+        self.val_metric_history = val_metric_history
+
         return True
 
     def save_model(self):
@@ -47,9 +57,12 @@ class ExtendedModel:
 
         torch.save({
             'model_state_dict': self.torch_model.state_dict(),
-            'loss_history': self.loss_history,
-            'train_history': self.train_history,
-            'val_history': self.val_history
+
+            'train_loss_history': self.train_loss_history,
+            'val_loss_history': self.val_loss_history,
+
+            'train_metric_history': self.train_metric_history,
+            'val_metric_history': self.val_metric_history
         }, self.output + '/' + self.model_name)
 
     def load_best_model(self):
