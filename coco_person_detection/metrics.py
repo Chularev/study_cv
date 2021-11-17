@@ -1,13 +1,31 @@
 import torch
-
+import metrics.metrics
 
 class Metrics:
     @staticmethod
     def iou(model, loader):
-        return 0
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        iou = 0
+
+        for i_step, (img, target) in enumerate(loader):
+            x = img.to(device)
+            prediction = model(img)
+            if prediction[0] < 0.5:
+                if not target['img_has_person']:
+                    iou += 1
+                continue
+
+            if target['img_has_person']:
+                tmp = Iou.iou(prediction[1:], target['box'])
+                if tmp > 0.5:
+                    iou += 1
+
+        return iou / len(loader)
 
     @staticmethod
     def compute_accuracy(model, loader):
+
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         """
         Computes accuracy on the dataset wrapped in a loader
 
@@ -20,8 +38,8 @@ class Metrics:
         total_samples = 0
         correct_samples = 0
         for i_step, (x, y) in enumerate(loader):
-            x_gpu = x.to(self.device)
-            y_gpu = y.to(self.device)
+            x_gpu = x.to(device)
+            y_gpu = y.to(device)
 
             prediction = model(x_gpu)
 
