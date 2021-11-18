@@ -59,14 +59,13 @@ class FiftyOneTorchDataset(torch.utils.data.Dataset):
         target['img_width'] = metadata['width']
         target['img_height'] = metadata['height']
 
-        target["box"] = []
+        box = [0,0,0,0]
         if img_has_person:
-            box = None
             if len(boxes) > 1:
                 box = sorted(boxes)[0]
             else:
                 box = boxes[0]
-            target["box"] = torch.as_tensor(box, dtype=torch.float32)
+        target["box"] = torch.as_tensor(box, dtype=torch.float32)
 
         target["img_has_person"] = img_has_person
         target["img_path"] = img_path
