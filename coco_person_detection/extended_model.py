@@ -72,3 +72,8 @@ class ExtendedModel:
     def save_best_model(self):
         self.model_name = 'the_best'
         self.save_model()
+
+    def deployment_best_model(self):
+        self.load_best_model()
+        script_model = torch.jit.script(self.torch_model)
+        script_model.save(self.output + '/the_best.pt')
