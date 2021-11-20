@@ -46,14 +46,15 @@ class FiftyOneTorchDataset(torch.utils.data.Dataset):
             coco_obj = fouc.COCOObject.from_detection(
                 det, metadata, category_id=category_id,
             )
-            x, y, w, h = coco_obj.bbox
+            if coco_obj.area > 2000:
+                x, y, w, h = coco_obj.bbox
 
-            boxes.append([x / metadata['width'],
-                          y / metadata['height'],
-                          (x + w) / metadata['width'],
-                          (y + h) / metadata['height']])
+                boxes.append([x / metadata['width'],
+                              y / metadata['height'],
+                              (x + w) / metadata['width'],
+                              (y + h) / metadata['height']])
 
-            img_has_person = 1
+                img_has_person = 1
 
         target = {}
         target['img_width'] = metadata['width']
