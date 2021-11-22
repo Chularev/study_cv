@@ -26,7 +26,7 @@ class Metrics:
 
             for i in range(len(predictions)):
                 prediction = predictions[i]
-                if prediction[0] < 0.5:
+                if torch.round(torch.sigmoid(prediction[0])) < 0.5:
                     if not gpu_img_has_person[i]:
                         iou += 1
                     continue
