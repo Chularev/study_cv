@@ -37,7 +37,7 @@ class Viewer:
         self.print_img(img, target)
         flag = torch.round(torch.sigmoid(prediction[0])) == 1
         label = "Yes" if flag else 'No'
-        if flag > 0.5:
+        if flag:
             x_top_left = math.ceil(prediction[1] * target['img_width'])
             y_top_left = math.ceil(prediction[2] * target['img_height'])
 
