@@ -23,7 +23,6 @@ class Metrics:
             gpu_box = targets['box'].type(torch.cuda.FloatTensor)
             gpu_box = gpu_box.to(device)
 
-
             for i in range(len(predictions)):
                 prediction = predictions[i]
                 if torch.round(torch.sigmoid(prediction[0])) < 0.5:
