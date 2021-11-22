@@ -1,5 +1,5 @@
 from PIL import Image
-from extended_model import ExtendedModel
+import torch
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
@@ -35,8 +35,9 @@ class Viewer:
 
     def print_prediction(self, img, target, prediction):
         self.print_img(img, target)
-        label = "Yes" if prediction[0] > 0.5 else 'No'
-        if prediction[0] > 0.5:
+        flag = torch.round(torch.sigmoid(prediction[0])) == 1
+        label = "Yes" if flag else 'No'
+        if flag > 0.5:
             x_top_left = math.ceil(prediction[1] * target['img_width'])
             y_top_left = math.ceil(prediction[2] * target['img_height'])
 
