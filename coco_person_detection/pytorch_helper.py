@@ -32,7 +32,7 @@ class PyTorchHelper:
         return train_indices, val_indices
 
     def loss_calc(self, img, target, model):
-        loss_function_xy = torch.nn.L1Loss()
+        loss_function_xy = torch.nn.MSELoss()
         loss_function_bce = torch.nn.BCEWithLogitsLoss()
 
         gpu_img = img.type(torch.cuda.FloatTensor)
