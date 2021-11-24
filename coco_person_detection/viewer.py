@@ -21,15 +21,14 @@ class Viewer:
         plt.imshow(img)
         plt.show()
 
-    def add_box(self, img, target):
-        x_top_left = math.ceil(target['box'][0] * target['img_width'])
-        y_top_left = math.ceil(target['box'][1] * target['img_height'])
+    def convert_box(self, box, width, height):
+        return [math.ceil(box[0] * width), math.ceil(box[1]*height), math.ceil(box[2]*width), math.ceil(box[3]*height)]
 
-        x_bottom_right = math.ceil(target['box'][2] * target['img_width'])
-        y_bottom_right = math.ceil(target['box'][3] * target['img_height'])
+    def add_box(self, img, target):
+        box = self.convert_box(target['box'], target['img_width'], target['img_height'])
 
         img = self.convert_from_image_to_cv2(img)
-        img = cv2.rectangle(img, (x_top_left, y_top_left), (x_bottom_right,y_bottom_right),
+        img = cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]),
                               (255, 0, 0), 4)
         return self.convert_from_cv2_to_image(img)
 
@@ -38,14 +37,10 @@ class Viewer:
         flag = torch.round(torch.sigmoid(prediction[0])) == 1
         label = "Yes" if flag else 'No'
         if flag:
-            x_top_left = math.ceil(prediction[1] * target['img_width'])
-            y_top_left = math.ceil(prediction[2] * target['img_height'])
-
-            x_bottom_right = math.ceil(prediction[3] * target['img_width'])
-            y_bottom_right = math.ceil(prediction[4] * target['img_height'])
+            box = self.convert_box(prediction[1:], target['img_width'], target['img_height'])
 
             img = self.convert_from_image_to_cv2(img)
-            img = cv2.rectangle(img, (x_top_left, y_top_left), (x_bottom_right, y_bottom_right),
+            img = cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]),
                                 (0, 0, 255), 4)
             img = self.convert_from_cv2_to_image(img)
         plt.title(label)
