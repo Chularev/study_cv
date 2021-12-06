@@ -68,11 +68,15 @@ class PyTorchHelper:
         model.type(torch.cuda.FloatTensor)
         model.to(self.device)
 
-        train_loss_history = []
-        val_loss_history = []
+        loss_history = {
+            'train': [],
+            'val': []
+        }
 
-        train_metric_history = []
-        val_metric_history = []
+        metric_history = {
+            'train': [],
+            'val': []
+        }
 
         print('=' * 30)
         print("Start train:")
@@ -103,14 +107,14 @@ class PyTorchHelper:
 
             ave_loss = loss_accum / i_step
 
-            train_loss_history.append(float(ave_loss))
+            loss_history['train'].append(float(ave_loss))
 
             model.eval()
 
             print('=' * 30)
             print("Average loss train: %f" % (ave_loss))
             map = self.evaluate(model,train_loader)
-            train_metric_history.append(map)
+            metric_history['train'].append(map)
             print("Train map: %f" % (map))
 
             loss_accum = 0
@@ -121,15 +125,15 @@ class PyTorchHelper:
 
             ave_loss = loss_accum / i_step
 
-            val_loss_history.append(float(ave_loss))
+            loss_history['val'].append(float(ave_loss))
             print("Average loss test: %f" % (ave_loss))
             map = self.evaluate(model, val_loader)
-            val_metric_history.append(map)
+            metric_history['val'].append(map)
             print("Test map: %f" % (map))
             print('=' * 30)
             resourceMonitor.print_statistics('MB')
             print('=' * 30)
 
         model = model.to(torch.device('cpu'))
-        return model, train_loss_history, val_loss_history, train_metric_history, val_metric_history
+        return model, loss_history['train'], loss_history['val'], metric_history['train'], metric_history['val']
 
