@@ -55,6 +55,11 @@ class PyTorchHelper:
             loss_value = loss_value + loss_function_xy(prediction[:, 1:][indexes_with_label], gpu_box[indexes_with_label])
         return loss_value
 
+
+    @torch.inference_mode()
+    def evaluate(model, data_loader):
+        return Metrics.iou(model, data_loader)
+
     def train_model(self, model, train_loader, val_loader,  optimizer, num_epochs, scheduler=None):
 
         torch.cuda.empty_cache()
@@ -104,7 +109,7 @@ class PyTorchHelper:
 
             print('=' * 30)
             print("Average loss train: %f" % (ave_loss))
-            map = Metrics.iou(model,train_loader)
+            map = self.evaluate(model,train_loader)
             train_metric_history.append(map)
             print("Train map: %f" % (map))
 
@@ -118,7 +123,7 @@ class PyTorchHelper:
 
             val_loss_history.append(float(ave_loss))
             print("Average loss test: %f" % (ave_loss))
-            map = Metrics.iou(model, val_loader)
+            map = self.evaluate(model, val_loader)
             val_metric_history.append(map)
             print("Test map: %f" % (map))
             print('=' * 30)
