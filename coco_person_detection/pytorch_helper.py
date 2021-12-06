@@ -111,12 +111,6 @@ class PyTorchHelper:
 
             model.eval()
             with torch.no_grad():
-                print('=' * 30)
-                print("Average loss train: %f" % (ave_loss))
-                map = self.evaluate(model,train_loader)
-                metric_history['train'].append(map)
-                print("Train map: %f" % (map))
-
                 loss_accum = 0
                 for i_step, (img, target) in enumerate(val_loader):
                     with torch.no_grad():
@@ -127,6 +121,15 @@ class PyTorchHelper:
 
                 loss_history['val'].append(float(ave_loss))
                 print("Average loss test: %f" % (ave_loss))
+
+
+
+                print('=' * 30)
+                print("Average loss train: %f" % (ave_loss))
+                map = self.evaluate(model,train_loader)
+                metric_history['train'].append(map)
+                print("Train map: %f" % (map))
+
                 map = self.evaluate(model, val_loader)
                 metric_history['val'].append(map)
                 print("Test map: %f" % (map))
