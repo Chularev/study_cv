@@ -1,4 +1,4 @@
-CUDA_LAUNCH_BLOCKING=1
+CUDA_LAUNCH_BLOCKING = 1
 
 import numpy as np
 
@@ -15,7 +15,7 @@ from resource_monitor import ResourceMonitor
 
 class PyTorchHelper:
 
-    def __init__(self,  batch_size, data):
+    def __init__(self, batch_size, data):
         self.batch_size = batch_size
         self.data = data
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -39,28 +39,25 @@ class PyTorchHelper:
         gpu_img = gpu_img.to(self.device)
         prediction = model(gpu_img)
 
-
         gpu_img_has_person = target['img_has_person'].type(torch.cuda.FloatTensor)
         gpu_img_has_person = gpu_img_has_person.to(self.device)
-
 
         gpu_box = target['box'].type(torch.cuda.FloatTensor)
         gpu_box = gpu_box.to(self.device)
 
         loss_value = loss_function_bce(prediction[:, 0], gpu_img_has_person)
 
-
         indexes_with_label = (gpu_img_has_person == 1).nonzero(as_tuple=True)
         if len(indexes_with_label) > 0:
-            loss_value = loss_value + loss_function_xy(prediction[:, 1:][indexes_with_label], gpu_box[indexes_with_label])
+            loss_value = loss_value + loss_function_xy(prediction[:, 1:][indexes_with_label],
+                                                       gpu_box[indexes_with_label])
         return loss_value
-
 
     @torch.inference_mode()
     def evaluate(model, data_loader):
         return Metrics.iou(model, data_loader)
 
-    def train_model(self, model, train_loader, val_loader,  optimizer, num_epochs, scheduler=None):
+    def train_model(self, model, train_loader, val_loader, optimizer, num_epochs, scheduler=None):
 
         torch.cuda.empty_cache()
         resourceMonitor = ResourceMonitor()
@@ -92,8 +89,7 @@ class PyTorchHelper:
             loss_accum = 0
             step_count = len(train_loader)
             for i_step, (img, target) in enumerate(train_loader):
-
-                loss_value = self.loss_calc(img,target,model)
+                loss_value = self.loss_calc(img, target, model)
 
                 optimizer.zero_grad()
                 loss_value.backward()
@@ -114,7 +110,7 @@ class PyTorchHelper:
                 loss_accum = 0
                 for i_step, (img, target) in enumerate(val_loader):
                     with torch.no_grad():
-                        loss_value = self.loss_calc(img,target,model)
+                        loss_value = self.loss_calc(img, target, model)
                         loss_accum += loss_value
 
                 ave_loss = loss_accum / i_step
@@ -122,21 +118,19 @@ class PyTorchHelper:
                 loss_history['val'].append(float(ave_loss))
                 print("Average loss test: %f" % (ave_loss))
 
-
-
+            with torch.inference_mode():
                 print('=' * 30)
                 print("Average loss train: %f" % (ave_loss))
-                map = self.evaluate(model,train_loader)
-                metric_history['train'].append(map)
-                print("Train map: %f" % (map))
+                m_map = self.evaluate(model, train_loader)
+                metric_history['train'].append(m_map)
+                print("Train map: %f" % m_map)
 
-                map = self.evaluate(model, val_loader)
-                metric_history['val'].append(map)
-                print("Test map: %f" % (map))
+                m_map = self.evaluate(model, val_loader)
+                metric_history['val'].append(m_map)
+                print("Test map: %f" % m_map)
                 print('=' * 30)
                 resourceMonitor.print_statistics('MB')
                 print('=' * 30)
 
         model = model.to(torch.device('cpu'))
         return model, loss_history['train'], loss_history['val'], metric_history['train'], metric_history['val']
-
