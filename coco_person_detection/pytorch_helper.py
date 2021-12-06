@@ -110,29 +110,29 @@ class PyTorchHelper:
             loss_history['train'].append(float(ave_loss))
 
             model.eval()
+            with torch.no_grad():
+                print('=' * 30)
+                print("Average loss train: %f" % (ave_loss))
+                map = self.evaluate(model,train_loader)
+                metric_history['train'].append(map)
+                print("Train map: %f" % (map))
 
-            print('=' * 30)
-            print("Average loss train: %f" % (ave_loss))
-            map = self.evaluate(model,train_loader)
-            metric_history['train'].append(map)
-            print("Train map: %f" % (map))
+                loss_accum = 0
+                for i_step, (img, target) in enumerate(val_loader):
+                    with torch.no_grad():
+                        loss_value = self.loss_calc(img,target,model)
+                        loss_accum += loss_value
 
-            loss_accum = 0
-            for i_step, (img, target) in enumerate(val_loader):
-                with torch.no_grad():
-                    loss_value = self.loss_calc(img,target,model)
-                    loss_accum += loss_value
+                ave_loss = loss_accum / i_step
 
-            ave_loss = loss_accum / i_step
-
-            loss_history['val'].append(float(ave_loss))
-            print("Average loss test: %f" % (ave_loss))
-            map = self.evaluate(model, val_loader)
-            metric_history['val'].append(map)
-            print("Test map: %f" % (map))
-            print('=' * 30)
-            resourceMonitor.print_statistics('MB')
-            print('=' * 30)
+                loss_history['val'].append(float(ave_loss))
+                print("Average loss test: %f" % (ave_loss))
+                map = self.evaluate(model, val_loader)
+                metric_history['val'].append(map)
+                print("Test map: %f" % (map))
+                print('=' * 30)
+                resourceMonitor.print_statistics('MB')
+                print('=' * 30)
 
         model = model.to(torch.device('cpu'))
         return model, loss_history['train'], loss_history['val'], metric_history['train'], metric_history['val']
