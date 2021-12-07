@@ -54,7 +54,7 @@ class PyTorchHelper:
         return loss_value
 
     @torch.inference_mode()
-    def evaluate(model, data_loader):
+    def evaluate(self, model, data_loader):
         return Metrics.iou(model, data_loader)
 
     def train_model(self, model, train_loader, val_loader, optimizer, num_epochs, scheduler=None):
@@ -124,19 +124,16 @@ class PyTorchHelper:
                 loss_history['val'].append(float(ave_loss))
                 print("Average loss test: %f" % (ave_loss))
 
+            print('=' * 30)
             with torch.inference_mode():
-                print('=' * 30)
-                print("Average loss train: %f" % (ave_loss))
-                m_map = self.evaluate(model, train_loader)
-                metric_history['train'].append(m_map)
-                print("Train map: %f" % m_map)
+                for phase in ('train', 'val'):
+                    m_map = self.evaluate(model, loaders[phase])
+                    metric_history[phase].append(m_map)
+                    print("{0} map: {1}".format(phase, m_map))
 
-                m_map = self.evaluate(model, val_loader)
-                metric_history['val'].append(m_map)
-                print("Test map: %f" % m_map)
-                print('=' * 30)
-                resource_monitor.print_statistics('MB')
-                print('=' * 30)
+                    print('=' * 30)
+                    resource_monitor.print_statistics('MB')
+                    print('=' * 30)
 
         model = model.to(torch.device('cpu'))
         return model, loss_history['train'], loss_history['val'], metric_history['train'], metric_history['val']
