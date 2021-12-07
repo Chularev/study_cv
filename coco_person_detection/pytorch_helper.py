@@ -123,7 +123,7 @@ class PyTorchHelper:
                 ave_loss = loss_accum / len(val_loader)
 
                 loss_history['val'].append(float(ave_loss))
-                print("Average loss test: %f" % (ave_loss))
+                print("Average loss test: %f" % ave_loss)
 
             print('=' * 30)
             with torch.inference_mode():
