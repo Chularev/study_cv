@@ -106,19 +106,22 @@ class PyTorchHelper:
             if scheduler is not None:
                 scheduler.step()
 
-            ave_loss = loss_accum / i_step
+            ave_loss = loss_accum / step_count
 
             loss_history['train'].append(float(ave_loss))
 
+            print('-' * 30)
+            print("Average loss train: %f" % ave_loss)
+
+            loss_accum = 0
             model.eval()
             with torch.no_grad():
-                loss_accum = 0
                 for i_step, (img, target) in enumerate(val_loader):
                     with torch.no_grad():
                         loss_value = self.loss_calc(img, target, model)
                         loss_accum += loss_value
 
-                ave_loss = loss_accum / i_step
+                ave_loss = loss_accum / len(val_loader)
 
                 loss_history['val'].append(float(ave_loss))
                 print("Average loss test: %f" % (ave_loss))
