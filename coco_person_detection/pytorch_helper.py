@@ -60,7 +60,7 @@ class PyTorchHelper:
     def train_model(self, model, train_loader, val_loader, optimizer, num_epochs, scheduler=None):
 
         torch.cuda.empty_cache()
-        resourceMonitor = ResourceMonitor()
+        resource_monitor = ResourceMonitor()
 
         model.type(torch.cuda.FloatTensor)
         model.to(self.device)
@@ -75,9 +75,15 @@ class PyTorchHelper:
             'val': []
         }
 
+        loaders = {
+            'train': train_loader,
+            'val': val_loader
+
+        }
+
         print('=' * 30)
         print("Start train:")
-        resourceMonitor.print_statistics('MB')
+        resource_monitor.print_statistics('MB')
         print('=' * 30)
 
         for epoch in range(num_epochs):
@@ -129,7 +135,7 @@ class PyTorchHelper:
                 metric_history['val'].append(m_map)
                 print("Test map: %f" % m_map)
                 print('=' * 30)
-                resourceMonitor.print_statistics('MB')
+                resource_monitor.print_statistics('MB')
                 print('=' * 30)
 
         model = model.to(torch.device('cpu'))
