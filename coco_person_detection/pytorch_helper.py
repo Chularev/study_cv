@@ -89,7 +89,7 @@ class PyTorchHelper:
             for phase in ['train', 'val']:
                 model.train(phase == 'train')  # Set model to training mode
 
-                print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+                print('Epoch {}/{}. Phase {}'.format(epoch, num_epochs - 1, phase))
                 print('-' * 10)
 
                 loss_accum = 0
