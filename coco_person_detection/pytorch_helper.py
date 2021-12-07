@@ -108,6 +108,12 @@ class PyTorchHelper:
                     loss_accum += loss_value.item()
                     print('Step {}/{} Loss {}'.format(i_step, step_count, loss_value.item()))
 
+                ave_loss = loss_accum / step_count
+                loss_history[phase].append(float(ave_loss))
+                print('-' * 30)
+                print("Average loss train: %f" % ave_loss)
+                print('-' * 30)
+
             print('=' * 30)
             with torch.inference_mode():
                 for phase in ('train', 'val'):
