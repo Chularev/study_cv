@@ -95,13 +95,13 @@ class PyTorchHelper:
             step_count = len(train_loader)
             for i_step, (img, target) in enumerate(train_loader):
                 loss_value = self.loss_calc(img, target, model)
+                loss_accum += loss_value
 
                 optimizer.zero_grad()
                 loss_value.backward()
                 optimizer.step()
 
                 print('Step {}/{} Loss {}'.format(i_step, step_count, loss_value))
-                loss_accum += loss_value
 
             if scheduler is not None:
                 scheduler.step()
