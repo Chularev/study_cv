@@ -117,9 +117,8 @@ class PyTorchHelper:
             model.eval()
             with torch.no_grad():
                 for i_step, (img, target) in enumerate(val_loader):
-                    with torch.no_grad():
-                        loss_value = self.loss_calc(img, target, model)
-                        loss_accum += loss_value
+                    loss_value = self.loss_calc(img, target, model)
+                    loss_accum += loss_value
 
                 ave_loss = loss_accum / len(val_loader)
 
