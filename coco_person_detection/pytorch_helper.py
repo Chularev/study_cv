@@ -132,7 +132,7 @@ class PyTorchHelper:
                     m_map = self.evaluate(model, loaders[phase])
                     metric_history[phase].append(m_map)
                     print("{0} map: {1}".format(phase, m_map))
-                
+
             print('=' * 30)
             resource_monitor.print_statistics('MB')
             print('=' * 30)
