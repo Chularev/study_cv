@@ -86,44 +86,27 @@ class PyTorchHelper:
         print('=' * 30)
 
         for epoch in range(num_epochs):
-            model.train()  # Enter train mode
+            for phase in ['train', 'val']:
+                model.train(phase == 'train')  # Set model to training mode
 
-            print('Epoch {}/{}'.format(epoch, num_epochs - 1))
-            print('-' * 10)
+                print('Epoch {}/{}'.format(epoch, num_epochs - 1))
+                print('-' * 10)
 
-            loss_accum = 0
-            step_count = len(train_loader)
-            for i_step, (img, target) in enumerate(train_loader):
-                loss_value = self.loss_calc(img, target, model)
-                loss_accum += loss_value
+                loss_accum = 0
+                step_count = len(loaders[phase])
+                for i_step, (img, target) in enumerate(loaders[phase]):
+                    with torch.set_grad_enabled(phase == 'train'):
+                        loss_value = self.loss_calc(img, target, model)
 
-                optimizer.zero_grad()
-                loss_value.backward()
-                optimizer.step()
+                    if phase == 'train':
+                        optimizer.zero_grad()
+                        loss_value.backward()
+                        optimizer.step()
+                        if scheduler is not None:
+                            scheduler.step()
 
-                print('Step {}/{} Loss {}'.format(i_step, step_count, loss_value))
-
-            if scheduler is not None:
-                scheduler.step()
-
-            ave_loss = loss_accum / step_count
-
-            loss_history['train'].append(float(ave_loss))
-
-            print('-' * 30)
-            print("Average loss train: %f" % ave_loss)
-
-            loss_accum = 0
-            model.eval()
-            with torch.no_grad():
-                for i_step, (img, target) in enumerate(val_loader):
-                    loss_value = self.loss_calc(img, target, model)
-                    loss_accum += loss_value
-
-                ave_loss = loss_accum / len(val_loader)
-
-                loss_history['val'].append(float(ave_loss))
-                print("Average loss test: %f" % ave_loss)
+                    loss_accum += loss_value.item()
+                    print('Step {}/{} Loss {}'.format(i_step, step_count, loss_value.item()))
 
             print('=' * 30)
             with torch.inference_mode():
