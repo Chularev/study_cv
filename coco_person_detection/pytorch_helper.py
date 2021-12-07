@@ -49,8 +49,7 @@ class PyTorchHelper:
 
         indexes_with_label = (gpu_img_has_person == 1).nonzero(as_tuple=True)
         if len(indexes_with_label) > 0:
-            loss_value = loss_value + loss_function_xy(prediction[:, 1:][indexes_with_label],
-                                                       gpu_box[indexes_with_label])
+            return loss_value + loss_function_xy(prediction[:, 1:][indexes_with_label], gpu_box[indexes_with_label])
         return loss_value
 
     @torch.inference_mode()
