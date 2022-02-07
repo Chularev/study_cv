@@ -6,6 +6,12 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
+from models import Net
+import ray
+from ray import tune
+from data_handlers.data_preparer import get_datasets
+
+
 def find_hyperparameters(config, data_train, data_test):
     # define training and validation data_handlers loaders
     data_loader = torch.utils.data.DataLoader(
@@ -45,3 +51,25 @@ def find_hyperparameters(config, data_train, data_test):
         lenet_model.add_history(train_loss_history, val_loss_history, train_metric_history, val_metric_history)
 
     return lenet_model
+
+if __name__ == "__main__":
+    config = {
+        'need_train': True,
+        'regs': [0.001],
+        'optimizers': [optim.Adam],
+        'model': Net,
+        'model_name': 'best_lenet'
+    }
+
+    torch_dataset, torch_dataset_test = get_datasets()
+    analysis = tune.run(
+        tune.with_parameters(find_hyperparameters, data_train=torch_dataset, data_test=torch_dataset_test),
+        sync_config=tune.SyncConfig(
+            syncer=None  # Disable syncing
+        ),
+        name="experiment_name",
+        local_dir="/mnt/heap/My folder/checpoint",
+        num_samples=1,
+        config=config,
+        resources_per_trial={"cpu": 8, "gpu": 1})
+
