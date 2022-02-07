@@ -20,17 +20,6 @@ class PyTorchHelper:
         self.data = data
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    def split(self, validation_split):
-
-        data_size = self.data.data.shape[0]
-        split = int(np.floor(validation_split * data_size))
-        indices = list(range(data_size))
-        np.random.shuffle(indices)
-
-        train_indices, val_indices = indices[split:], indices[:split]
-
-        return train_indices, val_indices
-
     def loss_calc(self, img, target, model):
         loss_function_xy = torch.nn.SmoothL1Loss()
         loss_function_bce = torch.nn.BCEWithLogitsLoss()

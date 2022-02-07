@@ -6,6 +6,18 @@ import fiftyone.zoo as foz
 from fiftyone import ViewField as F
 import torchvision.transforms as T
 
+'''
+    def split(self, validation_split):
+
+        data_size = self.data.data.shape[0]
+        split = int(np.floor(validation_split * data_size))
+        indices = list(range(data_size))
+        np.random.shuffle(indices)
+
+        train_indices, val_indices = indices[split:], indices[:split]
+
+        return train_indices, val_indices
+'''
 
 def get_datasets() -> Tuple[FiftyOneTorchDataset, FiftyOneTorchDataset]:
     fo_dataset = foz.load_zoo_dataset("coco-2017", split="validation",
