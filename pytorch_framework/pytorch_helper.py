@@ -45,7 +45,7 @@ class PyTorchHelper:
     def evaluate(self, model, data_loader):
         return Metrics.iou(model, data_loader)
 
-    def train_model(self, model, train_loader, val_loader, optimizer, num_epochs, scheduler=None):
+    def train_model(self, model, loaders, optimizer, num_epochs, scheduler=None):
 
         torch.cuda.empty_cache()
         resource_monitor = ResourceMonitor()
@@ -61,12 +61,6 @@ class PyTorchHelper:
         metric_history = {
             'train': [],
             'val': []
-        }
-
-        loaders = {
-            'train': train_loader,
-            'val': val_loader
-
         }
 
         print('=' * 30)

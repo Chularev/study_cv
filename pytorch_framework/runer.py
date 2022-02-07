@@ -10,15 +10,21 @@ from models import Net
 import ray
 from ray import tune
 from data_handlers.data_preparer import get_datasets
+from typing import Tuple, Dict
+
+def get_loaders(datasets) -> Dict[str,  torch.utils.data.DataLoader]:
+    return {
+        'train': torch.utils.data.DataLoader(
+            datasets['train'], batch_size=64, shuffle=True),
+        'test': torch.utils.data.DataLoader(
+            datasets['test'], batch_size=64, shuffle=False)
+    }
 
 
 def find_hyperparameters(config, datasets):
     # define training and validation data_handlers loaders
-    data_loader = torch.utils.data.DataLoader(
-        datasets['train'], batch_size=64, shuffle=True)
 
-    data_loader_test = torch.utils.data.DataLoader(
-        datasets['test'], batch_size=64, shuffle=False)
+    loaders = get_loaders(datasets)
 
     learning_rates = [1e-1]
     anneal_coeff = 0.5
@@ -47,7 +53,7 @@ def find_hyperparameters(config, datasets):
         scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=anneal_epoch, gamma=anneal_coeff)
 
         model, train_loss_history, val_loss_history, train_metric_history, val_metric_history = helper.train_model \
-            (lenet_model.torch_model, data_loader, data_loader_test, optimizer, epoch_num, scheduler)
+            (lenet_model.torch_model, loaders, optimizer, epoch_num, scheduler)
         lenet_model.add_history(train_loss_history, val_loss_history, train_metric_history, val_metric_history)
 
     return lenet_model
