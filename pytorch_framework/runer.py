@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 def find_hyperparameters(config, data_train, data_test):
-    # define training and validation data loaders
+    # define training and validation data_handlers loaders
     data_loader = torch.utils.data.DataLoader(
         data_train, batch_size=64, shuffle=True)
 

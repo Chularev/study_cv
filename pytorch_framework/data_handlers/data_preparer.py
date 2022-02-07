@@ -1,4 +1,4 @@
-from data.dataset import FiftyOneTorchDataset
+from data_handlers.dataset import FiftyOneTorchDataset
 from typing import Tuple
 import collections
 import fiftyone as fo
@@ -9,7 +9,7 @@ import torchvision.transforms as T
 '''
     def split(self, validation_split):
 
-        data_size = self.data.data.shape[0]
+        data_size = self.data_handlers.data_handlers.shape[0]
         split = int(np.floor(validation_split * data_size))
         indices = list(range(data_size))
         np.random.shuffle(indices)

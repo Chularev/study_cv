@@ -48,7 +48,7 @@ class Metrics:
         """
         model.eval()  # Evaluation mode
         # TODO: Copy implementation from previous assignment
-        # Don't forget to move the data to device before running it through the model!
+        # Don't forget to move the data_handlers to device before running it through the model!
 
         total_samples = 0
         correct_samples = 0
