@@ -12,13 +12,13 @@ from ray import tune
 from data_handlers.data_preparer import get_datasets
 
 
-def find_hyperparameters(config, data_train, data_test):
+def find_hyperparameters(config, datasets):
     # define training and validation data_handlers loaders
     data_loader = torch.utils.data.DataLoader(
-        data_train, batch_size=64, shuffle=True)
+        datasets['train'], batch_size=64, shuffle=True)
 
     data_loader_test = torch.utils.data.DataLoader(
-        data_test, batch_size=64, shuffle=False)
+        datasets['test'], batch_size=64, shuffle=False)
 
     learning_rates = [1e-1]
     anneal_coeff = 0.5
@@ -61,9 +61,9 @@ if __name__ == "__main__":
         'model_name': 'best_lenet'
     }
 
-    torch_dataset, torch_dataset_test = get_datasets()
+    datasets = get_datasets()
     analysis = tune.run(
-        tune.with_parameters(find_hyperparameters, data_train=torch_dataset, data_test=torch_dataset_test),
+        tune.with_parameters(find_hyperparameters, datasets=datasets),
         sync_config=tune.SyncConfig(
             syncer=None  # Disable syncing
         ),

@@ -1,5 +1,5 @@
 from data_handlers.dataset import FiftyOneTorchDataset
-from typing import Tuple
+from typing import Tuple, Dict
 import collections
 import fiftyone as fo
 import fiftyone.zoo as foz
@@ -19,7 +19,7 @@ import torchvision.transforms as T
         return train_indices, val_indices
 '''
 
-def get_datasets() -> Tuple[FiftyOneTorchDataset, FiftyOneTorchDataset]:
+def get_datasets() -> Dict[str, FiftyOneTorchDataset]:
     fo_dataset = foz.load_zoo_dataset("coco-2017", split="validation",
                                       dataset_dir='/mnt/heap')
     fo_dataset.compute_metadata()
@@ -47,4 +47,7 @@ def get_datasets() -> Tuple[FiftyOneTorchDataset, FiftyOneTorchDataset]:
     print('train dataset = ' + str(len(torch_dataset)))
     print('test dataset = ' + str(len(torch_dataset_test)))
 
-    return torch_dataset, torch_dataset_test
+    return {
+        'train' : torch_dataset,
+        'test': torch_dataset_test
+    }
