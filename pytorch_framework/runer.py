@@ -32,16 +32,12 @@ def find_hyperparameters(config, datasets):
     regs = config['regs']
     optimizers = config['optimizers']
 
-    batch_size = 64
     epoch_num = 5
 
-    run_record = {}
 
     helper = PyTorchHelper(8,  None)
 
     lenet_model = None
-    val_loss = 8
-    loss_history = None
     for lr, reg, anneal_epoch, optimizer in product(learning_rates, regs, anneal_epochs, optimizers):
 
         lenet_model = ExtendedModel(config['model'](), config['need_train'], config['model_name'])
