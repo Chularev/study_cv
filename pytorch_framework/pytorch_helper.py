@@ -12,6 +12,7 @@ from metrics import Metrics
 from torchvision import transforms
 from resource_monitor import ResourceMonitor
 from torch.utils.tensorboard import SummaryWriter
+from ray import tune
 
 
 class PyTorchHelper:
@@ -65,6 +66,13 @@ class PyTorchHelper:
             'val': []
         }
 
+        report_metrics = {
+            'loss': {
+                'train': [],
+                'val': []
+            }
+        }
+
         print('=' * 30)
         print("Start train:")
         resource_monitor.print_statistics('MB')
@@ -92,9 +100,9 @@ class PyTorchHelper:
                             scheduler.step()
 
                     loss_accum += loss_value.item()
-                    if phase == 'train':
-                        self.loger.add_scalar('Loss_train/batch', loss_value.item(), tb_step)
-                        tb_step += 1
+                    self.loger.add_scalar('Loss_{}/batch'.format(phase), loss_value.item(), tb_step)
+                    report_metrics['loss'][phase].append(loss_value.item())
+                    tb_step += 1
                     print('Step {}/{} Loss {}'.format(i_step, step_count, loss_value.item()))
 
                 ave_loss = loss_accum / step_count
@@ -115,4 +123,8 @@ class PyTorchHelper:
             resource_monitor.print_statistics('MB')
             print('=' * 30)
         model = model.to(torch.device('cpu'))
+        tune.report(
+            train_loss=sum(report_metrics['loss']['train']) / len(report_metrics['loss']['train']),
+            val_loss=sum(report_metrics['loss']['val']) / len(report_metrics['loss']['val'])
+        )
         return model, loss_history['train'], loss_history['val'], metric_history['train'], metric_history['val']
