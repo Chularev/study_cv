@@ -44,14 +44,14 @@ def find_hyperparameters(config, datasets):
 if __name__ == "__main__":
     config = {
         'need_train': True,
-        'reg': 0.001,
+        'reg': 0.01,
         'optimizer': optim.Adam,
         'model': Net,
         'model_name': 'best_lenet',
         'learning_rate': 1e-1,
         'anneal_epoch': 5,
         'anneal_coeff': 0.5,
-        'epoch_num': 5
+        'epoch_num': tune.grid_search([2,3])
     }
 
     datasets = get_datasets()
