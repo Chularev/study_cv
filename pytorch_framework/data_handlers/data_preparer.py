@@ -49,5 +49,5 @@ def get_datasets() -> Dict[str, FiftyOneTorchDataset]:
 
     return {
         'train' : torch_dataset,
-        'test': torch_dataset_test
+        'val': torch_dataset_test
     }

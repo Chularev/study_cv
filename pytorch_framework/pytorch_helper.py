@@ -11,6 +11,7 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from metrics import Metrics
 from torchvision import transforms
 from resource_monitor import ResourceMonitor
+from torch.utils.tensorboard import SummaryWriter
 
 
 class PyTorchHelper:
@@ -19,6 +20,7 @@ class PyTorchHelper:
         self.batch_size = batch_size
         self.data = data
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.loger = SummaryWriter('TensorBoard')
 
     def loss_calc(self, img, target, model):
         loss_function_xy = torch.nn.SmoothL1Loss()
@@ -68,6 +70,7 @@ class PyTorchHelper:
         resource_monitor.print_statistics('MB')
         print('=' * 30)
 
+        tb_step = -1
         for epoch in range(num_epochs):
             for phase in ['train', 'val']:
                 model.train(phase == 'train')  # Set model to training mode
@@ -89,12 +92,16 @@ class PyTorchHelper:
                             scheduler.step()
 
                     loss_accum += loss_value.item()
+                    if phase == 'train':
+                        self.loger.add_scalar('Loss_train/batch', loss_value.item(), tb_step)
+                        tb_step += 1
                     print('Step {}/{} Loss {}'.format(i_step, step_count, loss_value.item()))
 
                 ave_loss = loss_accum / step_count
                 loss_history[phase].append(float(ave_loss))
                 print('-' * 30)
                 print("Average loss train: %f" % ave_loss)
+                self.loger.add_scalar('Loss_train/epoch', ave_loss, epoch)
                 print('-' * 30)
 
             print('=' * 30)
