@@ -25,42 +25,33 @@ def find_hyperparameters(config, datasets):
     # define training and validation data_handlers loaders
 
     loaders = get_loaders(datasets)
-
-    learning_rates = [1e-1]
-    anneal_coeff = 0.5
-    anneal_epochs = [5]
-    regs = config['regs']
-    optimizers = config['optimizers']
-
-    epoch_num = 5
-
-
     helper = PyTorchHelper(8,  None)
 
-    lenet_model = None
-    for lr, reg, anneal_epoch, optimizer in product(learning_rates, regs, anneal_epochs, optimizers):
+    lenet_model = ExtendedModel(config['model'](), config['need_train'], config['model_name'])
+    if not lenet_model.need_train:
+        if lenet_model.load_model():
+            return lenet_model
 
-        lenet_model = ExtendedModel(config['model'](), config['need_train'], config['model_name'])
-        if not lenet_model.need_train:
-            if lenet_model.load_model():
-                return lenet_model
+    optimizer = config['optimizer'](lenet_model.torch_model.parameters(), lr=config['learning_rate'], weight_decay=config['reg'])
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=config['anneal_epoch'], gamma=config['anneal_coeff'])
 
-        optimizer = optimizer(lenet_model.torch_model.parameters(), lr=lr, weight_decay=reg)
-        scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=anneal_epoch, gamma=anneal_coeff)
-
-        model, train_loss_history, val_loss_history, train_metric_history, val_metric_history = helper.train_model \
-            (lenet_model.torch_model, loaders, optimizer, epoch_num, scheduler)
-        lenet_model.add_history(train_loss_history, val_loss_history, train_metric_history, val_metric_history)
+    model, train_loss_history, val_loss_history, train_metric_history, val_metric_history = helper.train_model \
+        (lenet_model.torch_model, loaders, optimizer, config['epoch_num'] , scheduler)
+    lenet_model.add_history(train_loss_history, val_loss_history, train_metric_history, val_metric_history)
 
     return lenet_model
 
 if __name__ == "__main__":
     config = {
         'need_train': True,
-        'regs': [0.001],
-        'optimizers': [optim.Adam],
+        'reg': 0.001,
+        'optimizer': optim.Adam,
         'model': Net,
-        'model_name': 'best_lenet'
+        'model_name': 'best_lenet',
+        'learning_rate': 1e-1,
+        'anneal_epoch': 5,
+        'anneal_coeff': 0.5,
+        'epoch_num': 5
     }
 
     datasets = get_datasets()
