@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 from models import Net
+from ray.tune import CLIReporter
 import ray
 from ray import tune
 from data_handlers.data_preparer import get_datasets
@@ -55,6 +56,8 @@ if __name__ == "__main__":
     }
 
     datasets = get_datasets()
+
+    reporter = CLIReporter(max_report_frequency=30)
     analysis = tune.run(
         tune.with_parameters(find_hyperparameters, datasets=datasets),
         sync_config=tune.SyncConfig(
@@ -64,5 +67,6 @@ if __name__ == "__main__":
         local_dir="/mnt/heap/My folder/checkpoint",
         num_samples=1,
         config=config,
-        resources_per_trial={"cpu": 8, "gpu": 1})
+        resources_per_trial={"cpu": 8, "gpu": 1},
+        progress_reporter=reporter)
 
