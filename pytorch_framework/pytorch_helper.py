@@ -63,18 +63,11 @@ class PyTorchHelper:
             }
         }
 
-        print('=' * 30)
-        print("Start train:")
-        resource_monitor.print_statistics('MB')
-        print('=' * 30)
 
         tb_step = -1
         for epoch in range(num_epochs):
             for phase in ['train', 'val']:
                 model.train(phase == 'train')  # Set model to training mode
-
-                print('Epoch {}/{}. Phase {}'.format(epoch, num_epochs - 1, phase))
-                print('-' * 10)
 
                 loss_accum = 0
                 step_count = len(loaders[phase])
@@ -93,15 +86,13 @@ class PyTorchHelper:
                     self.loger.add_scalar('Loss_{}/batch'.format(phase), loss_value.item(), tb_step)
                     report_metrics['loss'][phase].append(loss_value.item())
                     tb_step += 1
-                    print('Step {}/{} Loss {}'.format(i_step, step_count, loss_value.item()))
+
+                    print('Epoch {}/{}. Phase {} Step {}/{} Loss {}'.format(epoch, num_epochs - 1, phase,
+                                                                            i_step, step_count, loss_value.item()))
 
                 ave_loss = loss_accum / step_count
-                print('-' * 30)
-                print("Average loss train: %f" % ave_loss)
                 self.loger.add_scalar('Loss_train/epoch', ave_loss, epoch)
-                print('-' * 30)
 
-            print('=' * 30)
             '''
             with torch.inference_mode():
                 for phase in ('train', 'val'):
