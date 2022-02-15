@@ -56,16 +56,6 @@ class PyTorchHelper:
         model.type(torch.cuda.FloatTensor)
         model.to(self.device)
 
-        loss_history = {
-            'train': [],
-            'val': []
-        }
-
-        metric_history = {
-            'train': [],
-            'val': []
-        }
-
         report_metrics = {
             'loss': {
                 'train': [],
@@ -106,22 +96,17 @@ class PyTorchHelper:
                     print('Step {}/{} Loss {}'.format(i_step, step_count, loss_value.item()))
 
                 ave_loss = loss_accum / step_count
-                loss_history[phase].append(float(ave_loss))
                 print('-' * 30)
                 print("Average loss train: %f" % ave_loss)
                 self.loger.add_scalar('Loss_train/epoch', ave_loss, epoch)
                 print('-' * 30)
 
             print('=' * 30)
+            '''
             with torch.inference_mode():
                 for phase in ('train', 'val'):
                     m_map = self.evaluate(model, loaders[phase])
-                    metric_history[phase].append(m_map)
-                    print("{0} map: {1}".format(phase, m_map))
-
-            print('=' * 30)
-            resource_monitor.print_statistics('MB')
-            print('=' * 30)
+            '''
 
         tune.report(
             train_loss=sum(report_metrics['loss']['train']) / len(report_metrics['loss']['train']),
