@@ -36,11 +36,7 @@ def find_hyperparameters(config, datasets):
     optimizer = config['optimizer'](lenet_model.torch_model.parameters(), lr=config['learning_rate'], weight_decay=config['reg'])
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=config['anneal_epoch'], gamma=config['anneal_coeff'])
 
-    model, train_loss_history, val_loss_history, train_metric_history, val_metric_history = helper.train_model \
-        (lenet_model.torch_model, loaders, optimizer, config['epoch_num'] , scheduler)
-    lenet_model.add_history(train_loss_history, val_loss_history, train_metric_history, val_metric_history)
-
-    return lenet_model
+    helper.train_model(lenet_model.torch_model, loaders, optimizer, config['epoch_num'] , scheduler)
 
 if __name__ == "__main__":
     config = {

@@ -122,9 +122,8 @@ class PyTorchHelper:
             print('=' * 30)
             resource_monitor.print_statistics('MB')
             print('=' * 30)
-        model = model.to(torch.device('cpu'))
+
         tune.report(
             train_loss=sum(report_metrics['loss']['train']) / len(report_metrics['loss']['train']),
             val_loss=sum(report_metrics['loss']['val']) / len(report_metrics['loss']['val'])
         )
-        return model, loss_history['train'], loss_history['val'], metric_history['train'], metric_history['val']
