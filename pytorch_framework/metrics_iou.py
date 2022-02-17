@@ -12,9 +12,40 @@
     DOI = {10.3390/electronics10030279}
 }
 '''
+from torchmetrics import Metric
+import torchvision.ops as ops
+import torch
 
 
-class Iou:
+class Iou(Metric):
+    def __init__(self, dist_sync_on_step=False, threshold=0.75):
+        super().__init__(dist_sync_on_step=dist_sync_on_step)
+
+        self.threshold = threshold
+
+        self.add_state("iou", default=torch.tensor(0), dist_reduce_fx="sum")
+        self.add_state("total", default=torch.tensor(0), dist_reduce_fx="sum")
+
+    def update(self, preds: torch.Tensor, target: torch.Tensor):
+        area1 = ops.box_area(preds)
+        area2 = ops.box_area(target)
+
+        lt = torch.max(preds[:, :2], target[:, :2])
+        rb = torch.min(preds[:, 2:], target[:, 2:])
+
+        wh = (rb - lt).clamp(min=0)
+        inter = wh[:, 0] * wh[:, 1]
+
+        union = area1 + area2 - inter
+
+        self.iou += torch.sum(inter / union)
+        self.total += preds.shape[0]
+
+    def compute(self):
+        return self.iou.float() / self.total
+
+
+class Iou_old:
     @staticmethod
     def iou(boxA, boxB):
         # if boxes dont intersect
