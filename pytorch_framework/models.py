@@ -1,6 +1,7 @@
 from torchvision.models import resnet18
 import torch.nn as nn
 
+
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -9,4 +10,7 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = self.model(x)
-        return x
+        return {
+            'class': x[:, 0],
+            'bbox': x[:, 1:]
+        }

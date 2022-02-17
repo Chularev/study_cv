@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision.datasets as dset
 from torch.utils.data.sampler import SubsetRandomSampler
-from metrics import Metrics
+from metrics import MyMetric
 from torchvision import transforms
 from resource_monitor import ResourceMonitor
 from torch.utils.tensorboard import SummaryWriter
@@ -37,16 +37,18 @@ class PyTorchHelper:
         gpu_box = target['box'].type(torch.cuda.FloatTensor)
         gpu_box = gpu_box.to(self.device)
 
-        loss_value = loss_function_bce(prediction[:, 0], gpu_img_has_person)
+        loss_value = loss_function_bce(prediction['class'], gpu_img_has_person)
 
         indexes_with_label = (gpu_img_has_person == 1).nonzero(as_tuple=True)
         if len(indexes_with_label) > 0:
-            return loss_value + loss_function_xy(prediction[:, 1:][indexes_with_label], gpu_box[indexes_with_label])
+            return loss_value + loss_function_xy(prediction['bbox'][indexes_with_label], gpu_box[indexes_with_label])
         return loss_value
 
+    '''
     @torch.inference_mode()
     def evaluate(self, model, data_loader):
-        return Metrics.iou(model, data_loader)
+        return M.iou(model, data_loader)
+    '''
 
     def train_model(self, model, loaders, optimizer, num_epochs, scheduler=None):
 
