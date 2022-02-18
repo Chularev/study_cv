@@ -4,6 +4,7 @@ from pycparser.c_ast import ID
 from metrics_iou import Iou
 from torchmetrics.classification import Accuracy
 
+
 class MyMetric:
     def __init__(self):
         self.accuracy = Accuracy()
