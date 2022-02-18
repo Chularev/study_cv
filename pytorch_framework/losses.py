@@ -1,13 +1,14 @@
-from losses import _Loss
+from torch import Module
 from torch import Tensor
+import torch
 
 
-class MyLoss(_Loss):
-    __constants__ = ['reduction']
+class MyLoss(Module):
+    def __init__(self) -> None:
+        super(MyLoss, self).__init__()
 
-    def __init__(self, size_average=None, reduce=None, reduction: str = 'mean', beta: float = 1.0) -> None:
-        super(MyLoss, self).__init__(size_average, reduce, reduction)
-        self.beta = beta
+        self.class_loss = torch.nn.BCEWithLogitsLoss()
+        self.bbox_loss = torch.nn.SmoothL1Loss()
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        return F.smooth_l1_loss(input, target, reduction=self.reduction, beta=self.beta)
+        return 90;
