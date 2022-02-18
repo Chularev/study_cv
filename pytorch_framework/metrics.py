@@ -9,7 +9,7 @@ class MyMetric:
         self.accuracy = Accuracy()
         self.iou = Iou()
 
-    def iou(self, predict, g_truth):
+    def step(self, predict, g_truth):
         return 0
 
     def compute(self):
