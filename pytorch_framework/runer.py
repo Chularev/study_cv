@@ -27,7 +27,7 @@ def find_hyperparameters(config, datasets, checkpoint_dir=None):
 
     model = config['model']()
 
-    optimizer = config['optimizer'](model.torch_model.parameters(), lr=config['learning_rate'], weight_decay=config['reg'])
+    optimizer = config['optimizer'](model.parameters(), lr=config['learning_rate'], weight_decay=config['reg'])
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=config['anneal_epoch'], gamma=config['anneal_coeff'])
 
     if checkpoint_dir:
@@ -36,7 +36,7 @@ def find_hyperparameters(config, datasets, checkpoint_dir=None):
         config['model'].load_state_dict(model_state)
         optimizer.load_state_dict(optimizer_state)
 
-    trainer.train(model.torch_model, loaders, optimizer, config['epoch_num'], scheduler)
+    trainer.train(model, loaders, optimizer, config['epoch_num'], scheduler)
 
 if __name__ == "__main__":
     config = {
