@@ -89,7 +89,16 @@ class Trainer:
                 ave_loss = loss_accum / step_count
                 self.logger.add_scalar('Loss_train/epoch', ave_loss)
 
+        train_metrics = self.metrics['train'].compute()
+        val_metrics = self.metrics['val'].compute()
+
         tune.report(
             train_loss=sum(report_metrics['loss']['train']) / len(report_metrics['loss']['train']),
-            val_loss=sum(report_metrics['loss']['val']) / len(report_metrics['loss']['val'])
+            val_loss=sum(report_metrics['loss']['val']) / len(report_metrics['loss']['val']),
+
+            train_iou=train_metrics['iou'],
+            val_iou=val_metrics['iou'],
+
+            train_accuracy=train_metrics['accuracy'],
+            val_accuracy=val_metrics['accuracy']
         )
