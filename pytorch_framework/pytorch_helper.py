@@ -56,7 +56,6 @@ class PyTorchHelper:
     def train_model(self, model, loaders, optimizer, num_epochs, scheduler=None):
 
         torch.cuda.empty_cache()
-        resource_monitor = ResourceMonitor()
 
         model = model.to(self.device)
 
@@ -94,12 +93,6 @@ class PyTorchHelper:
 
                 ave_loss = loss_accum / step_count
                 self.logger.add_scalar('Loss_train/epoch', ave_loss)
-
-            '''
-            with torch.inference_mode():
-                for phase in ('train', 'val'):
-                    m_map = self.evaluate(model, loaders[phase])
-            '''
 
         tune.report(
             train_loss=sum(report_metrics['loss']['train']) / len(report_metrics['loss']['train']),
