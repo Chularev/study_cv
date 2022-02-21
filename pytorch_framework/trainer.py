@@ -45,7 +45,7 @@ class Trainer:
             self.logger.add_scalar('Metric_{}/iou'.format(self.phase), metrics['iou'])
             self.logger.add_scalar('Metric_{}/accuracy'.format(self.phase),  metrics['accuracy'])
 
-        return losses
+        return sum(losses.values())
 
     def train(self, model, loaders, optimizer, num_epochs, scheduler=None):
 
