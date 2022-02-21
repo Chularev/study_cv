@@ -1,17 +1,15 @@
-from itertools import product
 from pytorch_helper import PyTorchHelper
 from extended_model import ExtendedModel
 
 import torch
-import torch.nn as nn
 import torch.optim as optim
+import os
 
 from models import Net
 from ray.tune import CLIReporter
-import ray
 from ray import tune
 from data_handlers.data_preparer import get_datasets
-from typing import Tuple, Dict
+from typing import Dict
 
 def get_loaders(datasets) -> Dict[str,  torch.utils.data.DataLoader]:
     return {
@@ -22,7 +20,7 @@ def get_loaders(datasets) -> Dict[str,  torch.utils.data.DataLoader]:
     }
 
 
-def find_hyperparameters(config, datasets):
+def find_hyperparameters(config, datasets, checkpoint_dir=None):
     # define training and validation data_handlers loaders
 
     loaders = get_loaders(datasets)
@@ -35,6 +33,12 @@ def find_hyperparameters(config, datasets):
 
     optimizer = config['optimizer'](lenet_model.torch_model.parameters(), lr=config['learning_rate'], weight_decay=config['reg'])
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=config['anneal_epoch'], gamma=config['anneal_coeff'])
+
+    if checkpoint_dir:
+        checkpoint = os.path.join(checkpoint_dir, "checkpoint")
+        model_state, optimizer_state = torch.load(checkpoint)
+        config['model'].load_state_dict(model_state)
+        optimizer.load_state_dict(optimizer_state)
 
     helper.train_model(lenet_model.torch_model, loaders, optimizer, config['epoch_num'] , scheduler)
 
