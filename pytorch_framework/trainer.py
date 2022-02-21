@@ -45,7 +45,7 @@ class Trainer:
         with torch.inference_mode():
             metrics = self.metrics[self.phase].step(prediction, gpu_img_has_person, gpu_box)
             for key in metrics.keys():
-                self.logger.add_scalar('Metric_{}/{}'.format(self.phase, key), metrics[key])
+                self.logger.add_scalar('Metric_{}/{}'.format(self.phase, key), metrics[key].item())
 
         return sum(losses.values())
 
@@ -100,9 +100,9 @@ class Trainer:
             train_loss=sum(report_metrics['loss']['train']) / len(report_metrics['loss']['train']),
             val_loss=sum(report_metrics['loss']['val']) / len(report_metrics['loss']['val']),
 
-            train_iou=train_metrics['iou'],
-            val_iou=val_metrics['iou'],
+            train_iou=train_metrics['iou'].item(),
+            val_iou=val_metrics['iou'].item(),
 
-            train_accuracy=train_metrics['accuracy'],
-            val_accuracy=val_metrics['accuracy']
+            train_accuracy=train_metrics['accuracy'].item(),
+            val_accuracy=val_metrics['accuracy'].item()
         )
