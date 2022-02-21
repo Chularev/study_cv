@@ -44,7 +44,7 @@ class Trainer:
 
         with torch.inference_mode():
             metrics = self.metrics[self.phase].step(prediction, gpu_img_has_person, gpu_box)
-            for key in losses.keys():
+            for key in metrics.keys():
                 self.logger.add_scalar('Metric_{}/{}'.format(self.phase, key), metrics[key])
 
         return sum(losses.values())
