@@ -22,8 +22,13 @@ class PyTorchHelper:
         self.batch_size = batch_size
         self.data = data
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.loger = SummaryWriter('TensorBoard')
+        self.logger = SummaryWriter('TensorBoard')
         self.losses = MyLoss()
+        self.metrics = {
+            'train': MyMetric(self.device),
+            'val': MyMetric(self.device)
+        }
+        self.phase = 'train'
 
     def to_gpu(self, item):
         return item.type(torch.cuda.FloatTensor).to(self.device)
@@ -36,11 +41,10 @@ class PyTorchHelper:
         prediction = model(gpu_img)
 
         with torch.no_grad():
-            metric = MyMetric(self.device)
-            metrics = metric.step(prediction, gpu_img_has_person, gpu_box)
+            metrics = self.metrics[self.phase].step(prediction, gpu_img_has_person, gpu_box)
             print('iou {}, acc {}'.format(metrics['iou'], metrics['accuracy']))
 
-        losses = self.losses.calc(prediction, gpu_img_has_person.type(torch.cuda.FloatTensor), gpu_box)
+        losses = self.losses.calc(prediction, gpu_img_has_person, gpu_box)
         return losses
 
     '''
@@ -67,6 +71,8 @@ class PyTorchHelper:
         tb_step = -1
         for epoch in range(num_epochs):
             for phase in ['train', 'val']:
+
+                self.phase = phase
                 model.train(phase == 'train')  # Set model to training mode
 
                 loss_accum = 0
@@ -83,7 +89,7 @@ class PyTorchHelper:
                             scheduler.step()
 
                     loss_accum += loss_value.item()
-                    self.loger.add_scalar('Loss_{}/batch'.format(phase), loss_value.item(), tb_step)
+                    self.logger.add_scalar('Loss_{}/batch'.format(phase), loss_value.item(), tb_step)
                     report_metrics['loss'][phase].append(loss_value.item())
                     tb_step += 1
 
@@ -91,7 +97,7 @@ class PyTorchHelper:
                                                                             i_step, step_count, loss_value.item()))
 
                 ave_loss = loss_accum / step_count
-                self.loger.add_scalar('Loss_train/epoch', ave_loss, epoch)
+                self.logger.add_scalar('Loss_train/epoch', ave_loss, epoch)
 
             '''
             with torch.inference_mode():
