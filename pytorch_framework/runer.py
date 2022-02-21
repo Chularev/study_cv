@@ -60,7 +60,7 @@ if __name__ == "__main__":
             syncer=None  # Disable syncing
         ),
         name="experiment_name",
-        local_dir="/mnt/heap/My folder/checkpoint",
+        local_dir="/mnt/heap/My folder/tune_reports",
         num_samples=1,
         config=config,
         resources_per_trial={"cpu": 8, "gpu": 1},

@@ -90,6 +90,9 @@ class PyTorchHelper:
                     report_metrics['loss'][phase].append(loss_value.item())
                     print('Epoch {}/{}. Phase {} Step {}/{} Loss {}'.format(epoch, num_epochs - 1, phase,
                                                                             i_step, step_count, loss_value.item()))
+                    with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
+                        path = os.path.join(checkpoint_dir, "checkpoint")
+                        torch.save((model.state_dict(), optimizer.state_dict()), path)
 
                 ave_loss = loss_accum / step_count
                 self.logger.add_scalar('Loss_train/epoch', ave_loss)
