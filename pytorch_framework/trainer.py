@@ -38,11 +38,13 @@ class Trainer:
 
         prediction = model(gpu_img)
 
-        with torch.no_grad():
-            metrics = self.metrics[self.phase].step(prediction, gpu_img_has_person, gpu_box)
-            print('iou {}, acc {}'.format(metrics['iou'], metrics['accuracy']))
-
         losses = self.losses.calc(prediction, gpu_img_has_person, gpu_box)
+
+        with torch.inference_mode():
+            metrics = self.metrics[self.phase].step(prediction, gpu_img_has_person, gpu_box)
+            self.logger.add_scalar('Metric_{}/iou'.format(self.phase), metrics['iou'])
+            self.logger.add_scalar('Metric_{}/accuracy'.format(self.phase),  metrics['accuracy'])
+
         return losses
 
     def train(self, model, loaders, optimizer, num_epochs, scheduler=None):
