@@ -6,7 +6,7 @@ class MyLoss:
     def __init__(self) -> None:
         super(MyLoss, self).__init__()
 
-        self.class_loss = torch.nn.BCEWithLogitsLoss()
+        self.class_loss = torch.nn.BCELoss()
         self.bbox_loss = torch.nn.SmoothL1Loss()
 
     def calc(self, prediction: Tensor, gpu_img_has_person: Tensor, gpu_box:Tensor) -> Tensor:
