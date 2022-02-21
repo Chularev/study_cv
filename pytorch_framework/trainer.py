@@ -45,7 +45,7 @@ class Trainer:
         losses = self.losses.calc(prediction, gpu_img_has_person, gpu_box)
         return losses
 
-    def train_model(self, model, loaders, optimizer, num_epochs, scheduler=None):
+    def train(self, model, loaders, optimizer, num_epochs, scheduler=None):
 
         torch.cuda.empty_cache()
 
