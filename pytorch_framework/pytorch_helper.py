@@ -13,6 +13,7 @@ from torchvision import transforms
 from resource_monitor import ResourceMonitor
 from torch.utils.tensorboard import SummaryWriter
 from ray import tune
+from losses import MyLoss
 
 
 class PyTorchHelper:
@@ -22,27 +23,25 @@ class PyTorchHelper:
         self.data = data
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.loger = SummaryWriter('TensorBoard')
+        self.losses = MyLoss()
+
+    def to_gpu(self, item):
+        return item.type(torch.cuda.FloatTensor).to(self.device)
 
     def loss_calc(self, img, target, model):
-        loss_function_xy = torch.nn.SmoothL1Loss()
-        loss_function_bce = torch.nn.BCEWithLogitsLoss()
+        gpu_img = self.to_gpu(img)
+        gpu_img_has_person = target['img_has_person'].type(torch.cuda.IntTensor).to(self.device)
+        gpu_box = self.to_gpu(target['box'])
 
-        gpu_img = img.type(torch.cuda.FloatTensor)
-        gpu_img = gpu_img.to(self.device)
         prediction = model(gpu_img)
 
-        gpu_img_has_person = target['img_has_person'].type(torch.cuda.FloatTensor)
-        gpu_img_has_person = gpu_img_has_person.to(self.device)
+        with torch.no_grad():
+            metric = MyMetric(self.device)
+            metrics = metric.step(prediction, gpu_img_has_person, gpu_box)
+            print('iou {}, acc {}'.format(metrics['iou'], metrics['accuracy']))
 
-        gpu_box = target['box'].type(torch.cuda.FloatTensor)
-        gpu_box = gpu_box.to(self.device)
-
-        loss_value = loss_function_bce(prediction['class'], gpu_img_has_person)
-
-        indexes_with_label = (gpu_img_has_person == 1).nonzero(as_tuple=True)
-        if len(indexes_with_label) > 0:
-            return loss_value + loss_function_xy(prediction['bbox'][indexes_with_label], gpu_box[indexes_with_label])
-        return loss_value
+        losses = self.losses.calc(prediction, gpu_img_has_person.type(torch.cuda.FloatTensor), gpu_box)
+        return losses
 
     '''
     @torch.inference_mode()
@@ -55,8 +54,7 @@ class PyTorchHelper:
         torch.cuda.empty_cache()
         resource_monitor = ResourceMonitor()
 
-        model.type(torch.cuda.FloatTensor)
-        model.to(self.device)
+        model = model.to(self.device)
 
         report_metrics = {
             'loss': {

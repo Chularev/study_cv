@@ -23,8 +23,8 @@ class Iou(Metric):
 
         self.threshold = threshold
 
-        self.add_state("iou", default=torch.tensor(0), dist_reduce_fx="sum")
-        self.add_state("total", default=torch.tensor(0), dist_reduce_fx="sum")
+        self.add_state("iou", default=torch.tensor(0, dtype=torch.float), dist_reduce_fx="sum")
+        self.add_state("total", default=torch.tensor(0, dtype=torch.int32), dist_reduce_fx="sum")
 
     def update(self, preds: torch.Tensor, target: torch.Tensor):
         area1 = ops.box_area(preds)
