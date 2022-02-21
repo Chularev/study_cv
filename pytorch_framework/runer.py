@@ -1,4 +1,4 @@
-from pytorch_helper import PyTorchHelper
+from trainer import Trainer
 from extended_model import ExtendedModel
 
 import torch
@@ -24,7 +24,7 @@ def find_hyperparameters(config, datasets, checkpoint_dir=None):
     # define training and validation data_handlers loaders
 
     loaders = get_loaders(datasets)
-    helper = PyTorchHelper(8,  None)
+    helper = Trainer(8, None)
 
     model = config['model']()
 
