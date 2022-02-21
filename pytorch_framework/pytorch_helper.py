@@ -11,9 +11,9 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from metrics import MyMetric
 from torchvision import transforms
 from resource_monitor import ResourceMonitor
-from torch.utils.tensorboard import SummaryWriter
 from ray import tune
 from losses import MyLoss
+from logger import Logger
 
 
 class PyTorchHelper:
@@ -22,7 +22,7 @@ class PyTorchHelper:
         self.batch_size = batch_size
         self.data = data
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.logger = SummaryWriter('TensorBoard')
+        self.logger = Logger('TensorBoard')
         self.losses = MyLoss()
         self.metrics = {
             'train': MyMetric(self.device),
@@ -67,8 +67,6 @@ class PyTorchHelper:
             }
         }
 
-
-        tb_step = -1
         for epoch in range(num_epochs):
             for phase in ['train', 'val']:
 
@@ -89,15 +87,13 @@ class PyTorchHelper:
                             scheduler.step()
 
                     loss_accum += loss_value.item()
-                    self.logger.add_scalar('Loss_{}/batch'.format(phase), loss_value.item(), tb_step)
+                    self.logger.add_scalar('Loss_{}/batch'.format(phase), loss_value.item())
                     report_metrics['loss'][phase].append(loss_value.item())
-                    tb_step += 1
-
                     print('Epoch {}/{}. Phase {} Step {}/{} Loss {}'.format(epoch, num_epochs - 1, phase,
                                                                             i_step, step_count, loss_value.item()))
 
                 ave_loss = loss_accum / step_count
-                self.logger.add_scalar('Loss_train/epoch', ave_loss, epoch)
+                self.logger.add_scalar('Loss_train/epoch', ave_loss)
 
             '''
             with torch.inference_mode():
