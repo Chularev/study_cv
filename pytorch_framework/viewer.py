@@ -62,22 +62,4 @@ class Viewer:
             plt.grid(False)
             plt.axis('off')
 
-    @staticmethod
-    def visualize_metric_history(extended_model):
-        plt.plot(extended_model.train_metric_history, label='train')
-        plt.plot(extended_model.val_metric_history, label='val')
-        plt.title('model metric')
-        plt.ylabel('metric')
-        plt.xlabel('epoch')
-        plt.legend(loc='upper left')
-        plt.show()
-
-    @staticmethod
-    def visualize_loss_history(extended_model):
-        plt.plot(extended_model.train_loss_history, label='train')
-        plt.plot(extended_model.val_loss_history, label='val')
-        plt.title('model loss')
-        plt.ylabel('loss')
-        plt.xlabel('epoch')
-        plt.legend(loc='upper left')
-        plt.show()
+            
