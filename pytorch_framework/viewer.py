@@ -46,20 +46,3 @@ class Viewer:
         plt.title(label)
         plt.imshow(img)
         plt.show()
-
-    def visualize_samples(dataset, indices, title=None, count=10):
-        # visualize random 10 samples
-        plt.figure(figsize=(count * 3, 3))
-        display_indices = indices[:count]
-        if title:
-            plt.suptitle("%s %s/%s\n\n" % (title, len(display_indices), len(indices)))
-
-        for i, index in enumerate(display_indices):
-            x, y, _ = dataset[index]
-            plt.subplot(1, count, i + 1)
-            plt.title("Label: %s" % y)
-            plt.imshow(x)
-            plt.grid(False)
-            plt.axis('off')
-
-            

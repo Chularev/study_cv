@@ -48,7 +48,7 @@ if __name__ == "__main__":
         'learning_rate': 1e-1,
         'anneal_epoch': 5,
         'anneal_coeff': 0.5,
-        'epoch_num': tune.grid_search([2,3])
+        'epoch_num': 10
     }
 
     datasets = get_datasets()
