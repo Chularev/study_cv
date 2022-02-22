@@ -33,7 +33,7 @@ def find_hyperparameters(config, datasets, checkpoint_dir=None):
     if checkpoint_dir:
         checkpoint = os.path.join(checkpoint_dir, "checkpoint")
         model_state, optimizer_state = torch.load(checkpoint)
-        config['model'].load_state_dict(model_state)
+        model.load_state_dict(model_state)
         optimizer.load_state_dict(optimizer_state)
 
     trainer.train(model, loaders, optimizer, config['epoch_num'], scheduler)
