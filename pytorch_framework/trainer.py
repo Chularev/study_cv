@@ -4,17 +4,11 @@ import numpy as np
 
 import torch
 import os
-import torch.nn as nn
-import torch.optim as optim
-import torchvision.datasets as dset
-from torch.utils.data.sampler import SubsetRandomSampler
 from metrics import MyMetric
-from torchvision import transforms
-from resource_monitor import ResourceMonitor
 from ray import tune
 from losses import MyLoss
 from logger import Logger
-
+from viewer import Viewer
 
 class Trainer:
 
@@ -27,6 +21,7 @@ class Trainer:
             'val': MyMetric(self.device)
         }
         self.phase = 'train'
+        self.viewer = Viewer()
 
     def to_gpu(self, item):
         return item.type(torch.cuda.FloatTensor).to(self.device)
@@ -86,9 +81,17 @@ class Trainer:
                     report_metrics['loss'][phase].append(loss_value.item())
                     print('Epoch {}/{}. Phase {} Step {}/{} Loss {}'.format(epoch, num_epochs - 1, phase,
                                                                             i_step, step_count, loss_value.item()))
-                    with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
-                        path = os.path.join(checkpoint_dir, "checkpoint")
-                        torch.save((model.state_dict(), optimizer.state_dict()), path)
+                    if phase == 'val':
+                        with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
+                            path = os.path.join(checkpoint_dir, "checkpoint")
+                            torch.save((model.state_dict(), optimizer.state_dict()), path)
+
+                            batch = next(iter(loaders['val']))
+                            predict = model(batch[0].to('gpu'))
+                            target = batch[1]
+                            for index in range(5):
+                                img_with_bbox = self.viewer.get_img_with_predict(target[index], predict[index])
+                                self.logger.add_image('Image ' + str(index), img_with_bbox)
 
                 ave_loss = loss_accum / step_count
                 self.logger.add_scalar('Loss_sum_train/epoch', ave_loss)

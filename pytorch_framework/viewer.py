@@ -55,8 +55,9 @@ class Viewer:
         buf.seek(0)
         return buf
 
-    def get_img_with_predict(self, img, target, prediction):
+    def get_img_with_predict(self, target, prediction):
         """Create a pyplot plot and save to buffer."""
+        img = Image.open(target['img_path']).convert("RGB")
         buffer = self.gen_buffer(img, target, prediction)
         image = Image.open(buffer)
         return ToTensor()(image)
