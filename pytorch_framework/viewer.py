@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 import math
+from metrics_iou import Iou
 
 
 class Viewer:
@@ -34,7 +35,13 @@ class Viewer:
         flag = torch.round(prediction['class'][0]) == 1
         label += "| Pred "
         label += "Yes" if flag else 'No'
-        label += ' Prob {}'.format(prediction['class'][0])
+        label += ' Prob = {}'.format(prediction['class'][0])
+
+        if target['box'].numel() > 1:
+            iou = Iou()
+            tmp = iou(prediction['bbox'], target['box'].unsqueeze(0))
+            label += ' Iou = ' + str(tmp.item())
+
         if flag:
             img = self.add_box(img, prediction['bbox'][0], target, (0, 0, 255))
         plt.title(label)
