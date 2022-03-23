@@ -23,7 +23,7 @@ def find_hyperparameters(config, datasets, checkpoint_dir=None):
     # define training and validation data_handlers loaders
 
     loaders = get_loaders(datasets)
-    trainer = Trainer()
+    trainer = Trainer(datasets)
 
     model = config['model']()
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         'learning_rate': 1e-1,
         'anneal_epoch': 5,
         'anneal_coeff': 0.5,
-        'epoch_num': 10
+        'epoch_num': 2
     }
 
     datasets = get_datasets()

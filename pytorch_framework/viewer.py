@@ -53,6 +53,7 @@ class Viewer:
         buf = io.BytesIO()
         plt.savefig(buf, format='jpeg')
         buf.seek(0)
+        plt.close()
         return buf
 
     def get_img_with_predict(self, target, prediction):

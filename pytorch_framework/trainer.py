@@ -12,7 +12,8 @@ from viewer import Viewer
 
 class Trainer:
 
-    def __init__(self):
+    def __init__(self, datasets):
+        self.datasets = datasets
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.logger = Logger('TensorBoard')
         self.losses = MyLoss()
@@ -86,11 +87,13 @@ class Trainer:
                             path = os.path.join(checkpoint_dir, "checkpoint")
                             torch.save((model.state_dict(), optimizer.state_dict()), path)
 
-                            batch = next(iter(loaders['val']))
-                            predict = model(batch[0].to('gpu'))
-                            target = batch[1]
                             for index in range(5):
-                                img_with_bbox = self.viewer.get_img_with_predict(target[index], predict[index])
+                                img, target = self.datasets['train'][index]
+                                predict = model(self.to_gpu(img.unsqueeze(0)))
+                                predict['class'] = predict['class'].to('cpu')
+                                predict['bbox'] = predict['bbox'].to('cpu')
+
+                                img_with_bbox = self.viewer.get_img_with_predict(target, predict)
                                 self.logger.add_image('Image ' + str(index), img_with_bbox)
 
                 ave_loss = loss_accum / step_count
