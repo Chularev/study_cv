@@ -5,6 +5,8 @@ import numpy as np
 import cv2
 import math
 from metrics_iou import Iou
+import io
+from torchvision.transforms import ToTensor
 
 
 class Viewer:
@@ -26,7 +28,8 @@ class Viewer:
                             color, 4)
         return self.convert_from_cv2_to_image(img)
 
-    def print_prediction(self, img, target, prediction):
+    def gen_buffer(self, img, target, prediction):
+        plt.figure()
         label = "Gt "
         label += "Yes" if target['img_has_person'] == 1 else 'No'
         if target['img_has_person'] == 1:
@@ -46,4 +49,16 @@ class Viewer:
             img = self.add_box(img, prediction['bbox'][0], target, (0, 0, 255))
         plt.title(label)
         plt.imshow(img)
-        plt.show()
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='jpeg')
+        buf.seek(0)
+        return buf
+        # plt.show()
+
+    def print_prediction(self, img, target, prediction):
+        """Create a pyplot plot and save to buffer."""
+        buffer = self.gen_buffer(img, target, prediction)
+        image = Image.open(buffer)
+        return ToTensor()(image)
+
