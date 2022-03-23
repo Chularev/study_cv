@@ -54,7 +54,6 @@ class Viewer:
         plt.savefig(buf, format='jpeg')
         buf.seek(0)
         return buf
-        # plt.show()
 
     def print_prediction(self, img, target, prediction):
         """Create a pyplot plot and save to buffer."""
