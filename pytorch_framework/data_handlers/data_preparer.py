@@ -36,9 +36,15 @@ def get_datasets() -> Dict[str, FiftyOneTorchDataset]:
 
     img_size = (256, 256)
     train_transforms = T.Compose([T.Resize(img_size),
-                                  T.ToTensor()])
+                                  T.ToTensor(),
+                                  T.Normalize(mean=[0.43, 0.44, 0.47],
+                                                       std=[0.20, 0.20, 0.20])
+    ])
     test_transforms = T.Compose([T.Resize(img_size),
-                                 T.ToTensor()])
+                                 T.ToTensor(),
+                                 T.Normalize(mean=[0.43, 0.44, 0.47],
+                                                      std=[0.20, 0.20, 0.20])
+    ])
 
     torch_dataset = FiftyOneTorchDataset(train_view, train_transforms,
                                          classes=person_list)
