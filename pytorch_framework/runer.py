@@ -28,7 +28,7 @@ def find_hyperparameters(config, datasets, checkpoint_dir=None):
     model = config['model']()
 
     optimizer = config['optimizer'](model.parameters(), lr=config['learning_rate'], weight_decay=config['reg'])
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=config['anneal_epoch'], gamma=config['anneal_coeff'])
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=config['scheduler_epoch'], gamma=config['scheduler_coefficient'])
 
     if checkpoint_dir:
         checkpoint = os.path.join(checkpoint_dir, "checkpoint")
@@ -45,10 +45,10 @@ if __name__ == "__main__":
         'optimizer': optim.Adam,
         'model': Net,
         'model_name': 'best_lenet',
-        'learning_rate': 1e-1,
-        'anneal_epoch': 5,
-        'anneal_coeff': 0.5,
-        'epoch_num': 2
+         'learning_rate': 1e-3,
+         'scheduler_epoch': 2,
+         'scheduler_coefficient': 0.1,
+         'epoch_num': 2
     }
 
     datasets = get_datasets()
