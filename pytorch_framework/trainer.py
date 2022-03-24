@@ -60,7 +60,6 @@ class Trainer:
 
         for epoch in range(num_epochs):
             for phase in ['train', 'val']:
-
                 if phase == 'train' and epoch > 0:
                     if scheduler is not None:
                         scheduler.step()
