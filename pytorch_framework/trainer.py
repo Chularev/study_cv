@@ -72,7 +72,7 @@ class Trainer:
                 for i_step, (img, target) in enumerate(loaders[phase]):
 
                     optimizer.zero_grad()
-                    
+
                     with torch.set_grad_enabled(phase == 'train'):
                         loss_value = self.loss_calc(img, target, model)
 
@@ -84,20 +84,20 @@ class Trainer:
                     self.logger.add_scalar('Loss_sum_{}/batch'.format(phase), loss_value.item())
                     report_metrics['loss'][phase].append(loss_value.item())
                     print('Epoch {}/{}. Phase {} Step {}/{} Loss {}'.format(epoch, num_epochs - 1, phase,
-                                                                            i_step, step_count, loss_value.item()))
-                    if phase == 'val':
-                        with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
-                            path = os.path.join(checkpoint_dir, "checkpoint")
-                            torch.save((model.state_dict(), optimizer.state_dict()), path)
+                                                                        i_step, step_count, loss_value.item()))
+                if phase == 'val':
+                    with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
+                        path = os.path.join(checkpoint_dir, "checkpoint")
+                        torch.save((model.state_dict(), optimizer.state_dict()), path)
 
-                            for index in range(5):
-                                img, target = self.datasets['train'][index]
-                                predict = model(self.to_gpu(img.unsqueeze(0)))
-                                predict['class'] = predict['class'].to('cpu')
-                                predict['bbox'] = predict['bbox'].to('cpu')
+                        for index in range(5):
+                            img, target = self.datasets['train'][index]
+                            predict = model(self.to_gpu(img.unsqueeze(0)))
+                            predict['class'] = predict['class'].to('cpu')
+                            predict['bbox'] = predict['bbox'].to('cpu')
 
-                                img_with_bbox = self.viewer.get_img_with_predict(target, predict)
-                                self.logger.add_image('Image ' + str(index), img_with_bbox)
+                            img_with_bbox = self.viewer.get_img_with_predict(target, predict)
+                            self.logger.add_image('Image ' + str(index), img_with_bbox)
 
                 ave_loss = loss_accum / step_count
                 self.logger.add_scalar('Loss_sum_train/epoch', ave_loss)
