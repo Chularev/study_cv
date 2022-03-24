@@ -61,21 +61,24 @@ class Trainer:
         for epoch in range(num_epochs):
             for phase in ['train', 'val']:
 
+                if phase == 'train' and epoch > 0:
+                    if scheduler is not None:
+                        scheduler.step()
+
                 self.phase = phase
                 model.train(phase == 'train')  # Set model to training mode
 
                 loss_accum = 0
                 step_count = len(loaders[phase])
                 for i_step, (img, target) in enumerate(loaders[phase]):
+
+                    optimizer.zero_grad()
                     with torch.set_grad_enabled(phase == 'train'):
                         loss_value = self.loss_calc(img, target, model)
 
                     if phase == 'train':
-                        optimizer.zero_grad()
                         loss_value.backward()
                         optimizer.step()
-                        if scheduler is not None:
-                            scheduler.step()
 
                     loss_accum += loss_value.item()
                     self.logger.add_scalar('Loss_sum_{}/batch'.format(phase), loss_value.item())
