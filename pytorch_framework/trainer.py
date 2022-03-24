@@ -72,6 +72,7 @@ class Trainer:
                 for i_step, (img, target) in enumerate(loaders[phase]):
 
                     optimizer.zero_grad()
+                    
                     with torch.set_grad_enabled(phase == 'train'):
                         loss_value = self.loss_calc(img, target, model)
 
