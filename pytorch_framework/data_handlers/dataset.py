@@ -82,7 +82,7 @@ class FiftyOneTorchDataset(torch.utils.data.Dataset):
             tmp = self.a_transforms(image=img, bboxes=b)
             if len(tmp['bboxes']) > 0 and len(tmp['bboxes'][0][:4]) > 3:
                 target["box"] = torch.as_tensor(tmp['bboxes'][0][:4], dtype=torch.float32)
-            img = tmp['image']
+                img = tmp['image']
 
         img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         if self.transforms is not None:
