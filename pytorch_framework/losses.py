@@ -8,7 +8,7 @@ class MyLoss:
         super(MyLoss, self).__init__()
 
         self.class_loss = torch.nn.BCELoss()
-        self.bbox_loss = torch.nn.SmoothL1Loss()
+        self.bbox_loss = torch.nn.MSELoss()
 
     def calc(self, prediction: Tensor, gpu_img_has_person: Tensor, gpu_box: Tensor) -> Dict[str, Tensor]:
         result: Dict[str, Tensor] = {}
@@ -18,6 +18,6 @@ class MyLoss:
 
         indexes_with_label = (gpu_img_has_person == 1).nonzero(as_tuple=True)
         if len(indexes_with_label) > 0:
-            result['bbox_loss'] = self.bbox_loss(prediction['bbox'][indexes_with_label], gpu_box[indexes_with_label])
+            result['bbox_loss'] = 100 * self.bbox_loss(prediction['bbox'][indexes_with_label], gpu_box[indexes_with_label])
 
         return result

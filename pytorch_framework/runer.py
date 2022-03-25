@@ -41,14 +41,14 @@ def find_hyperparameters(config, datasets, checkpoint_dir=None):
 if __name__ == "__main__":
     config = {
         'need_train': True,
-        'reg': 0.01,
+        'reg': 0.0001,
         'optimizer': optim.Adam,
         'model': Net,
         'model_name': 'best_lenet',
          'learning_rate': 1e-3,
-         'scheduler_epoch': 5,
+         'scheduler_epoch': 15,
          'scheduler_coefficient': 0.1,
-         'epoch_num': 20
+         'epoch_num': 50
     }
 
     datasets = get_datasets()
