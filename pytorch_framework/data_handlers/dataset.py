@@ -10,10 +10,12 @@ class FiftyOneTorchDataset(torch.utils.data.Dataset):
             transforms=None,
             gt_field="ground_truth",
             classes=None,
+            a_transforms=None
     ):
         self.samples = fiftyone_dataset
         self.transforms = transforms
         self.gt_field = gt_field
+        self.a_transforms = a_transforms
 
         self.img_paths = self.samples.values("filepath")
 
@@ -70,6 +72,11 @@ class FiftyOneTorchDataset(torch.utils.data.Dataset):
 
         target["img_has_person"] = img_has_person
         target["img_path"] = img_path
+
+        if self.a_transforms is not None:
+            tmp = self.a_transforms(image=img, bboxes=target["box"])
+            target["box"] = tmp['bboxes']
+            img = tmp['image']
 
         if self.transforms is not None:
             img = self.transforms(img)
