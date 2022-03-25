@@ -23,6 +23,7 @@ class Trainer:
         }
         self.phase = 'train'
         self.viewer = Viewer()
+        self.out = ''
 
     def to_gpu(self, item):
         return item.type(torch.cuda.FloatTensor).to(self.device)
@@ -37,11 +38,13 @@ class Trainer:
         losses = self.losses.calc(prediction, gpu_img_has_person, gpu_box)
         for key in losses.keys():
             self.logger.add_scalar('Losses_{}/{}'.format(self.phase, key), losses[key].item())
+            self.out += ' {} - {}'.format(key, losses[key].item())
 
         with torch.inference_mode():
             metrics = self.metrics[self.phase].step(prediction, gpu_img_has_person, gpu_box)
             for key in metrics.keys():
                 self.logger.add_scalar('Metric_{}/{}'.format(self.phase, key), metrics[key].item())
+                self.out += ' {} - {}'.format(key, metrics[key].item())
 
         return sum(losses.values())
 
@@ -80,7 +83,9 @@ class Trainer:
                     self.logger.add_scalar('Loss_sum_{}/batch'.format(phase), loss_value.item())
                     report_metrics['loss'][phase].append(loss_value.item())
                     print('Epoch {}/{}. Phase {} Step {}/{} Loss {}'.format(epoch, num_epochs - 1, phase,
-                                                                        i_step, step_count, loss_value.item()))
+                                                                        i_step, step_count, loss_value.item()) + self.out)
+                    self.out = ''
+
                     if phase == 'train':
                         loss_value.backward()
                         optimizer.step()
