@@ -1,5 +1,6 @@
 import torch
 import fiftyone.utils.coco as fouc
+import cv2
 from PIL import Image
 
 
@@ -35,7 +36,6 @@ class FiftyOneTorchDataset(torch.utils.data.Dataset):
         img_path = self.img_paths[idx]
         sample = self.samples[img_path]
         metadata = sample.metadata
-        img = Image.open(img_path).convert("RGB")
 
         boxes = []
         detections = sample[self.gt_field].detections
@@ -73,11 +73,18 @@ class FiftyOneTorchDataset(torch.utils.data.Dataset):
         target["img_has_person"] = img_has_person
         target["img_path"] = img_path
 
-        if self.a_transforms is not None:
-            tmp = self.a_transforms(image=img, bboxes=target["box"])
-            target["box"] = tmp['bboxes']
+        img = cv2.imread(img_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        if self.a_transforms is not None and img_has_person:
+            b = [
+                [target["box"][0], target["box"][1], target["box"][2], target["box"][3], 'jjjj']
+            ]
+            tmp = self.a_transforms(image=img, bboxes=b)
+            if len(tmp['bboxes']) > 0 and len(tmp['bboxes'][0][:4]) > 3:
+                target["box"] = torch.as_tensor(tmp['bboxes'][0][:4], dtype=torch.float32)
             img = tmp['image']
 
+        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         if self.transforms is not None:
             img = self.transforms(img)
 

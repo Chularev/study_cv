@@ -5,7 +5,8 @@ import fiftyone as fo
 import fiftyone.zoo as foz
 from fiftyone import ViewField as F
 import torchvision.transforms as T
-
+import albumentations as A
+import cv2
 '''
     def split(self, validation_split):
 
@@ -34,7 +35,15 @@ def get_datasets() -> Dict[str, FiftyOneTorchDataset]:
     train_view = person_view.take(len(person_view) * 0.75, seed=51)
     test_view = person_view.exclude([s.id for s in train_view])
 
-    img_size = (256, 256)
+    img_size = (254, 254)
+
+    p = 0.5
+    a_transform = A.Compose([
+        A.HorizontalFlip(p=0.5),
+        A.ShiftScaleRotate(p=0.5),
+        A.RandomBrightnessContrast(p=0.3)
+    ], bbox_params=A.BboxParams(format='albumentations'))
+
     train_transforms = T.Compose([T.Resize(img_size),
                                   T.ToTensor(),
                                   T.Normalize(mean=[0.43, 0.44, 0.47],
@@ -47,7 +56,7 @@ def get_datasets() -> Dict[str, FiftyOneTorchDataset]:
     ])
 
     torch_dataset = FiftyOneTorchDataset(train_view, train_transforms,
-                                         classes=person_list)
+                                         classes=person_list, a_transforms=a_transform)
     torch_dataset_test = FiftyOneTorchDataset(test_view, test_transforms,
                                               classes=person_list)
     print('train dataset = ' + str(len(torch_dataset)))
