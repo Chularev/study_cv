@@ -28,6 +28,14 @@ class Viewer:
                             color, 4)
         return self.convert_from_cv2_to_image(img)
 
+    def box_to_str(self, box):
+        result = " ["
+        result += '{:.2f}'.format(box[0].item()) + ','
+        result += '{:.2f}'.format(box[1].item()) + ','
+        result += '{:.2f}'.format(box[2].item()) + ','
+        result += '{:.2f}'.format(box[3].item()) + ']'
+        return result
+
     def gen_buffer(self, img, target, prediction):
         plt.figure()
         label = "Gt "
@@ -38,12 +46,14 @@ class Viewer:
         flag = torch.round(prediction['class'][0]) == 1
         label += "| Pred "
         label += "Yes" if flag else 'No'
-        label += ' Prob = {}'.format(prediction['class'][0])
+        label += ' Prob = {:.2f}'.format(prediction['class'][0])
 
         if target['box'].numel() > 1:
             iou = Iou()
             tmp = iou(prediction['bbox'], target['box'].unsqueeze(0))
-            label += ' Iou = ' + str(tmp.item())
+            box = prediction['bbox'][0]
+            label += self.box_to_str(box)
+            label += ' Iou = {:.2f}'.format(tmp.item())
 
         if flag:
             img = self.add_box(img, prediction['bbox'][0], target, (0, 0, 255))
