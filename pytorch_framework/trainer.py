@@ -76,15 +76,16 @@ class Trainer:
                     torch.set_grad_enabled(phase == 'train')
                     loss_value = self.loss_calc(img, target, model)
 
-                    if phase == 'train':
-                        loss_value.backward()
-                        optimizer.step()
-
                     loss_accum += loss_value.item()
                     self.logger.add_scalar('Loss_sum_{}/batch'.format(phase), loss_value.item())
                     report_metrics['loss'][phase].append(loss_value.item())
                     print('Epoch {}/{}. Phase {} Step {}/{} Loss {}'.format(epoch, num_epochs - 1, phase,
                                                                         i_step, step_count, loss_value.item()))
+                    if phase == 'train':
+                        loss_value.backward()
+                        optimizer.step()
+
+                        
                 if phase == 'val':
                     with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
                         path = os.path.join(checkpoint_dir, "checkpoint")

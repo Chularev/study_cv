@@ -8,7 +8,7 @@ class MyLoss:
         super(MyLoss, self).__init__()
 
         self.class_loss = torch.nn.BCELoss()
-        self.bbox_loss = torch.nn.BCELoss()
+        self.bbox_loss = torch.nn.SmoothL1Loss()
 
     def calc(self, prediction: Tensor, gpu_img_has_person: Tensor, gpu_box: Tensor) -> Dict[str, Tensor]:
         result: Dict[str, Tensor] = {}
