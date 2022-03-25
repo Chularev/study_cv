@@ -73,8 +73,8 @@ class Trainer:
 
                     optimizer.zero_grad()
 
-                    with torch.set_grad_enabled(phase == 'train'):
-                        loss_value = self.loss_calc(img, target, model)
+                    torch.set_grad_enabled(phase == 'train')
+                    loss_value = self.loss_calc(img, target, model)
 
                     if phase == 'train':
                         loss_value.backward()
@@ -90,8 +90,8 @@ class Trainer:
                         path = os.path.join(checkpoint_dir, "checkpoint")
                         torch.save((model.state_dict(), optimizer.state_dict()), path)
 
-                        for index in range(5):
-                            img, target = self.datasets['train'][index]
+                        for index in range(100, 120):
+                            img, target = self.datasets['val'][index]
                             predict = model(self.to_gpu(img.unsqueeze(0)))
                             predict['class'] = predict['class'].to('cpu')
                             predict['bbox'] = predict['bbox'].to('cpu')
