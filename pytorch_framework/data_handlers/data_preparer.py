@@ -28,7 +28,7 @@ def get_datasets() -> Dict[str, FiftyOneTorchDataset]:
     person_list = ['person', "car", "truck", "bus", 'boat']
     person_view = fo_dataset.filter_labels("ground_truth",
                                            F("label").is_in(person_list)).match(
-        F("ground_truth.detections").length() < 5)
+        F("ground_truth.detections").length() < 5).shuffle()
     print('person_view len = ' + str(len(person_view)))
 
     # split the dataset in train and test set
