@@ -45,10 +45,11 @@ def get_datasets() -> Dict[str, FiftyOneTorchDataset]:
         A.RandomBrightnessContrast(p=0.3)
     ], bbox_params=A.BboxParams(format='albumentations'))
 
-    transforms = T.Compose([T.Resize(img_size),
-                                  T.ToTensor(),
-                                  T.Normalize(mean=[0.43, 0.44, 0.47],
-                                                       std=[0.20, 0.20, 0.20])
+    transforms = T.Compose([
+        T.Resize(img_size),
+        T.ToTensor(),
+        T.Normalize(mean=[0.43, 0.44, 0.47],
+                    std=[0.20, 0.20, 0.20])
     ])
 
     torch_dataset = FiftyOneTorchDataset(train_view, transforms,
