@@ -28,7 +28,7 @@ def get_datasets() -> Dict[str, FiftyOneTorchDataset]:
     person_list = ['person', "car", "truck", "bus", 'boat']
     person_view = fo_dataset.filter_labels("ground_truth",
                                            F("label").is_in(person_list)).match(
-        F("ground_truth.detections").length() == 1)
+        F("ground_truth.detections").length() < 5)
     print('person_view len = ' + str(len(person_view)))
 
     # split the dataset in train and test set
@@ -40,24 +40,20 @@ def get_datasets() -> Dict[str, FiftyOneTorchDataset]:
     p = 0.5
     a_transform = A.Compose([
         A.HorizontalFlip(p=0.5),
+        A.VerticalFlip(p=0.5),
         A.ShiftScaleRotate(p=0.5),
         A.RandomBrightnessContrast(p=0.3)
     ], bbox_params=A.BboxParams(format='albumentations'))
 
-    train_transforms = T.Compose([T.Resize(img_size),
+    transforms = T.Compose([T.Resize(img_size),
                                   T.ToTensor(),
                                   T.Normalize(mean=[0.43, 0.44, 0.47],
                                                        std=[0.20, 0.20, 0.20])
     ])
-    test_transforms = T.Compose([T.Resize(img_size),
-                                 T.ToTensor(),
-                                 T.Normalize(mean=[0.43, 0.44, 0.47],
-                                                      std=[0.20, 0.20, 0.20])
-    ])
 
-    torch_dataset = FiftyOneTorchDataset(train_view, train_transforms,
+    torch_dataset = FiftyOneTorchDataset(train_view, transforms,
                                          classes=person_list, a_transforms=a_transform)
-    torch_dataset_test = FiftyOneTorchDataset(test_view, test_transforms,
+    torch_dataset_test = FiftyOneTorchDataset(test_view, transforms,
                                               classes=person_list)
     print('train dataset = ' + str(len(torch_dataset)))
     print('test dataset = ' + str(len(torch_dataset_test)))
