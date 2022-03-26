@@ -48,7 +48,7 @@ class FiftyOneTorchDataset(torch.utils.data.Dataset):
             coco_obj = fouc.COCOObject.from_detection(
                 det, metadata, category_id=category_id,
             )
-            
+
             x, y, w, h = coco_obj.bbox
 
             boxes.append([x / metadata['width'],
