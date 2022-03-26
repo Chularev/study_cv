@@ -7,7 +7,7 @@ import os
 from models import Net
 from ray.tune import CLIReporter
 from ray import tune
-from data_handlers.data_preparer import get_datasets
+from data_birds.data_preparer_birds import get_datasets
 from typing import Dict
 
 def get_loaders(datasets) -> Dict[str,  torch.utils.data.DataLoader]:
@@ -46,9 +46,9 @@ if __name__ == "__main__":
         'model': Net,
         'model_name': 'best_lenet',
          'learning_rate': 1e-3,
-         'scheduler_epoch': 15,
+         'scheduler_epoch': 5,
          'scheduler_coefficient': 0.1,
-         'epoch_num': 50
+         'epoch_num': 20
     }
 
     datasets = get_datasets()
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         sync_config=tune.SyncConfig(
             syncer=None  # Disable syncing
         ),
-        name="experiment_name",
+        name="birds",
         local_dir="/mnt/heap/My folder/tune_reports",
         num_samples=1,
         config=config,
