@@ -22,7 +22,7 @@ import cv2
 
 def get_datasets() -> Dict[str, FiftyOneTorchDataset]:
     fo_dataset = foz.load_zoo_dataset("coco-2017", split="validation",
-                                      dataset_dir='/mnt/heap')
+                                      dataset_dir='/mnt/heap/imges/coco')
     fo_dataset.compute_metadata()
 
     person_list = ['person', "car", "truck", "bus", 'boat']

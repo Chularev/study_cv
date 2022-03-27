@@ -20,3 +20,7 @@ class Logger(object):
     def add_image(self, name, img):
         step = self.get_step(name)
         self.logger.add_image(name, img, step)
+
+    def add_grid_images(self, name, imgs):
+        step = self.get_step(name)
+        self.logger.add_images(name, imgs, step)

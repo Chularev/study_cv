@@ -7,7 +7,7 @@ import os
 from models import Net
 from ray.tune import CLIReporter
 from ray import tune
-from data_birds.data_preparer_birds import get_datasets
+from data_handlers.data_preparer import get_datasets
 from typing import Dict
 
 def get_loaders(datasets) -> Dict[str,  torch.utils.data.DataLoader]:
@@ -48,7 +48,7 @@ if __name__ == "__main__":
          'learning_rate': 1e-3,
          'scheduler_epoch': 5,
          'scheduler_coefficient': 0.1,
-         'epoch_num': 20
+         'epoch_num': 1
     }
 
     datasets = get_datasets()
