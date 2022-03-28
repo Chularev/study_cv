@@ -32,18 +32,15 @@ if __name__ == "__main__":
     img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 
-    result = []
+    for j in range(4):
+        result = []
+        for i in range(10):
+            transformed = transform(image=img, bboxes=[[0.7, 0.7, 0.8, 0.8, 'kjk']])
+            image = transformed["image"]
+            result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
 
-    for i in range(10):
-        transformed = transform(image=img, bboxes=[[0.7, 0.7, 0.8, 0.8, 'kjk']])
-        image = transformed["image"]
-        result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
+        result = torch.cat(result)
+        print('Done inerr {} !'.format(j))
+        logger.add_grid_images('my_test', result)
 
-    print( result[0].shape)
-    result = torch.cat(result)
-    print(result.shape)
-    #grid = torchvision.utils.make_grid(result)
-    #print(grid.shape)
-    logger.add_grid_images('my_test', result)
-
-    print('Done !')
+    print('Done All !')
