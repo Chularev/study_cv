@@ -33,7 +33,7 @@ class RoadDataset(torch.utils.data.Dataset):
 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         if self.a_transforms:
-            tmp = self.a_transforms(image=img)
+            img = self.a_transforms(image=img)
 
         img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         if self.transforms is not None:
