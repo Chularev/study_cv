@@ -30,7 +30,7 @@ class RoadDataset(torch.utils.data.Dataset):
         img_path_target = img_path_target.replace("uu_", "uu_road_")
 
         img_target = cv2.imread(img_path_target)
-        
+
         m = self.get_mask()
         mask = np.all(img_target == m['road_label'], axis=2)
 
