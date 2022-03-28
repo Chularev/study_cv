@@ -5,21 +5,25 @@ from torchvision.transforms import ToTensor
 import torchvision
 from logger import Logger
 import cv2
-
-def get_augmentations():
-    a_transform = A.Compose([
+def get_a_augmentations():
+    return [
         A.Resize(256, 256),
         A.HorizontalFlip(p=0.5),
         A.VerticalFlip(p=0.5),
         A.ShiftScaleRotate(p=0.5),
         A.RandomBrightnessContrast(p=0.3)
-    ], bbox_params=A.BboxParams(format='albumentations'))
+    ]
+def get_augmentations():
+    a_transform = A.Compose(
+        get_a_augmentations(),
+        bbox_params=A.BboxParams(format='albumentations')
+    )
     return a_transform
 
 
 if __name__ == "__main__":
     #datasets = get_datasets()
-    transform = get_augmentations()
+    transform = get_a_augmentations()
     logger = Logger('TensorBoard')
 
     #data = datasets['train']
@@ -34,8 +38,13 @@ if __name__ == "__main__":
 
     for j in range(4):
         result = []
-        for i in range(10):
-            transformed = transform(image=img, bboxes=[[0.7, 0.7, 0.8, 0.8, 'kjk']])
+        for i in range(len(transform) - 1):
+            transform[i+1].p = 1
+            t2 = transform[i+1]
+            tgr = A.Compose([
+                transform[0], t2
+            ])
+            transformed = tgr(image=img)
             image = transformed["image"]
             result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
 
