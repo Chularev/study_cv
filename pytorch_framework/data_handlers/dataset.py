@@ -1,5 +1,5 @@
 import torch
-import fiftyone.utils.coco as fouc
+import numpy as np
 import cv2
 from PIL import Image
 import os
@@ -43,3 +43,10 @@ class RoadDataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.img_paths)
+
+    def get_mask(self):
+        return {
+            'non_road_label': np.array([255, 0, 0]),
+            'road_label': np.array([255, 0, 255]),
+            'other_road_label': np.array([0, 0, 0])
+        }
