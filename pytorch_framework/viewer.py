@@ -73,3 +73,18 @@ class Viewer:
         image = Image.open(buffer)
         return ToTensor()(image)
 
+    def add_title(self, cv_img, title):
+        img = self.convert_from_cv2_to_image(cv_img)
+        plt.figure()
+
+        plt.title(title)
+        plt.imshow(img)
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='jpeg')
+        buf.seek(0)
+        plt.close()
+
+        img = Image.open(buf)
+        return self.convert_from_image_to_cv2(img)
+

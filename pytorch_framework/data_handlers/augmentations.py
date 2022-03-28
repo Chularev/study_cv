@@ -1,8 +1,6 @@
 import albumentations as A
 import torch
-from data_handlers.data_preparer import get_datasets
-from torchvision.transforms import ToTensor
-import torchvision
+from viewer import Viewer
 from logger import Logger
 import cv2
 def get_a_augmentations():
@@ -35,9 +33,11 @@ if __name__ == "__main__":
 
     img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-
+    viewer = Viewer()
     for j in range(4):
         result = []
+        image = viewer.add_title(img, 'Original img')
+        result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
         for i in range(len(transform) - 1):
             transform[i+1].p = 1
             t2 = transform[i+1]
@@ -46,6 +46,7 @@ if __name__ == "__main__":
             ])
             transformed = tgr(image=img)
             image = transformed["image"]
+            image = viewer.add_title(image, str(transform[i + 1].__class__.__name__))
             result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
 
         result = torch.cat(result)
