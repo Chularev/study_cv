@@ -30,20 +30,18 @@ class RoadDataset(torch.utils.data.Dataset):
         img_path_target = img_path_target.replace("uu_", "uu_road_")
 
         img_target = cv2.imread(img_path_target)
-
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
+        
         m = self.get_mask()
         mask = np.all(img_target == m['road_label'], axis=2)
 
         if self.a_transforms:
             img = self.a_transforms(image=img)
 
-        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        img = Image.fromarray(img)
         if self.transforms is not None:
             img = self.transforms(img)
 
-        return img, mask
+        return {'image': img, "mask": mask, 'path': self.path + '/' + self.img_paths[idx]}
 
     def __len__(self):
         return len(self.img_paths)

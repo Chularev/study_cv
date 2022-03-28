@@ -1,5 +1,6 @@
 from data_handlers.data_preparer import get_datasets
 import torch
+import cv2
 from viewer import Viewer
 from logger import Logger
 
@@ -12,7 +13,12 @@ if __name__ == "__main__":
 
     for i in range(10):
         result = []
-        img_orig, mask = train[i]
+        target = train[i]
+
+        path = target['path']
+        img_orig = cv2.imread(path)
+
+        mask = target['mask']
 
         img_orig = viewer.convert_from_image_to_cv2(img_orig)
         image = viewer.add_title(img_orig, 'Original img')
