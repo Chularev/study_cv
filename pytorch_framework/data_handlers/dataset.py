@@ -43,7 +43,7 @@ class RoadDataset(torch.utils.data.Dataset):
         if self.transforms is not None:
             img = self.transforms(img)
 
-        return img, img_target, mask
+        return img, mask
 
     def __len__(self):
         return len(self.img_paths)
