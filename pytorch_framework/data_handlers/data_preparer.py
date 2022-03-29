@@ -1,10 +1,6 @@
 from data_handlers.dataset import RoadDataset
 from typing import Tuple, Dict
-import collections
-import fiftyone as fo
-import fiftyone.zoo as foz
-from fiftyone import ViewField as F
-import torchvision.transforms as T
+from albumentations.pytorch import ToTensorV2
 import albumentations as A
 import cv2
 '''
@@ -21,20 +17,16 @@ import cv2
 '''
 
 def get_datasets() -> Dict[str, RoadDataset]:
-    '''
-    img_size = (254, 254)
 
-    p = 0.5
-    a_transform = A.Compose([
-        A.HorizontalFlip(p=0.5),
-        A.VerticalFlip(p=0.5),
-        A.ShiftScaleRotate(p=0.5),
-        A.RandomBrightnessContrast(p=0.3)
-    ], bbox_params=A.BboxParams(format='albumentations'))
-    '''
+    transform = A.Compose([
+        A.Resize(width=128, height=1128),
+        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+        ToTensorV2(),
+    ])
+
 
     path = '/mnt/heap/imges/road/training/image_2'
-    torch_dataset = RoadDataset(path)
+    torch_dataset = RoadDataset(path, transform)
 
     print('train dataset = ' + str(len(torch_dataset)))
 
