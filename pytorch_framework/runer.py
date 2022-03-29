@@ -45,7 +45,7 @@ if __name__ == "__main__":
          'learning_rate': 1e-3,
          'scheduler_epoch': 5,
          'scheduler_coefficient': 0.1,
-         'epoch_num': 3
+         'epoch_num': 10
     }
 
     datasets = get_datasets()
