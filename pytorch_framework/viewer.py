@@ -38,4 +38,23 @@ class Viewer:
         newImg[:, :, 2] = img[:, :, 2] * mask[:, :]
         return newImg
 
+    def create_output(self, target, prediction = None):
+        result = []
+
+        path = target['path']
+        img_orig = cv2.imread(path)
+
+        mask = target['mask']
+
+        img_orig = self.convert_from_image_to_cv2(img_orig)
+        image = self.add_title(img_orig, 'Original img')
+        result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
+
+        mask = self.mask_image(img_orig, mask)
+        mask = self.convert_from_image_to_cv2(mask)
+        image = self.add_title(mask, 'Mask ')
+        result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
+
+        return torch.cat(result)
+
 
