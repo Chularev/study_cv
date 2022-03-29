@@ -32,7 +32,7 @@ class Viewer:
         return self.convert_from_image_to_cv2(img)
 
     def mask_image(self, img, mask):
-        mask = mask.numpy()
+        mask = mask.numpy().astype(np.uint8)
         newImg = img * mask
         return newImg
 
@@ -42,6 +42,11 @@ class Viewer:
         newImg[:, :, 1] = 1 * mask[:, :]
         newImg[:, :, 2] = 1 * mask[:, :]
         return newImg
+
+    def prepare_for_grid(self, img, title):
+        image = self.convert_from_image_to_cv2(img.copy())
+        image = self.add_title(image, title)
+        return torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0)
 
     def create_output(self, target, prediction = None):
         result = []
@@ -54,22 +59,18 @@ class Viewer:
         SIZE = (mask.shape[0], mask.shape[1])
         img_orig = cv2.resize(img_orig, SIZE)
 
-        img_orig = self.convert_from_image_to_cv2(img_orig)
-        image = self.add_title(img_orig, 'Original img')
-        result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
+        img = self.prepare_for_grid(img_orig, 'Original img')
+        result.append(img)
 
         mask = self.mask_image(img_orig, mask)
-        mask = self.convert_from_image_to_cv2(mask)
-        image = self.add_title(mask, 'Mask ')
-        result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
+        img = self.prepare_for_grid(mask, 'Mask ')
+        result.append(img)
 
         if prediction != None:
             prediction = torch.round(prediction)
             mask = self.mask_image(img_orig, prediction)
-            mask = self.convert_from_image_to_cv2(mask)
-            mask = np.array(Image.fromarray((mask * 255).astype(np.uint8)).resize(SIZE).convert('RGB'))
-            image = self.add_title(mask, 'Mask prediction')
-            result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
+            img = self.prepare_for_grid(mask,'Mask prediction')
+            result.append(img)
 
         return torch.cat(result)
 
