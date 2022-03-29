@@ -51,7 +51,8 @@ class Viewer:
 
         mask = target['mask']
 
-        img_orig = cv2.resize(img_orig, (mask.shape[0], mask.shape[1]))
+        SIZE = (mask.shape[0], mask.shape[1])
+        img_orig = cv2.resize(img_orig, SIZE)
 
         img_orig = self.convert_from_image_to_cv2(img_orig)
         image = self.add_title(img_orig, 'Original img')
@@ -61,6 +62,14 @@ class Viewer:
         mask = self.convert_from_image_to_cv2(mask)
         image = self.add_title(mask, 'Mask ')
         result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
+
+        if prediction != None:
+            prediction = torch.round(prediction)
+            mask = self.mask_image(img_orig, prediction)
+            mask = self.convert_from_image_to_cv2(mask)
+            mask = np.array(Image.fromarray((mask * 255).astype(np.uint8)).resize(SIZE).convert('RGB'))
+            image = self.add_title(mask, 'Mask prediction')
+            result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))
 
         return torch.cat(result)
 

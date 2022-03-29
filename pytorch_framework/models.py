@@ -22,6 +22,7 @@ class UNET(nn.Module):
             self, in_channels=3, out_channels=1, features=[64, 128, 256, 512],
     ):
         super(UNET, self).__init__()
+        self.sigmoid = nn.Sigmoid()
         self.ups = nn.ModuleList()
         self.downs = nn.ModuleList()
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
@@ -64,7 +65,10 @@ class UNET(nn.Module):
             concat_skip = torch.cat((skip_connection, x), dim=1)
             x = self.ups[idx+1](concat_skip)
 
-        return self.final_conv(x)
+        x = self.final_conv(x)
+        x = x.permute(0, 3, 2, 1)
+        x = self.sigmoid(x)
+        return x
 
 def hh():
     x = torch.randn((8, 3, 128, 128))

@@ -4,7 +4,7 @@ import torch
 import torch.optim as optim
 import os
 
-from models import Net
+from models import UNET
 from ray.tune import CLIReporter
 from ray import tune
 from data_handlers.data_preparer import get_datasets
@@ -13,11 +13,8 @@ from typing import Dict
 def get_loaders(datasets) -> Dict[str,  torch.utils.data.DataLoader]:
     return {
         'train': torch.utils.data.DataLoader(
-            datasets['train'], batch_size=64, shuffle=True),
-        'val': torch.utils.data.DataLoader(
-            datasets['val'], batch_size=64, shuffle=False)
+            datasets['train'], batch_size=16, shuffle=True)
     }
-
 
 def find_hyperparameters(config, datasets, checkpoint_dir=None):
     # define training and validation data_handlers loaders
@@ -25,7 +22,7 @@ def find_hyperparameters(config, datasets, checkpoint_dir=None):
     loaders = get_loaders(datasets)
     trainer = Trainer(datasets)
 
-    model = config['model']()
+    model = config['model'](in_channels=3, out_channels=3)
 
     optimizer = config['optimizer'](model.parameters(), lr=config['learning_rate'], weight_decay=config['reg'])
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=config['scheduler_epoch'], gamma=config['scheduler_coefficient'])
@@ -43,12 +40,12 @@ if __name__ == "__main__":
         'need_train': True,
         'reg': 0.0001,
         'optimizer': optim.Adam,
-        'model': Net,
+        'model': UNET,
         'model_name': 'best_lenet',
          'learning_rate': 1e-3,
          'scheduler_epoch': 5,
          'scheduler_coefficient': 0.1,
-         'epoch_num': 1
+         'epoch_num': 3
     }
 
     datasets = get_datasets()
@@ -59,7 +56,7 @@ if __name__ == "__main__":
         sync_config=tune.SyncConfig(
             syncer=None  # Disable syncing
         ),
-        name="birds",
+        name="Unet",
         local_dir="/mnt/heap/My folder/tune_reports",
         num_samples=1,
         config=config,

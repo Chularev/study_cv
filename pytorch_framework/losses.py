@@ -11,4 +11,4 @@ class MyLoss:
 
     def calc(self, prediction: Tensor, mask: Tensor) -> Dict[str, Tensor]:
         result = self.loss(prediction, mask)
-        return result
+        return {'BCELoss':  result}
