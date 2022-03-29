@@ -32,10 +32,15 @@ class Viewer:
         return self.convert_from_image_to_cv2(img)
 
     def mask_image(self, img, mask):
+        mask = mask.numpy()
+        newImg = img * mask
+        return newImg
+
+    def binary(self, img, mask):
         newImg = img.copy()
-        newImg[:, :, 0] = img[:, :, 0] * mask[:, :]
-        newImg[:, :, 1] = img[:, :, 1] * mask[:, :]
-        newImg[:, :, 2] = img[:, :, 2] * mask[:, :]
+        newImg[:, :, 0] = 1 * mask[:, :]
+        newImg[:, :, 1] = 1 * mask[:, :]
+        newImg[:, :, 2] = 1 * mask[:, :]
         return newImg
 
     def create_output(self, target, prediction = None):
@@ -45,6 +50,8 @@ class Viewer:
         img_orig = cv2.imread(path)
 
         mask = target['mask']
+
+        img_orig = cv2.resize(img_orig, (mask.shape[0], mask.shape[1]))
 
         img_orig = self.convert_from_image_to_cv2(img_orig)
         image = self.add_title(img_orig, 'Original img')

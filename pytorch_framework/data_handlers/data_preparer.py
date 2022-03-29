@@ -19,7 +19,7 @@ import cv2
 def get_datasets() -> Dict[str, RoadDataset]:
 
     transform = A.Compose([
-        A.Resize(width=128, height=1128),
+        A.Resize(width=128, height=128),
         A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
         ToTensorV2(),
     ])

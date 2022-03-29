@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 from PIL import Image
 import os
+from viewer import Viewer
 
 
 class RoadDataset(torch.utils.data.Dataset):
@@ -15,6 +16,7 @@ class RoadDataset(torch.utils.data.Dataset):
 
         self.img_paths = os.listdir(path)
         self.path = path
+        self.viewer = Viewer()
 
     def __getitem__(self, idx):
         img_path = self.img_paths[idx]
@@ -31,10 +33,12 @@ class RoadDataset(torch.utils.data.Dataset):
 
         m = self.get_mask()
         mask = np.all(img_target == m['road_label'], axis=2)
+        mask = self.viewer.binary(img_target, mask)
 
-        img = Image.fromarray(img)
         if self.transforms is not None:
-            img = self.transforms(img)
+            tmp = self.transforms(image=img, mask=mask)
+            img = tmp['image']
+            mask = tmp['mask']
 
         return {'image': img, "mask": mask, 'path': self.path + '/' + self.img_paths[idx]}
 
