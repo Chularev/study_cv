@@ -9,11 +9,9 @@ class RoadDataset(torch.utils.data.Dataset):
     def __init__(
             self,
             path,
-            transforms=None,
-            a_transforms=None
+            transforms=None
     ):
         self.transforms = transforms
-        self.a_transforms = a_transforms
 
         self.img_paths = os.listdir(path)
         self.path = path
@@ -33,9 +31,6 @@ class RoadDataset(torch.utils.data.Dataset):
 
         m = self.get_mask()
         mask = np.all(img_target == m['road_label'], axis=2)
-
-        if self.a_transforms:
-            img = self.a_transforms(image=img)
 
         img = Image.fromarray(img)
         if self.transforms is not None:

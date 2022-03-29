@@ -31,23 +31,13 @@ def get_datasets() -> Dict[str, RoadDataset]:
         A.ShiftScaleRotate(p=0.5),
         A.RandomBrightnessContrast(p=0.3)
     ], bbox_params=A.BboxParams(format='albumentations'))
-
-    transforms = T.Compose([
-        T.Resize(img_size),
-        T.ToTensor(),
-        T.Normalize(mean=[0.43, 0.44, 0.47],
-                    std=[0.20, 0.20, 0.20])
-    ])
     '''
 
     path = '/mnt/heap/imges/road/training/image_2'
     torch_dataset = RoadDataset(path)
-    #torch_dataset_test = FiftyOneTorchDataset(test_view, transforms,
-     #                                         classes=person_list)
+
     print('train dataset = ' + str(len(torch_dataset)))
-   # print('test dataset = ' + str(len(torch_dataset_test)))
 
     return {
-        'train' : torch_dataset
-        #'val': torch_dataset_test
+        'train': torch_dataset
     }
