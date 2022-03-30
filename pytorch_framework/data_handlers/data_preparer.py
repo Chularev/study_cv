@@ -1,8 +1,6 @@
 from data_handlers.dataset import RoadDataset
-from typing import Tuple, Dict
-from albumentations.pytorch import ToTensorV2
-import albumentations as A
-import cv2
+from data_handlers.augmentations import get_transforms_for_predict
+from typing import Dict
 '''
     def split(self, validation_split):
 
@@ -18,12 +16,7 @@ import cv2
 
 def get_datasets() -> Dict[str, RoadDataset]:
 
-    transform = A.Compose([
-        A.Resize(width=128, height=128),
-        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-        ToTensorV2(),
-    ])
-
+    transform = get_transforms_for_predict()
 
     path = '/mnt/heap/imges/road/training/image_2'
     torch_dataset = RoadDataset(path, transform)

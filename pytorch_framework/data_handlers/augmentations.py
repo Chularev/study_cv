@@ -1,8 +1,10 @@
+from albumentations.pytorch import ToTensorV2
 import albumentations as A
 import torch
 from viewer import Viewer
 from logger import Logger
 import cv2
+
 def get_a_augmentations():
     return [
         A.Resize(256, 256),
@@ -17,6 +19,13 @@ def get_augmentations():
         bbox_params=A.BboxParams(format='albumentations')
     )
     return a_transform
+
+def get_transforms_for_predict():
+    return A.Compose([
+        A.Resize(width=128, height=128),
+        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+        ToTensorV2(),
+    ])
 
 
 if __name__ == "__main__":
