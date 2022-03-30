@@ -31,9 +31,19 @@ class Viewer:
         img = Image.open(buf)
         return self.convert_from_image_to_cv2(img)
 
+    # Function to calculate mask over image
+    def weighted_img(self, img, initial_img, α=1., β=0.5, γ=0.):
+        initial_img = np.asarray(initial_img, np.float32)
+        img = np.asarray(img, np.float32)
+        img[:,:,0] = 0
+        img[:, :, 1] = 0
+        return cv2.addWeighted(initial_img, α, img, β, γ)
+
     def mask_image(self, img, mask):
         mask = mask.numpy().astype(np.uint8)
-        newImg = img * mask
+        mask = mask * 255
+        newImg = self.weighted_img(mask, img)
+        newImg = np.asarray(newImg, np.uint8)
         return newImg
 
     def binary(self, img, mask):
