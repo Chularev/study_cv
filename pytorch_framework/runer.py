@@ -43,9 +43,9 @@ if __name__ == "__main__":
         'model': UNET,
         'model_name': 'best_lenet',
          'learning_rate': 1e-3,
-         'scheduler_epoch': 5,
+         'scheduler_epoch': 100,
          'scheduler_coefficient': 0.1,
-         'epoch_num': 10
+         'epoch_num': 200
     }
 
     datasets = get_datasets()
