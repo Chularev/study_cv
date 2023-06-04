@@ -56,8 +56,8 @@ if __name__ == "__main__":
         sync_config=tune.SyncConfig(
             syncer=None  # Disable syncing
         ),
-        name="Unet",
-        local_dir="/mnt/heap/My folder/tune_reports",
+        name="YoloV1",
+        local_dir="/home/alex/workspace/experiments/",
         num_samples=1,
         config=config,
         resources_per_trial={"cpu": 8, "gpu": 1},
