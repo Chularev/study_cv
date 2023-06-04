@@ -1,8 +1,8 @@
 from albumentations.pytorch import ToTensorV2
 import albumentations as A
 import torch
-from viewer import Viewer
-from logger import Logger
+from helpers.viewer import Viewer
+from helpers.logger import Logger
 import cv2
 
 def get_a_augmentations():

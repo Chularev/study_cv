@@ -18,16 +18,16 @@ def get_datasets() -> Dict[str, VOCDataset]:
 
     transform = get_transforms_for_predict()
 
-    path = "../data/train.csv"
-    IMG_DIR = "../data/data/images"
-    LABEL_DIR = "../data/data/labels"
-    train_dataset = VOCDataset(
+    path = "data/train.csv"
+    IMG_DIR = "data/data/images"
+    LABEL_DIR = "data/data/labels"
+    torch_dataset = VOCDataset(
         path,
         transform=transform,
         img_dir=IMG_DIR,
         label_dir=LABEL_DIR,
     )
-    torch_dataset = VOCDataset(path, transform)
+
 
     print('train dataset = ' + str(len(torch_dataset)))
 
