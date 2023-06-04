@@ -7,11 +7,11 @@ wget -nc https://pjreddie.com/media/files/VOCtest_06-Nov-2007.tar
                                                               
 ## OR DOWNLOAD FROM HERE (FASTER DOWNLOAD)                                          
 # VOC2007 DATASET                                                              
-wget -nc http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtrainval_06-Nov-2007.ta
-wget -nc http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtest_06-Nov-2007.tar #
+wget -nc http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtrainval_06-Nov-2007.tar
+wget -nc http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtest_06-Nov-2007.tar
 
 # VOC2012 DATASET                                                              
-wget -nc http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.ta
+wget -nc http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
 
 # Extract tar files
 tar xf VOCtrainval_11-May-2012.tar
@@ -22,7 +22,7 @@ tar xf VOCtest_06-Nov-2007.tar
 wget -nc https://pjreddie.com/media/files/voc_label.py
 
 # Run python file to clean data from xml files
-python voc_label.py
+python3 voc_label.py
 
 # Get train by using train+val from 2007 and 2012
 # Then we only test on 2007 test set
@@ -34,7 +34,7 @@ cp 2007_test.txt test.txt
 mkdir old_txt_files
 mv 2007* 2012* old_txt_files/
 
-python generate_csv.py
+python3 generate_csv.py
 
 mkdir data
 mkdir data/images
