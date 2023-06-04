@@ -4,11 +4,21 @@ import numpy as np
 
 import torch
 import os
-from metrics import MyMetric
+from helpers.utils import (
+    non_max_suppression,
+    mean_average_precision,
+    intersection_over_union,
+    cellboxes_to_boxes,
+    get_bboxes,
+    plot_image,
+    save_checkpoint,
+    load_checkpoint,
+)
+
 from ray import tune
-from losses import MyLoss
-from logger import Logger
-from viewer import Viewer
+from losses.Yolov1 import YoloLoss
+from helpers.logger import Logger
+from helpers.viewer import Viewer
 
 class Trainer:
 
@@ -16,7 +26,7 @@ class Trainer:
         self.datasets = datasets
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.logger = Logger('TensorBoard')
-        self.losses = MyLoss()
+        self.losses = YoloLoss()
 
         '''
         self.metrics = {

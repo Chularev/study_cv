@@ -1,4 +1,4 @@
-from data_handlers.dataset import RoadDataset
+from data_handlers.dataset import VOCDataset
 from data_handlers.augmentations import get_transforms_for_predict
 from typing import Dict
 '''
@@ -14,12 +14,20 @@ from typing import Dict
         return train_indices, val_indices
 '''
 
-def get_datasets() -> Dict[str, RoadDataset]:
+def get_datasets() -> Dict[str, VOCDataset]:
 
     transform = get_transforms_for_predict()
 
-    path = '/mnt/heap/imges/road/training/image_2'
-    torch_dataset = RoadDataset(path, transform)
+    path = "../data/train.csv"
+    IMG_DIR = "../data/data/images"
+    LABEL_DIR = "../data/data/labels"
+    train_dataset = VOCDataset(
+        path,
+        transform=transform,
+        img_dir=IMG_DIR,
+        label_dir=LABEL_DIR,
+    )
+    torch_dataset = VOCDataset(path, transform)
 
     print('train dataset = ' + str(len(torch_dataset)))
 

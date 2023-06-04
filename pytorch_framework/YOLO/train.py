@@ -37,8 +37,8 @@ NUM_WORKERS = 2
 PIN_MEMORY = True
 LOAD_MODEL = False
 LOAD_MODEL_FILE = "overfit.pth.tar"
-IMG_DIR = "data/images"
-LABEL_DIR = "data/labels"
+IMG_DIR = "../data/data/images"
+LABEL_DIR = "../data/data/labels"
 
 
 class Compose(object):

@@ -1,10 +1,10 @@
-from trainer import Trainer
+from core.trainer import Trainer
 
 import torch
 import torch.optim as optim
 import os
 
-from models import UNET
+from models.Yolov1 import Yolov1
 from ray.tune import CLIReporter
 from ray import tune
 from data_handlers.data_preparer import get_datasets
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         'need_train': True,
         'reg': 0.0001,
         'optimizer': optim.Adam,
-        'model': UNET,
+        'model': Yolov1,
         'model_name': 'best_lenet',
          'learning_rate': 1e-3,
          'scheduler_epoch': 100,

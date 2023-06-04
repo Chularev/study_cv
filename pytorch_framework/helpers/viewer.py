@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 import math
-from metrics_iou import Iou
+from metrics.metrics_iou import Iou
 import io
 from torchvision.transforms import ToTensor
 
