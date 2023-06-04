@@ -1,53 +1,90 @@
+"""
+Creates a Pytorch dataset to load the Pascal VOC dataset
+"""
+
 import torch
-import numpy as np
-import cv2
-from PIL import Image
 import os
-from viewer import Viewer
+import pandas as pd
+from PIL import Image
 
 
-class RoadDataset(torch.utils.data.Dataset):
+class VOCDataset(torch.utils.data.Dataset):
     def __init__(
-            self,
-            path,
-            transforms=None
+        self, csv_file, img_dir, label_dir, S=7, B=2, C=20, transform=None,
     ):
-        self.transforms = transforms
-
-        self.img_paths = os.listdir(path)
-        self.path = path
-        self.viewer = Viewer()
-
-    def __getitem__(self, idx):
-        img_path = self.img_paths[idx]
-        img_path = self.path + '/' + img_path
-
-        img = cv2.imread(img_path)
-
-        img_path_target = img_path.replace("image_2", "gt_image_2")
-        img_path_target = img_path_target.replace("um_", "um_road_")
-        img_path_target = img_path_target.replace("umm_", "umm_road_")
-        img_path_target = img_path_target.replace("uu_", "uu_road_")
-
-        img_target = cv2.imread(img_path_target)
-
-        m = self.get_mask()
-        mask = np.all(img_target == m['road_label'], axis=2)
-        mask = self.viewer.binary(img_target, mask)
-
-        if self.transforms is not None:
-            tmp = self.transforms(image=img, mask=mask)
-            img = tmp['image']
-            mask = tmp['mask']
-
-        return {'image': img, "mask": mask, 'path': self.path + '/' + self.img_paths[idx]}
+        self.annotations = pd.read_csv(csv_file)
+        self.img_dir = 'data/' + img_dir
+        self.label_dir = 'data/' + label_dir
+        self.transform = transform
+        self.S = S
+        self.B = B
+        self.C = C
 
     def __len__(self):
-        return len(self.img_paths)
+        return len(self.annotations)
 
-    def get_mask(self):
-        return {
-            'non_road_label': np.array([255, 0, 0]),
-            'road_label': np.array([255, 0, 255]),
-            'other_road_label': np.array([0, 0, 0])
-        }
+    def __getitem__(self, index):
+        label_path = os.path.join(self.label_dir, self.annotations.iloc[index, 1])
+        boxes = []
+        with open(label_path) as f:
+            for label in f.readlines():
+                class_label, x, y, width, height = [
+                    float(x) if float(x) != int(float(x)) else int(x)
+                    for x in label.replace("\n", "").split()
+                ]
+
+                boxes.append([class_label, x, y, width, height])
+
+        img_path = os.path.join(self.img_dir, self.annotations.iloc[index, 0])
+        image = Image.open(img_path)
+        boxes = torch.tensor(boxes)
+
+        if self.transform:
+            # image = self.transform(image)
+            image, boxes = self.transform(image, boxes)
+
+        # Convert To Cells
+        label_matrix = torch.zeros((self.S, self.S, self.C + 5 * self.B))
+        for box in boxes:
+            class_label, x, y, width, height = box.tolist()
+            class_label = int(class_label)
+
+            # i,j represents the cell row and cell column
+            i, j = int(self.S * y), int(self.S * x)
+            x_cell, y_cell = self.S * x - j, self.S * y - i
+
+            """
+            Calculating the width and height of cell of bounding box,
+            relative to the cell is done by the following, with
+            width as the example:
+            
+            width_pixels = (width*self.image_width)
+            cell_pixels = (self.image_width)
+            
+            Then to find the width relative to the cell is simply:
+            width_pixels/cell_pixels, simplification leads to the
+            formulas below.
+            """
+            width_cell, height_cell = (
+                width * self.S,
+                height * self.S,
+            )
+
+            # If no object already found for specific cell i,j
+            # Note: This means we restrict to ONE object
+            # per cell!
+            if label_matrix[i, j, 20] == 0:
+                # Set that there exists an object
+                label_matrix[i, j, 20] = 1
+
+                # Box coordinates
+                box_coordinates = torch.tensor(
+                    [x_cell, y_cell, width_cell, height_cell]
+                )
+
+                label_matrix[i, j, 21:25] = box_coordinates
+
+                # Set one hot encoding for class_label
+                label_matrix[i, j, class_label] = 1
+
+        return image, label_matrix
