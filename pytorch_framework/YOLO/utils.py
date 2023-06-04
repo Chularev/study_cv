@@ -239,7 +239,7 @@ def get_bboxes(
     threshold,
     pred_format="cells",
     box_format="midpoint",
-    device="cuda",
+    device="cuda:0",
 ):
     all_pred_boxes = []
     all_true_boxes = []
