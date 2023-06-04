@@ -11,7 +11,7 @@ import torchvision.transforms.functional as FT
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 from model import Yolov1
-from dataset import VOCDataset
+from data_handlers.dataset import VOCDataset
 from utils import (
     non_max_suppression,
     mean_average_precision,
@@ -90,14 +90,14 @@ def main():
         load_checkpoint(torch.load(LOAD_MODEL_FILE), model, optimizer)
 
     train_dataset = VOCDataset(
-        "./data/train.csv",
+        "../data/train.csv",
         transform=transform,
         img_dir=IMG_DIR,
         label_dir=LABEL_DIR,
     )
 
     test_dataset = VOCDataset(
-        "./data/test.csv", transform=transform, img_dir=IMG_DIR, label_dir=LABEL_DIR,
+        "../data/test.csv", transform=transform, img_dir=IMG_DIR, label_dir=LABEL_DIR,
     )
 
     train_loader = DataLoader(
