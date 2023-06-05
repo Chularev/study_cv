@@ -5,9 +5,11 @@ Main file for training Yolo model on Pascal VOC dataset
 import os
 
 import torch
-import torchvision.transforms as transforms
+from data_handlers.augmentations import (
+    get_transforms_for_train,
+    get_transforms_for_test
+)
 import torch.optim as optim
-import torchvision.transforms.functional as FT
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 from models.Yolov1 import Yolov1
@@ -39,20 +41,6 @@ LOAD_MODEL = False
 LOAD_MODEL_FILE = "overfit.pth.tar"
 IMG_DIR = "data/data/images"
 LABEL_DIR = "data/data/labels"
-
-
-class Compose(object):
-    def __init__(self, transforms):
-        self.transforms = transforms
-
-    def __call__(self, img, bboxes):
-        for t in self.transforms:
-            img, bboxes = t(img), bboxes
-
-        return img, bboxes
-
-
-transform = Compose([transforms.Resize((448, 448)), transforms.ToTensor(),])
 
 
 def train_fn(train_loader, model, optimizer, loss_fn):
@@ -91,13 +79,13 @@ def main():
 
     train_dataset = VOCDataset(
         "data/train.csv",
-        transform=transform,
+        transform=get_transforms_for_train(),
         img_dir=IMG_DIR,
         label_dir=LABEL_DIR,
     )
 
     test_dataset = VOCDataset(
-        "data/test.csv", transform=transform, img_dir=IMG_DIR, label_dir=LABEL_DIR,
+        "data/test.csv", transform=get_transforms_for_test(), img_dir=IMG_DIR, label_dir=LABEL_DIR,
     )
 
     train_loader = DataLoader(

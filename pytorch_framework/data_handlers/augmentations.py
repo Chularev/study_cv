@@ -20,12 +20,23 @@ def get_augmentations():
     )
     return a_transform
 
-def get_transforms_for_predict():
+def get_transforms_for_train():
     return A.Compose([
-        A.Resize(width=128, height=128),
-        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-        ToTensorV2(),
-    ])
+            A.Resize(width=448, height=448),
+            # A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+            ToTensorV2(p=1.0),
+        ],
+        bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
+    )
+def get_transforms_for_test():
+    return A.Compose([
+                A.Resize(width=448, height=448),
+                # A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+                ToTensorV2(p=1.0),
+        ],
+        bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
+    )
+
 
 
 if __name__ == "__main__":

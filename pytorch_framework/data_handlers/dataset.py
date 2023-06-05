@@ -1,11 +1,10 @@
 """
 Creates a Pytorch dataset to load the Pascal VOC dataset
 """
-
+import cv2
 import torch
 import os
 import pandas as pd
-from PIL import Image
 
 
 class VOCDataset(torch.utils.data.Dataset):
@@ -25,23 +24,41 @@ class VOCDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         label_path = os.path.join(self.label_dir, self.annotations.iloc[index, 1])
-        boxes = []
+        gt = {
+            'class_labels' : [],
+            'boxes' : []
+        }
         with open(label_path) as f:
             for label in f.readlines():
                 class_label, x, y, width, height = [
                     float(x) if float(x) != int(float(x)) else int(x)
                     for x in label.replace("\n", "").split()
                 ]
-
-                boxes.append([class_label, x, y, width, height])
+                class_label = int(class_label)
+                gt['class_labels'].append(class_label)
+                gt['boxes'].append([x, y, width, height])
 
         img_path = os.path.join(self.img_dir, self.annotations.iloc[index, 0])
-        image = Image.open(img_path)
-        boxes = torch.tensor(boxes)
+        image = cv2.imread(img_path)
+        gt['boxes'] = torch.tensor(gt['boxes'])
+
 
         if self.transform:
-            # image = self.transform(image)
-            image, boxes = self.transform(image, boxes)
+            transformed = self.transform(image=image, bboxes=gt['boxes'], class_labels=gt['class_labels'])
+            image = transformed['image']
+            gt['boxes'] = transformed['bboxes']
+            gt['class_labels'] = transformed['class_labels']
+
+        boxes = []
+        for i in range(len(gt['boxes'])):
+            box = gt['boxes'][i]
+            boxes.append([
+                gt['class_labels'][i],
+                box[0], box[1],
+                box[2], box[3]]
+            )
+
+        boxes = torch.tensor(boxes)
 
         # Convert To Cells
         label_matrix = torch.zeros((self.S, self.S, self.C + 5 * self.B))
@@ -87,4 +104,4 @@ class VOCDataset(torch.utils.data.Dataset):
                 # Set one hot encoding for class_label
                 label_matrix[i, j, class_label] = 1
 
-        return image, label_matrix
+        return image.type(torch.FloatTensor), label_matrix
