@@ -1,4 +1,4 @@
-from core.trainer import Trainer
+from core.looper import Looper
 
 import torch
 import torch.optim as optim
@@ -20,7 +20,7 @@ def find_hyperparameters(config, datasets, checkpoint_dir=None):
     # define training and validation data_handlers loaders
 
     loaders = get_loaders(datasets)
-    trainer = Trainer(datasets)
+    looper = Looper(datasets)
 
     model = config['model'](split_size=7, num_boxes=2, num_classes=20)
 
@@ -33,7 +33,7 @@ def find_hyperparameters(config, datasets, checkpoint_dir=None):
         model.load_state_dict(model_state)
         optimizer.load_state_dict(optimizer_state)
 
-    trainer.train(model, loaders, optimizer, config['epoch_num'], scheduler)
+    looper.start(model, loaders, optimizer, config['epoch_num'], scheduler)
 
 if __name__ == "__main__":
     config = {

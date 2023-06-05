@@ -20,6 +20,7 @@ from losses.Yolov1 import YoloLoss
 from helpers.logger import Logger
 from helpers.viewer import Viewer
 class Looper:
+
     def __init__(self, datasets):
         self.datasets = datasets
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -40,8 +41,28 @@ class Looper:
     def to_gpu(self, item):
         return item.type(torch.cuda.FloatTensor).to(self.device)
 
+    def loss_calc(self, target, model):
+        gpu_img = self.to_gpu(target['image'])
+        gpu_mask = self.to_gpu(target['mask'])
 
-    def loop(self, model, loaders, optimizer, num_epochs, scheduler=None):
+        prediction = model(gpu_img)
+
+        losses = self.losses.calc(prediction, gpu_mask)
+        for key in losses.keys():
+            self.logger.add_scalar('Losses_{}/{}'.format(self.phase, key), losses[key].item())
+            self.out += ' {} - {}'.format(key, losses[key].item())
+
+        '''
+        with torch.inference_mode():
+            metrics = self.metrics[self.phase].step(prediction, gpu_img_has_person, gpu_box)
+            for key in metrics.keys():
+                self.logger.add_scalar('Metric_{}/{}'.format(self.phase, key), metrics[key].item())
+                self.out += ' {} - {}'.format(key, metrics[key].item())
+        '''
+
+        return sum(losses.values())
+
+    def start(self, model, loaders, optimizer, num_epochs, scheduler=None):
 
         torch.cuda.empty_cache()
 
