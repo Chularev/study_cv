@@ -1,24 +1,5 @@
-CUDA_LAUNCH_BLOCKING = 1
-
-import numpy as np
-
 import torch
-import os
-from helpers.utils import (
-    non_max_suppression,
-    mean_average_precision,
-    intersection_over_union,
-    cellboxes_to_boxes,
-    get_bboxes,
-    plot_image,
-    save_checkpoint,
-    load_checkpoint,
-)
-
-from ray import tune
 from losses.Yolov1 import YoloLoss
-from helpers.logger import Logger
-from helpers.viewer import Viewer
 from core.train_config import TrainConfig
 
 
@@ -28,16 +9,15 @@ class Trainer:
         self.config = config
         self.losses = YoloLoss()
 
-    def to_gpu(self, item):
-        return item.type(torch.cuda.FloatTensor).to(self.device)
-
     def loss_calc(self, target, model):
-        gpu_img = self.to_gpu(target['image'])
-        gpu_mask = self.to_gpu(target['mask'])
+        img, bboxes = target
 
-        prediction = model(gpu_img)
+        img = img.to(self.config.device, torch.cuda.FloatTensor)
+        bboxes = bboxes.to(self.config.device, torch.cuda.FloatTensor)
 
-        losses = self.losses.calc(prediction, gpu_mask)
+        prediction = model(img)
+
+        losses = self.losses(prediction, bboxes)
         for key in losses.keys():
             self.config.logger.add_scalar('Losses_{}/{}'.format('train', key), losses[key].item())
 
@@ -50,8 +30,8 @@ class Trainer:
             c.scheduler.step()
 
         loss_accum = 0
-        step_count = len(c.loaders['train'])
-        for i_step, target in enumerate(c.loaders['train']):
+        step_count = len(c.train_loader)
+        for i_step, target in enumerate(c.train_loader):
             loss_value = self.loss_calc(target, c.model)
 
             loss_value.backward()

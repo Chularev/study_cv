@@ -5,4 +5,4 @@ class TrainConfig:
     scheduler = None
     optimizer = None
     model = None
-    loaders = None
+    train_loader = None
