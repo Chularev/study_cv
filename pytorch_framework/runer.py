@@ -22,7 +22,7 @@ def find_hyperparameters(config, datasets, checkpoint_dir=None):
     loaders = get_loaders(datasets)
     trainer = Trainer(datasets)
 
-    model = config['model'](in_channels=3, out_channels=3)
+    model = config['model'](split_size=7, num_boxes=2, num_classes=20)
 
     optimizer = config['optimizer'](model.parameters(), lr=config['learning_rate'], weight_decay=config['reg'])
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=config['scheduler_epoch'], gamma=config['scheduler_coefficient'])

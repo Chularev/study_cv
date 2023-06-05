@@ -1,6 +1,7 @@
 from data_handlers.dataset import VOCDataset
-from data_handlers.augmentations import get_transforms_for_predict
+from data_handlers.augmentations import get_transforms_for_train
 from typing import Dict
+from helpers.constants import get_project_root_dir
 '''
     def split(self, validation_split):
 
@@ -16,11 +17,13 @@ from typing import Dict
 
 def get_datasets() -> Dict[str, VOCDataset]:
 
-    transform = get_transforms_for_predict()
+    transform = get_transforms_for_train()
 
-    path = "data/train.csv"
-    IMG_DIR = "data/data/images"
-    LABEL_DIR = "data/data/labels"
+    ROOT_DIR = get_project_root_dir()
+
+    path = ROOT_DIR + "/data/train.csv"
+    IMG_DIR = ROOT_DIR + "/data/data/images"
+    LABEL_DIR = ROOT_DIR + "/data/data/labels"
     torch_dataset = VOCDataset(
         path,
         transform=transform,
