@@ -63,7 +63,7 @@ def covert_to_TrainParameters(parameters) -> TrainParameters:
 
 
 def start_train_loop(parameters, datasets, checkpoint_dir=None):
-    # define training and validation data_handlers loaders
+    # define training and validation dataset loaders
 
     p = covert_to_TrainParameters(parameters)
     loaders = get_loaders(datasets)

@@ -1,4 +1,4 @@
-from data_handlers.data_preparer import get_datasets
+from dataset.data_preparer import get_datasets
 from viewer import Viewer
 from logger import Logger
 

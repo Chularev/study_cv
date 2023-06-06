@@ -1,11 +1,11 @@
-from data_handlers.dataset import VOCDataset
-from data_handlers.augmentations import get_transforms_for_train
+from dataset.dataset import VOCDataset
+from dataset.augmentations import get_transforms_for_train
 from typing import Dict
 from helpers.constants import get_project_root_dir
 '''
     def split(self, validation_split):
 
-        data_size = self.data_handlers.data_handlers.shape[0]
+        data_size = self.dataset.dataset.shape[0]
         split = int(np.floor(validation_split * data_size))
         indices = list(range(data_size))
         np.random.shuffle(indices)

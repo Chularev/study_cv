@@ -5,7 +5,7 @@ Main file for training Yolo model on Pascal VOC dataset
 import os
 
 import torch
-from data_handlers.augmentations import (
+from dataset.augmentations import (
     get_transforms_for_train,
     get_transforms_for_test
 )
@@ -13,7 +13,7 @@ import torch.optim as optim
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 from models.Yolov1 import Yolov1
-from data_handlers.dataset import VOCDataset
+from dataset.dataset import VOCDataset
 from helpers.utils import (
     non_max_suppression,
     mean_average_precision,
