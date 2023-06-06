@@ -26,6 +26,9 @@ class Trainer:
     def train(self, epoch):
         c = self.config
         c.model.train()
+
+        torch.set_grad_enabled(True)
+
         if epoch > 0 and c.scheduler is not None:
             c.scheduler.step()
 

@@ -6,3 +6,4 @@ class TrainConfig:
     optimizer = None
     model = None
     train_loader = None
+    val_loader = None

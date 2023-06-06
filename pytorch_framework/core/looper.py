@@ -60,20 +60,11 @@ class Looper:
 
         for epoch in range(num_epochs):
             for phase in ['train']:  # , 'val']:
-                if phase == 'train' and epoch > 0:
-                    if scheduler is not None:
-                        scheduler.step()
-
-                self.phase = phase
                 model.train(phase == 'train')  # Set model to training mode
 
                 loss_accum = 0
                 step_count = len(loaders[phase])
                 for i_step, target in enumerate(loaders[phase]):
-
-                    optimizer.zero_grad()
-
-                    torch.set_grad_enabled(phase == 'train')
                     loss_value = self.loss_calc(target, model)
 
                     loss_accum += loss_value.item()
@@ -82,11 +73,6 @@ class Looper:
                     print('Epoch {}/{}. Phase {} Step {}/{} Loss {}'.format(epoch, num_epochs - 1, phase,
                                                                             i_step, step_count,
                                                                             loss_value.item()) + self.out)
-                    self.out = ''
-
-                    if phase == 'train':
-                        loss_value.backward()
-                        optimizer.step()
 
                 model.train(False)
                 torch.set_grad_enabled(False)
