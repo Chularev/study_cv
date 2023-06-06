@@ -10,6 +10,7 @@ class Validator:
         self.c = context
         self.metrics = YoloLoss()
         self.bar = Bar(self.c.val_loader)
+        self.bar.set('phase', 'validation')
 
     def metric_calc(self, target, model):
         img, bboxes = target
@@ -21,12 +22,15 @@ class Validator:
 
         metrics = self.metrics(prediction, bboxes)
         for key in metrics.keys():
-            self.c.logger.add_scalar('Metrics_{}/{}'.format('train', key), metrics[key].item())
+            item = metrics[key].item()
+            self.bar.set(key,item)
+            self.c.logger.add_scalar('Metrics_{}/{}'.format('train', key), item)
 
         return sum(metrics.values())
 
     def validate(self, epoch):
 
+        self.bar.set('epoch', epoch)
         self.c.model.eval()
 
         torch.set_grad_enabled(False)
@@ -39,6 +43,7 @@ class Validator:
             metric_accum += loss_value.item()
             self.c.logger.add_scalar('Metric_sum_{}/batch'.format('validation'), loss_value.item())
             # report_metrics['loss'][phase].append(loss_value.item())
-            print('Epoch {}/{}. Phase {} Step {}/{} Metric {}'.format(epoch, epoch - 1, 'validation',
-                                                                      i_step, step_count,
-                                                                      loss_value.item()))
+            #print('Epoch {}/{}. Phase {} Step {}/{} Metric {}'.format(epoch, epoch - 1, 'validation',
+             #                                                         i_step, step_count,
+              #                                                        loss_value.item()))
+            self.bar.update()
