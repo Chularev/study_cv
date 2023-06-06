@@ -51,6 +51,7 @@ def train_fn(train_loader, model, optimizer, loss_fn):
         x, y = x.to(DEVICE), y.to(DEVICE)
         out = model(x)
         loss = loss_fn(out, y)
+        loss = loss['YoloV1']
         mean_loss.append(loss.item())
         optimizer.zero_grad()
         loss.backward()
