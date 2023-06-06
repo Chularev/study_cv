@@ -4,7 +4,7 @@ import torch.optim as optim
 from models.Yolov1 import Yolov1
 from ray.tune import CLIReporter
 from ray import tune
-from dataset.dataset_helperr import get_datasets
+from dataset.dataset_helperr import DatasetHelper
 
 def get_parameters():
     p = TrainParameters()
@@ -24,7 +24,7 @@ def get_parameters():
 
 if __name__ == "__main__":
 
-    datasets = get_datasets()
+    datasets = DatasetHelper.get_datasets()
 
     reporter = CLIReporter(max_report_frequency=30)
     analysis = tune.run(
