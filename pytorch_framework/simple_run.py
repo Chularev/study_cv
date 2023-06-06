@@ -10,7 +10,7 @@ import torch.optim as optim
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 from models.Yolov1 import Yolov1
-from dataset.dataset import VOCDataset
+from dataset.vocdataset import VOCDataset
 from helpers.utils import (
     non_max_suppression,
     mean_average_precision,

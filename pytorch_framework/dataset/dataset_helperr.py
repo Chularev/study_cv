@@ -1,4 +1,4 @@
-from dataset.dataset import VOCDataset
+from dataset.vocdataset import VOCDataset
 from dataset.augments import Augments as A
 from typing import Dict
 from helpers.constants import IMG_DIR, LABEL_DIR, TRAIN_CSV_FILE, VAL_CSV_FILE
@@ -36,7 +36,6 @@ class DatasetHelper:
             'train': DatasetHelper.get_train_dataset(),
             'val': DatasetHelper.get_train_dataset()
         }
-
 
 
 if __name__ == "__main__":
