@@ -1,11 +1,11 @@
 '''
 
-        This class must used only with core classes
+        This class must be used only with core classes
 
 '''
 
 
-class _TrainConfig:
+class _TrainContext:
     device = None
     datasets = None
     logger = None
