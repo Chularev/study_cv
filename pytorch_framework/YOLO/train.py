@@ -5,7 +5,7 @@ Main file for training Yolo model on Pascal VOC dataset
 import os
 
 import torch
-from dataset.augmentations import (
+from dataset.augments import (
     get_transforms_for_train,
     get_transforms_for_test
 )

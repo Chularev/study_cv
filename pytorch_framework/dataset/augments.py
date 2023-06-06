@@ -4,57 +4,61 @@ import torch
 from helpers.viewer import Viewer
 from helpers.logger import Logger
 import cv2
+class Augments:
 
-def get_a_augmentations():
-    return [
-        A.Resize(256, 256),
-        A.HorizontalFlip(p=0.5),
-        A.VerticalFlip(p=0.5),
-        A.ShiftScaleRotate(p=0.5),
-        A.RandomBrightnessContrast(p=0.3)
-    ]
-def get_augmentations():
-    a_transform = A.Compose(
-        get_a_augmentations(),
-        bbox_params=A.BboxParams(format='albumentations')
-    )
-    return a_transform
+    @staticmethod
+    def get_all_augmentations():
+        return [
+            A.Resize(256, 256),
+            A.HorizontalFlip(p=0.5),
+            A.VerticalFlip(p=0.5),
+            A.ShiftScaleRotate(p=0.5),
+            A.RandomBrightnessContrast(p=0.3)
+        ]
 
-def get_transforms_for_train():
-    return A.Compose([
-            A.Resize(width=448, height=448),
-            # A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-            ToTensorV2(p=1.0),
-        ],
-        bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
-    )
-def get_transforms_for_test():
-    return A.Compose([
+    @staticmethod
+    def train():
+        return A.Compose([
                 A.Resize(width=448, height=448),
                 # A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
                 ToTensorV2(p=1.0),
-        ],
-        bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
-    )
+            ],
+            bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
+        )
+
+    @staticmethod
+    def validation():
+        return A.Compose([
+            A.Resize(width=448, height=448),
+            # A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+            ToTensorV2(p=1.0),
+            ],
+            bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
+        )
+
+    @staticmethod
+    def predict():
+        return A.Compose([
+                    A.Resize(width=448, height=448),
+                    # A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+                    ToTensorV2(p=1.0),
+            ],
+            bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
+        )
 
 
 
 if __name__ == "__main__":
-    #datasets = get_datasets()
-    transform = get_a_augmentations()
+    aug = Augments()
     logger = Logger('TensorBoard')
 
-    #data = datasets['train']
-
-    #image, target = data[0]
-
-    #image = cv2.imread(target['img_path'])
     image = cv2.imread('/mnt/heap/imges/coco/validation/data/000000161861.jpg')
 
     img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
+    transform = aug.get_all_augmentations()
     viewer = Viewer()
-    for j in range(4):
+    for j in range(len(transform)):
         result = []
         image = viewer.add_title(img, 'Original img')
         result.append(torch.from_numpy(image).permute(2, 0, 1).unsqueeze(0))

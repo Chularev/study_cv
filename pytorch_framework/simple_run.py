@@ -5,10 +5,7 @@ Main file for training Yolo model on Pascal VOC dataset
 import os
 
 import torch
-from dataset.augmentations import (
-    get_transforms_for_train,
-    get_transforms_for_test
-)
+from dataset.augments import Augments as Aug
 import torch.optim as optim
 from tqdm import tqdm
 from torch.utils.data import DataLoader
@@ -80,13 +77,13 @@ def main():
 
     train_dataset = VOCDataset(
         "data/train.csv",
-        transform=get_transforms_for_train(),
+        transform=Aug.train(),
         img_dir=IMG_DIR,
         label_dir=LABEL_DIR,
     )
 
     test_dataset = VOCDataset(
-        "data/test.csv", transform=get_transforms_for_test(), img_dir=IMG_DIR, label_dir=LABEL_DIR,
+        "data/test.csv", transform=Aug.validation(), img_dir=IMG_DIR, label_dir=LABEL_DIR,
     )
 
     train_loader = DataLoader(
