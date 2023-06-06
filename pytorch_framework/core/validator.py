@@ -23,18 +23,18 @@ class Validator:
         return sum(metrics.values())
 
     def validate(self, epoch):
-        C = self.config
-        C.model.eval()
+        c = self.config
+        c.model.eval()
 
         torch.set_grad_enabled(False)
 
         metric_accum = 0
-        step_count = len(C.val_loader)
-        for i_step, target in enumerate(C.val_loader):
-            loss_value = self.metric_calc(target, C.model)
+        step_count = len(c.val_loader)
+        for i_step, target in enumerate(c.val_loader):
+            loss_value = self.metric_calc(target, c.model)
 
             metric_accum += loss_value.item()
-            C.logger.add_scalar('Metric_sum_{}/batch'.format('validation'), loss_value.item())
+            c.logger.add_scalar('Metric_sum_{}/batch'.format('validation'), loss_value.item())
             # report_metrics['loss'][phase].append(loss_value.item())
             print('Epoch {}/{}. Phase {} Step {}/{} Metric {}'.format(epoch, epoch - 1, 'validation',
                                                                     i_step, step_count,
