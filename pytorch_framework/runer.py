@@ -1,25 +1,24 @@
 from core.train_loop import start_train_loop
-
-import torch
+from core.train_parameters import TrainParameters
 import torch.optim as optim
-import os
-
 from models.Yolov1 import Yolov1
 from ray.tune import CLIReporter
 from ray import tune
 from data_handlers.data_preparer import get_datasets
 
-config = {
-    'need_train': True,
-    'reg': 0.0001,
-    'optimizer': optim.Adam,
-    'model': Yolov1,
-    'model_name': 'best_net',
-    'learning_rate': 1e-3,
-    'scheduler_epoch': 100,
-    'scheduler_coefficient': 0.1,
-    'epoch_num': 200
-}
+def get_parameters():
+    p = TrainParameters()
+
+    p.need_train = True
+    p.reg = 0.0001
+    p.optimizer = optim.Adam
+    p.model = Yolov1
+    p.model_name = 'best_net'
+    p.learning_rate = 1e-3
+    p.scheduler_epoch = 100
+    p.scheduler_coefficient = 0.1
+    p.epoch_num = 1
+    return p
 
 
 
@@ -36,7 +35,7 @@ if __name__ == "__main__":
         name="YoloV1",
         local_dir="/home/alex/workspace/experiments/",
         num_samples=1,
-        config=config,
+        config={'params': get_parameters()},
         resources_per_trial={"cpu": 3, "gpu": 1},
         progress_reporter=reporter
     )

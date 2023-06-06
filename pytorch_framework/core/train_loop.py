@@ -7,8 +7,8 @@ from core.trainer import Trainer
 from core.validator import Validator
 from typing import Dict
 from helpers.logger import Logger
+from core.train_parameters import TrainParameters
 class Looper:
-
     def __init__(self, config: _TrainConfig):
         self.c = config
         self.trainer = Trainer(config)
@@ -50,23 +50,29 @@ def get_loaders(datasets) -> Dict[str,  torch.utils.data.DataLoader]:
         )
     }
 
+'''
+    This function used to work autocode helper
+'''
+def covert_to_TrainParameters(parameters) -> TrainParameters:
+    return parameters['params']
 def start_train_loop(parameters, datasets, checkpoint_dir=None):
     # define training and validation data_handlers loaders
 
+    p = covert_to_TrainParameters(parameters)
     loaders = get_loaders(datasets)
     train_config = _TrainConfig()
 
     train_config.train_loader = loaders['train']
     train_config.val_loader = loaders['val']
 
-    train_config.model = parameters['model'](split_size=7, num_boxes=2, num_classes=20)
+    train_config.model = p.model(split_size=7, num_boxes=2, num_classes=20)
 
-    train_config.optimizer = parameters['optimizer'](
-        train_config.model.parameters(), lr=parameters['learning_rate'], weight_decay=parameters['reg']
+    train_config.optimizer = p.optimizer(
+        train_config.model.parameters(), lr=p.learning_rate, weight_decay=p.reg
     )
 
     train_config.scheduler = optim.lr_scheduler.StepLR(
-        train_config.optimizer, step_size=parameters['scheduler_epoch'], gamma=parameters['scheduler_coefficient']
+        train_config.optimizer, step_size=p.scheduler_epoch, gamma=p.scheduler_coefficient
     )
 
     if checkpoint_dir:
@@ -75,7 +81,7 @@ def start_train_loop(parameters, datasets, checkpoint_dir=None):
         train_config.model.load_state_dict(model_state)
         train_config.optimizer.load_state_dict(optimizer_state)
 
-    train_config.epoch_num = parameters['epoch_num']
+    train_config.epoch_num = p.epoch_num
 
     train_config.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     train_config.logger = Logger('TensorBoard')
