@@ -12,8 +12,8 @@ class Trainer:
     def loss_calc(self, target, model):
         img, bboxes = target
 
-        img = img.to(self.config.device, torch.cuda.FloatTensor)
-        bboxes = bboxes.to(self.config.device, torch.cuda.FloatTensor)
+        img = img.to(self.config.device, torch.float)
+        bboxes = bboxes.to(self.config.device, torch.float)
 
         prediction = model(img)
 

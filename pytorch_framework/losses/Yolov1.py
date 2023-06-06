@@ -121,4 +121,4 @@ class YoloLoss(nn.Module):
             + class_loss  # fifth row
         )
 
-        return loss
+        return {'YoloV1': loss}
