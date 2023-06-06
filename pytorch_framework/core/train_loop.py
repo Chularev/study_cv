@@ -2,14 +2,14 @@ import torch
 import torch.optim as optim
 import os
 
-from core.train_config import TrainConfig
+from core.train_config import _TrainConfig
 from core.trainer import Trainer
 from core.validator import Validator
 from typing import Dict
 from helpers.logger import Logger
 class Looper:
 
-    def __init__(self, config: TrainConfig):
+    def __init__(self, config: _TrainConfig):
         self.c = config
         self.trainer = Trainer(config)
         self.validator = Validator(config)
@@ -54,7 +54,7 @@ def start_train_loop(parameters, datasets, checkpoint_dir=None):
     # define training and validation data_handlers loaders
 
     loaders = get_loaders(datasets)
-    train_config = TrainConfig()
+    train_config = _TrainConfig()
 
     train_config.train_loader = loaders['train']
     train_config.val_loader = loaders['val']

@@ -1,10 +1,10 @@
 import torch
 from losses.Yolov1 import YoloLoss
-from core.train_config import TrainConfig
+from core.train_config import _TrainConfig
 
 class Validator:
 
-    def __init__(self, config: TrainConfig):
+    def __init__(self, config: _TrainConfig):
         self.config = config
         self.metrics = YoloLoss()
 

@@ -1,4 +1,11 @@
-class TrainConfig:
+'''
+
+        This class must used only with core classes
+
+'''
+
+
+class _TrainConfig:
     device = None
     datasets = None
     logger = None

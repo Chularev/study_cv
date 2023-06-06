@@ -37,7 +37,7 @@ if __name__ == "__main__":
         local_dir="/home/alex/workspace/experiments/",
         num_samples=1,
         config=config,
-        resources_per_trial={"cpu": 8, "gpu": 1},
+        resources_per_trial={"cpu": 3, "gpu": 1},
         progress_reporter=reporter
     )
 
