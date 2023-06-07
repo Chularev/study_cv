@@ -1,3 +1,18 @@
+from enum import Enum, unique, auto
+
+@unique
+class LoadStrategy(Enum):
+    NONE = 0
+    MODEL = auto()
+    MODEL_OPTIMIZER = auto()
+
+@unique
+class SaveStrategy(Enum):
+    NONE = 0
+    MODEL = auto()
+    MODEL_OPTIMIZER = auto()
+    BEST_MODEL = auto()
+    BEST_MODEL_OPTIMIZER = auto()
 
 
 class TrainParameters:
@@ -10,4 +25,9 @@ class TrainParameters:
     scheduler_epoch = None
     scheduler_coefficient = None
     epoch_num = None
+
+    # Checkpoint
+    load_strategy = None
+    save_strategy = None
+    checkpoint_frequency = None
 

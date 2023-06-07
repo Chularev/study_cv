@@ -1,5 +1,5 @@
 from core.train_loop import start_train_loop
-from core.train_parameters import TrainParameters
+from core.train_parameters import TrainParameters, LoadStrategy, SaveStrategy
 import torch.optim as optim
 from models.Yolov1 import Yolov1
 from ray.tune import CLIReporter
@@ -18,6 +18,10 @@ def get_parameters():
     p.scheduler_epoch = 100
     p.scheduler_coefficient = 0.1
     p.epoch_num = 5
+
+    p.load_strategy = LoadStrategy.MODEL_OPTIMIZER
+    p.save_strategy = SaveStrategy.BEST_MODEL_OPTIMIZER
+    p.checkpoint_frequency = 3
     return p
 
 

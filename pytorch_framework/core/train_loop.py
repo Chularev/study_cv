@@ -86,6 +86,11 @@ def start_train_loop(parameters, datasets, checkpoint_dir=None):
         context.optimizer, step_size=p.scheduler_epoch, gamma=p.scheduler_coefficient
     )
 
+    # Checkpoint
+    context.load_strategy = p.load_strategy
+    context.save_strategy = p.save_strategy
+    context.checkpoint_frequency = p.checkpoint_frequency
+
     if checkpoint_dir:
         checkpoint = os.path.join(checkpoint_dir, "checkpoint")
         model_state, optimizer_state = torch.load(checkpoint)
