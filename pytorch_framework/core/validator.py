@@ -24,7 +24,7 @@ class Validator:
         for key in metrics.keys():
             item = metrics[key].item()
             self.bar.set(key,item)
-            self.c.logger.add_scalar('Metrics_validation/{}'.format(key), item)
+            self.c.logger.add_scalar('Validation/batch/metric/{}'.format(key), item)
 
         return sum(metrics.values())
 
@@ -40,10 +40,12 @@ class Validator:
             metric = self.metric_calc(target, self.c.model)
 
             metric_accum += metric.item()
-            self.c.logger.add_scalar('Metric_sum_validation/batch', metric.item())
+            self.c.logger.add_scalar('Validation/batch/metric/sum', metric.item())
 
             ave_metric = metric_accum / (i_step + 1)
-            self.c.logger.add_scalar('Metric_aver_validation/batch', ave_metric)
+            self.c.logger.add_scalar('Validation/batch/metric/average', ave_metric)
 
             self.bar.set('ave_metric', ave_metric)
             self.bar.update()
+
+        return metric_accum / len(self.bar)

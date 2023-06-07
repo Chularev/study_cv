@@ -17,7 +17,7 @@ def get_parameters():
     p.learning_rate = 1e-3
     p.scheduler_epoch = 100
     p.scheduler_coefficient = 0.1
-    p.epoch_num = 1
+    p.epoch_num = 5
     return p
 
 

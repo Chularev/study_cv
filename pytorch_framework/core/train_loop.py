@@ -22,8 +22,12 @@ class Looper:
         self.c.model = self.c.model.to(self.c.device)
 
         for epoch in range(self.c.epoch_num):
-            self.validator.validate(epoch)
-            self.trainer.train(epoch)
+
+            metric = self.validator.validate(epoch)
+            self.c.logger.add_scalar('Validation/epoch/metric', metric)
+
+            loss = self.trainer.train(epoch)
+            self.c.logger.add_scalar('Train/epoch/loss', loss)
             '''
             with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
                 path = os.path.join(checkpoint_dir, "checkpoint")
