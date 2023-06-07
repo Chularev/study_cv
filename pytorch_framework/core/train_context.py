@@ -20,3 +20,5 @@ class _TrainContext:
     load_strategy = None
     save_strategy = None
     checkpoint_frequency = None
+    metric_type = None
+    metric_value_stop = None

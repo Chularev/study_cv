@@ -8,6 +8,7 @@ from core.validator import Validator
 from typing import Dict
 from helpers.logger import Logger
 from core.train_parameters import TrainParameters
+from core.checkpointer import Checkpointer
 
 
 class Looper:
@@ -15,11 +16,13 @@ class Looper:
         self.c = context
         self.trainer = Trainer(context)
         self.validator = Validator(context)
+        self.checkpointer = Checkpointer(context)
 
     def train_loop(self):
         torch.cuda.empty_cache()
 
         self.c.model = self.c.model.to(self.c.device)
+        self.checkpointer.load()
 
         for epoch in range(self.c.epoch_num):
 
@@ -28,6 +31,12 @@ class Looper:
 
             loss = self.trainer.train(epoch)
             self.c.logger.add_scalar('Train/epoch/loss', loss)
+
+            self.checkpointer.save()
+
+            if self.checkpointer.is_finish():
+                break
+
             '''
             with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
                 path = os.path.join(checkpoint_dir, "checkpoint")
@@ -89,13 +98,11 @@ def start_train_loop(parameters, datasets, checkpoint_dir=None):
     # Checkpoint
     context.load_strategy = p.load_strategy
     context.save_strategy = p.save_strategy
+    context.metric_type = p.metric_type
+    context.metric_value_stop = p.metric_value_stop
     context.checkpoint_frequency = p.checkpoint_frequency
 
-    if checkpoint_dir:
-        checkpoint = os.path.join(checkpoint_dir, "checkpoint")
-        model_state, optimizer_state = torch.load(checkpoint)
-        context.model.load_state_dict(model_state)
-        context.optimizer.load_state_dict(optimizer_state)
+
 
     context.epoch_num = p.epoch_num
 
