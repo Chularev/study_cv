@@ -24,26 +24,26 @@ class Validator:
         for key in metrics.keys():
             item = metrics[key].item()
             self.bar.set(key,item)
-            self.c.logger.add_scalar('Metrics_{}/{}'.format('train', key), item)
+            self.c.logger.add_scalar('Metrics_validation/{}'.format(key), item)
 
         return sum(metrics.values())
 
+    @torch.no_grad()
     def validate(self, epoch):
 
         self.bar.set('epoch', epoch)
+
         self.c.model.eval()
 
-        torch.set_grad_enabled(False)
-
         metric_accum = 0
-        step_count = len(self.bar)
         for i_step, target in enumerate(self.bar):
-            loss_value = self.metric_calc(target, self.c.model)
+            metric = self.metric_calc(target, self.c.model)
 
-            metric_accum += loss_value.item()
-            self.c.logger.add_scalar('Metric_sum_{}/batch'.format('validation'), loss_value.item())
-            # report_metrics['loss'][phase].append(loss_value.item())
-            #print('Epoch {}/{}. Phase {} Step {}/{} Metric {}'.format(epoch, epoch - 1, 'validation',
-             #                                                         i_step, step_count,
-              #                                                        loss_value.item()))
+            metric_accum += metric.item()
+            self.c.logger.add_scalar('Metric_sum_validation/batch', metric.item())
+
+            ave_metric = metric_accum / (i_step + 1)
+            self.c.logger.add_scalar('Metric_aver_validation/batch', ave_metric)
+
+            self.bar.set('ave_metric', ave_metric)
             self.bar.update()
