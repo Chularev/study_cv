@@ -2,10 +2,8 @@ from tqdm import tqdm
 
 
 class Bar:
-    loop = None
-    map = {}
-
     def __init__(self, loop):
+        self.map = {}
         self.loop = tqdm(loop, leave=True)
 
     def set(self, key, value):
