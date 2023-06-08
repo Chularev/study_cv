@@ -1,4 +1,8 @@
+import os
+
 from core.train_context import _TrainContext
+from core.train_param_enums import LoadStrategy, SaveStrategy, MetricType
+from helpers.constants import CHECKPOINT_DIR
 
 
 class Checkpointer:
@@ -7,6 +11,12 @@ class Checkpointer:
         self.c = context
         self.best_metric = 0
     def load(self):
+
+        if not os.path.exists(CHECKPOINT_DIR):
+            return
+
+        if self.c.load_strategy == LoadStrategy.NONE:
+            return
         '''
            if checkpoint_dir:
         checkpoint = os.path.join(checkpoint_dir, "checkpoint")

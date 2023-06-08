@@ -1,5 +1,6 @@
-from core.train_loop import start_train_loop
-from core.train_parameters import TrainParameters, LoadStrategy, SaveStrategy
+from core.train_starter import start_train
+from core.train_parameters import TrainParameters
+from core.train_param_enums import LoadStrategy, SaveStrategy
 import torch.optim as optim
 from models.Yolov1 import Yolov1
 from ray.tune import CLIReporter
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 
     reporter = CLIReporter(max_report_frequency=30)
     analysis = tune.run(
-        tune.with_parameters(start_train_loop, datasets=datasets),
+        tune.with_parameters(start_train, datasets=datasets),
         sync_config=tune.SyncConfig(
             syncer=None  # Disable syncing
         ),

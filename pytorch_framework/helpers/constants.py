@@ -7,6 +7,7 @@ IMG_DIR = ROOT_DIR + "/data/data/images"
 LABEL_DIR = ROOT_DIR + "/data/data/labels"
 TRAIN_CSV_FILE = ROOT_DIR + "/data/train.csv"
 VAL_CSV_FILE = ROOT_DIR + "/data/test.csv"
+CHECKPOINT_DIR = '/home/alex/workspace/experiments/best_model/'
 
 
 if __name__ == "__main__":
