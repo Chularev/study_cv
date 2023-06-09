@@ -27,13 +27,14 @@ class Looper:
             metric = self.validator.validate(epoch)
             self.c.logger.add_scalar('Validation/epoch/metric', metric)
 
+            if epoch % self.c.checkpoint_frequency == 0:
+                self.checkpointer.save(metric)
+
+            if self.checkpointer.is_finish(metric):
+                break
+
             loss = self.trainer.train(epoch)
             self.c.logger.add_scalar('Train/epoch/loss', loss)
-
-            self.checkpointer.save()
-
-            if self.checkpointer.is_finish():
-                break
 
             '''
             with tune.checkpoint_dir(step=epoch) as checkpoint_dir:
