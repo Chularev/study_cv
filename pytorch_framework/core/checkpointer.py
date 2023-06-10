@@ -21,14 +21,14 @@ class Checkpointer:
             return False
 
        # checkpoint = os.path.join(CHECKPOINT_FILE)
-        model_state, optimizer_state, metric = torch.load(CHECKPOINT_FILE)
+        checkpoint = torch.load(CHECKPOINT_FILE)
 
-        self.best_metric = metric
+        self.best_metric = checkpoint['metric']
 
         if self.c.load_strategy == LoadStrategy.MODEL_OPTIMIZER:
-            self.c.optimizer.load_state_dict(optimizer_state)
+            self.c.optimizer.load_state_dict(checkpoint['optimizer_state'])
 
-        self.c.model.load_state_dict(model_state)
+        self.c.model.load_state_dict(checkpoint['model_state'])
 
         return True
 
@@ -54,12 +54,12 @@ class Checkpointer:
         self.best_metric = metric
 
         checkpoint = {
-            'model': self.c.model,
+            'model': self.c.model.state_dict(),
             'metric': self.best_metric
         }
 
         if self.c.save_strategy == SaveStrategy.BEST_MODEL_OPTIMIZER or self.c.save_strategy == SaveStrategy.MODEL_OPTIMIZER:
-            checkpoint['optimizer'] = self.c.optimizer
+            checkpoint['optimizer'] = self.c.optimizer.state_dict()
 
         torch.save(checkpoint, CHECKPOINT_FILE)
         return True
@@ -83,8 +83,8 @@ class Checkpointer:
         return result
 
 if __name__ == "__main__":
-    context = _TrainContext()
-    context.load_strategy = LoadStrategy.MODEL
+    n = {'hgjkl;': 0, 'll;': 5, '7': 8}
+    context,j,k = n
 
-    checkopinter = Checkpointer(context)
-    print(checkopinter.load())
+    print(context)
+    print(k)
