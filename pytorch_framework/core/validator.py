@@ -8,11 +8,11 @@ class Validator:
 
     def __init__(self, context: _TrainContext):
         self.c = context
-        self.metrics = YoloLoss()
+        self.metrics = self.c.metric(self.c.device)
         self.bar = Bar(self.c.val_loader)
         self.bar.set('phase', 'validation')
 
-    def metric_calc(self, target, model):
+    def metric_calc(self, target, model, train_idx):
         img, bboxes = target
 
         img = img.to(self.c.device, torch.float)
@@ -20,7 +20,7 @@ class Validator:
 
         prediction = model(img)
 
-        metrics = self.metrics(prediction, bboxes)
+        metrics = self.metrics(prediction, bboxes, img.shape[0], train_idx)
         for key in metrics.keys():
             item = metrics[key].item()
             self.bar.set(key,item)
@@ -37,7 +37,7 @@ class Validator:
 
         metric_accum = 0
         for i_step, target in enumerate(self.bar):
-            metric = self.metric_calc(target, self.c.model)
+            metric = self.metric_calc(target, self.c.model, i_step)
 
             metric_accum += metric.item()
             self.c.logger.add_scalar('Validation/batch/metric/sum', metric.item())
@@ -48,4 +48,4 @@ class Validator:
             self.bar.set('ave_metric', ave_metric)
             self.bar.update()
 
-        return metric_accum / len(self.bar)
+        return self.c.metric.compute()
