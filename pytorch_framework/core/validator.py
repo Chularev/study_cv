@@ -48,4 +48,4 @@ class Validator:
             self.bar.set('ave_metric', ave_metric)
             self.bar.update()
 
-        return self.c.metric.compute()
+        return self.metrics.compute()
