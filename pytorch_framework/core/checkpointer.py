@@ -37,14 +37,10 @@ class Checkpointer:
 
     def _check_metric(self, template, current):
         if self.c.metric_type == MetricType.METRIC:
-            if template <= current:
-                return True
+            return template <= current
 
         # metric is loss
-        if template >= current:
-            return True
-
-        return False
+        return template >= current
 
     def save(self, metric):
         if self.c.save_strategy == SaveStrategy.NONE:
