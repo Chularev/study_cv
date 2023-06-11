@@ -75,7 +75,7 @@ class Checkpointer:
 
         checkpoint = {
             "state_dict": self.c.model.state_dict(),
-            "optimizer": self.c.optimizer.state_dict(),
+            "optimizer_state": self.c.optimizer.state_dict(),
             "metric": self.best_metric
         }
         torch.save(checkpoint, CHECKPOINT_FILE)
