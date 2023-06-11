@@ -54,6 +54,9 @@ def start_train(parameters, datasets, checkpoint_dir=None):
     context.checkpoint_frequency = p.checkpoint_frequency
 
 
+    context.metric = p.metric
+
+
 
     context.epoch_num = p.epoch_num
 

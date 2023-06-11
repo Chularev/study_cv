@@ -1,4 +1,5 @@
 from core.train_param_enums import LoadStrategy, SaveStrategy, MetricType
+from metrics.metrics import MyMetric
 class TrainParameters:
     need_train = None
     reg = None
@@ -9,6 +10,7 @@ class TrainParameters:
     scheduler_epoch = None
     scheduler_coefficient = None
     epoch_num = 5
+    metric = MyMetric
 
     # Checkpoint
     load_strategy = LoadStrategy.MODEL_OPTIMIZER

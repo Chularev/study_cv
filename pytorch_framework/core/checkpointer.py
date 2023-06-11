@@ -15,9 +15,11 @@ class Checkpointer:
     def load(self):
 
         if not os.path.exists(CHECKPOINT_FILE):
+            print("Model is not exist")
             return False
 
         if self.c.load_strategy == LoadStrategy.NONE:
+            print('Strategy of model load is NONE')
             return False
 
        # checkpoint = os.path.join(CHECKPOINT_FILE)
@@ -30,6 +32,7 @@ class Checkpointer:
 
         self.c.model.load_state_dict(checkpoint['model_state'])
 
+        print("Model was loaded. Current metric is ", self.best_metric)
         return True
 
     def _check_metric(self, template, current):
@@ -45,10 +48,12 @@ class Checkpointer:
 
     def save(self, metric):
         if self.c.save_strategy == SaveStrategy.NONE:
+            print('Model was not save because save strategy is None')
             return False
 
         if self.c.save_strategy == SaveStrategy.BEST_MODEL_OPTIMIZER or self.c.save_strategy == SaveStrategy.BEST_MODEL:
             if not self._check_metric(self.best_metric, metric):
+                print("Model was not save because current metric is ", metric, ' but the best metric is ', self.best_metric)
                 return False
 
         self.best_metric = metric
@@ -61,6 +66,7 @@ class Checkpointer:
         if self.c.save_strategy == SaveStrategy.BEST_MODEL_OPTIMIZER or self.c.save_strategy == SaveStrategy.MODEL_OPTIMIZER:
             checkpoint['optimizer'] = self.c.optimizer.state_dict()
 
+        print('Model saved current metric is ', self.best_metric)
         torch.save(checkpoint, CHECKPOINT_FILE)
         return True
 
@@ -79,6 +85,7 @@ class Checkpointer:
         result = self._check_metric(self.c.metric_value_stop, metric)
         if result:
             self._save_on_disk(metric)
+            print('Model saved current metric is ', self.best_metric, ' train finished')
 
         return result
 

@@ -15,6 +15,7 @@ class _TrainContext:
     train_loader = None
     val_loader = None
     epoch_num = None
+    metric = None
 
     # Checkpoint
     load_strategy = None
