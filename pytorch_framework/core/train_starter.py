@@ -14,7 +14,7 @@ def get_loaders(datasets) -> Dict[str, torch.utils.data.DataLoader]:
             datasets['train'], batch_size=16, shuffle=True
         ),
         'val': torch.utils.data.DataLoader(
-            datasets['train'], batch_size=16, shuffle=True
+            datasets['val'], batch_size=32, shuffle=True
         )
     }
 
