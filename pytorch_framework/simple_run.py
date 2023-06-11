@@ -38,7 +38,7 @@ LOAD_MODEL_FILE = "overfit.pth.tar"
 IMG_DIR = "data/data/images"
 LABEL_DIR = "data/data/labels"
 
-def get_bboxes(
+def validation_fn(
     loader,
     model,
     iou_threshold,
@@ -88,8 +88,12 @@ def get_bboxes(
 
             train_idx += 1
 
+    mean_avg_prec = mean_average_precision(
+        all_pred_boxes, all_true_boxes, iou_threshold=0.5, box_format="midpoint"
+    )
     model.train()
-    return all_pred_boxes, all_true_boxes
+
+    return mean_avg_prec
 
 
 def train_fn(train_loader, model, optimizer, loss_fn):
@@ -167,13 +171,11 @@ def main():
         #    import sys
         #    sys.exit()
 
-        pred_boxes, target_boxes = get_bboxes(
+        mean_avg_prec = validation_fn(
             train_loader, model, iou_threshold=0.5, threshold=0.4
         )
 
-        mean_avg_prec = mean_average_precision(
-            pred_boxes, target_boxes, iou_threshold=0.5, box_format="midpoint"
-        )
+
         print(f"Train mAP: {mean_avg_prec}")
 
         #if mean_avg_prec > 0.9:
