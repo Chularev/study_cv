@@ -34,7 +34,7 @@ class DatasetHelper:
     def get_datasets() -> Dict[str, VOCDataset]:
         return {
             'train': DatasetHelper.get_train_dataset(),
-            'val': DatasetHelper.get_train_dataset()
+            'val': DatasetHelper.get_val_dataset()
         }
 
 
