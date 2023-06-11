@@ -10,12 +10,12 @@ class TrainParameters:
     scheduler_epoch = None
     scheduler_coefficient = None
     epoch_num = 5
-    metric = MyMetric
 
     # Checkpoint
     load_strategy = LoadStrategy.MODEL_OPTIMIZER
     save_strategy = SaveStrategy.BEST_MODEL_OPTIMIZER
     metric_type = MetricType.METRIC
+    metric = MyMetric
     metric_value_stop = 0.9
     checkpoint_frequency = 5
 
