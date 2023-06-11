@@ -64,7 +64,7 @@ class Checkpointer:
         }
 
         if self.c.save_strategy == SaveStrategy.BEST_MODEL_OPTIMIZER or self.c.save_strategy == SaveStrategy.MODEL_OPTIMIZER:
-            checkpoint['optimizer'] = self.c.optimizer.state_dict()
+            checkpoint['optimizer_state'] = self.c.optimizer.state_dict()
 
         print('Model saved current metric is ', self.best_metric)
         torch.save(checkpoint, CHECKPOINT_FILE)
