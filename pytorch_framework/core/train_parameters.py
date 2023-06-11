@@ -17,5 +17,5 @@ class TrainParameters:
     metric_type = MetricType.METRIC
     metric = MyMetric
     metric_value_stop = 0.9
-    checkpoint_frequency = 5
+    checkpoint_frequency = 1
 
