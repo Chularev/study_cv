@@ -44,6 +44,13 @@ class Checkpointer:
         # metric is loss
         return template >= current
 
+    def _save_checkpoint(self, checkpoint):
+        self._create_recursive_dir()
+        self._remove_file()
+        torch.save(checkpoint, self.file)
+
+        print('Model saved current metric is ', self.best_metric)
+
     def _create_recursive_dir(self):
         if not os.path.exists(CHECKPOINT_FOLDER):
             os.makedirs(CHECKPOINT_FOLDER)
@@ -72,11 +79,7 @@ class Checkpointer:
         if self.c.save_strategy == SaveStrategy.BEST_MODEL_OPTIMIZER or self.c.save_strategy == SaveStrategy.MODEL_OPTIMIZER:
             checkpoint['optimizer_state'] = self.c.optimizer.state_dict()
 
-        self._create_recursive_dir()
-        self._remove_file()
-        torch.save(checkpoint, self.file)
-
-        print('Model saved current metric is ', self.best_metric)
+        self._save_checkpoint(checkpoint)
 
         return True
 
@@ -88,7 +91,7 @@ class Checkpointer:
             "optimizer_state": self.c.optimizer.state_dict(),
             "metric": self.best_metric
         }
-        torch.save(checkpoint, self.file)
+        self._save_checkpoint(checkpoint)
 
     def is_finish(self, metric):
 
