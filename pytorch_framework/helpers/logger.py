@@ -1,8 +1,10 @@
 from torch.utils.tensorboard import SummaryWriter
+from helpers.constants import LOG_DIR
 
 
 class Logger(object):
     def __init__(self, log_dir):
+        log_dir = LOG_DIR + log_dir
         self.logger = SummaryWriter(log_dir=log_dir)
         self.values = {}
 
