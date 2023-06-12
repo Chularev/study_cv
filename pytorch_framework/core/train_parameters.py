@@ -5,6 +5,7 @@ from models.Yolov1 import Yolov1
 
 class TrainParameters:
     need_train = True
+    seed = 123
     reg = 0.0001
     optimizer = optim.Adam
     model = Yolov1

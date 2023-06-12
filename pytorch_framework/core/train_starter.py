@@ -73,6 +73,8 @@ def start_train(parameters, datasets):
 
     p = covert_to_TrainParameters(parameters)
 
+    torch.manual_seed(p.seed)
+
     context = create_context_from_params(p, datasets)
 
     looper = Looper(context)
