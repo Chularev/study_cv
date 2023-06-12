@@ -18,9 +18,8 @@ class Looper:
     def train_loop(self):
         torch.cuda.empty_cache()
 
-        self.checkpointer.load()
-
         self.c.model = self.c.model.to(self.c.device)
+        self.checkpointer.load()
 
         for epoch in range(self.c.epoch_num):
 
