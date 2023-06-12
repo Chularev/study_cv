@@ -20,3 +20,6 @@ class Bar:
 
     def update(self):
         self.loop.set_postfix(self.map)
+
+    def reset(self, total):
+        self.loop.reset(total)
