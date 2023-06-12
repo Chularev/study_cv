@@ -12,6 +12,7 @@ class TrainParameters:
     learning_rate = 1e-3
     scheduler_epoch = 100
     scheduler_coefficient = 0.1
+    weight_decay = 0
     epoch_num = 2
 
     # Checkpoint
