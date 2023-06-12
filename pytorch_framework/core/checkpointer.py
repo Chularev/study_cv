@@ -3,7 +3,7 @@ import torch
 
 from core.train_context import _TrainContext
 from core.train_param_enums import LoadStrategy, SaveStrategy, MetricType
-from helpers.constants import CHECKPOINT_FILE
+from helpers.constants import CHECKPOINT_FOLDER
 
 
 class Checkpointer:
@@ -11,10 +11,12 @@ class Checkpointer:
     def __init__(self, context: _TrainContext):
         self.c = context
         self.best_metric = 0
+        self.file_name = 'model.pth.tar'
+        self.file = CHECKPOINT_FOLDER + self.file_name
         
     def load(self):
 
-        if not os.path.exists(CHECKPOINT_FILE):
+        if not os.path.exists(self.file):
             print("Model is not exist")
             return False
 
@@ -23,7 +25,7 @@ class Checkpointer:
             return False
 
        # checkpoint = os.path.join(CHECKPOINT_FILE)
-        checkpoint = torch.load(CHECKPOINT_FILE)
+        checkpoint = torch.load(self.file)
 
         self.best_metric = checkpoint['metric']
 
@@ -41,6 +43,14 @@ class Checkpointer:
 
         # metric is loss
         return template >= current
+
+    def _create_recursive_dir(self):
+        if not os.path.exists(CHECKPOINT_FOLDER):
+            os.makedirs(CHECKPOINT_FOLDER)
+
+    def _remove_file(self):
+        if os.path.exists(self.file):
+            os.remove(self.file)
 
     def save(self, metric):
         if self.c.save_strategy == SaveStrategy.NONE:
@@ -62,8 +72,12 @@ class Checkpointer:
         if self.c.save_strategy == SaveStrategy.BEST_MODEL_OPTIMIZER or self.c.save_strategy == SaveStrategy.MODEL_OPTIMIZER:
             checkpoint['optimizer_state'] = self.c.optimizer.state_dict()
 
+        self._create_recursive_dir()
+        self._remove_file()
+        torch.save(checkpoint, self.file)
+
         print('Model saved current metric is ', self.best_metric)
-        torch.save(checkpoint, CHECKPOINT_FILE)
+
         return True
 
     def _save_on_disk(self, metric):
@@ -74,7 +88,7 @@ class Checkpointer:
             "optimizer_state": self.c.optimizer.state_dict(),
             "metric": self.best_metric
         }
-        torch.save(checkpoint, CHECKPOINT_FILE)
+        torch.save(checkpoint, self.file)
 
     def is_finish(self, metric):
 
