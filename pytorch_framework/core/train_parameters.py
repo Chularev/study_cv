@@ -14,7 +14,7 @@ class TrainParameters:
     scheduler_epoch = 100
     scheduler_coefficient = 0.1
     weight_decay = 0
-    epoch_num = 2
+    epoch_num = 1000
 
     # Checkpoint
     load_strategy = LoadStrategy.MODEL_OPTIMIZER
@@ -22,7 +22,7 @@ class TrainParameters:
     metric_type = MetricType.METRIC
     metric = MyMetric
     metric_value_stop = 0.9
-    checkpoint_frequency = 1
+    checkpoint_frequency = 5
 
     # Loaders
     # Train Loader
