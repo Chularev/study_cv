@@ -21,5 +21,5 @@ class Bar:
     def update(self):
         self.loop.set_postfix(self.map)
 
-    def reset(self, total):
+    def reset(self, total=None):
         self.loop.reset(total)
