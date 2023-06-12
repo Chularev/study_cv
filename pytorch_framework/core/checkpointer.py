@@ -39,10 +39,10 @@ class Checkpointer:
 
     def _check_metric(self, template, current):
         if self.c.metric_type == MetricType.METRIC:
-            return template <= current
+            return template < current
 
         # metric is loss
-        return template >= current
+        return template > current
 
     def _save_checkpoint(self, checkpoint):
         self._create_recursive_dir()
