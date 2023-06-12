@@ -10,9 +10,6 @@ class Trainer:
         self.c = context
         self.losses = YoloLoss()
 
-        self.bar = Bar(self.c.train_loader)
-        self.bar.set('phase', 'train')
-
     def loss_calc(self, target, model):
         img, bboxes = target
 
@@ -29,10 +26,15 @@ class Trainer:
 
         return sum(losses.values())
 
+    def bar_init(self, epoch):
+        self.bar = Bar(self.c.val_loader)
+        self.bar.set('phase', 'train')
+        self.bar.set('epoch', epoch)
+
     @torch.enable_grad()
     def train(self, epoch):
 
-        self.bar.set('epoch', epoch)
+        self.bar_init(epoch)
 
         self.c.model.train()
 
