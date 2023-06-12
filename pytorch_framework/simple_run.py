@@ -14,29 +14,21 @@ from dataset.vocdataset import VOCDataset
 from helpers.utils import (
     non_max_suppression,
     mean_average_precision,
-    intersection_over_union,
     cellboxes_to_boxes,
-    plot_image,
-    save_checkpoint,
     load_checkpoint,
 )
 from losses.Yolov1 import YoloLoss
+from core.train_parameters import TrainParameters
+from core.train_starter import create_context_from_params
+from core.train_param_enums import LoadStrategy, SaveStrategy
+from helpers.constants import CHECKPOINT_FOLDER, IMG_DIR, LABEL_DIR
+from dataset.dataset_helperr import DatasetHelper
 
-seed = 123
-torch.manual_seed(seed)
+LOAD_MODEL_FILE = CHECKPOINT_FOLDER + "overfit.pth.tar"
 
-# Hyperparameters etc.
-LEARNING_RATE = 2e-5
-DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-BATCH_SIZE = 16 # 64 in original paper but I don't have that much vram, grad accum?
-WEIGHT_DECAY = 0
-EPOCHS = 1000
-NUM_WORKERS = 2
-PIN_MEMORY = True
-LOAD_MODEL = False
-LOAD_MODEL_FILE = "overfit.pth.tar"
-IMG_DIR = "data/data/images"
-LABEL_DIR = "data/data/labels"
+p = TrainParameters()
+datasets = DatasetHelper.get_datasets()
+c = create_context_from_params(p, datasets)
 
 def validation_fn(
     loader,
@@ -101,7 +93,7 @@ def train_fn(train_loader, model, optimizer, loss_fn):
     mean_loss = []
 
     for batch_idx, (x, y) in enumerate(loop):
-        x, y = x.to(DEVICE), y.to(DEVICE)
+        x, y = x.to(c.device), y.to(c.device)
         out = model(x)
         loss = loss_fn(out, y)
         loss = loss['YoloV1']
@@ -122,14 +114,16 @@ def main():
         print("cuda is not available")
         exit(1)
 
-    model = Yolov1(split_size=7, num_boxes=2, num_classes=20).to(DEVICE)
+
+
+    model = Yolov1(split_size=7, num_boxes=2, num_classes=20).to(c.device)
     optimizer = optim.Adam(
-        model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY
+        model.parameters(), lr=p.learning_rate, weight_decay=p.weight_decay
     )
     loss_fn = YoloLoss()
 
-    if LOAD_MODEL:
-        load_checkpoint(torch.load(LOAD_MODEL_FILE), model, optimizer)
+   # if p.load_strategy == LoadStrategy.MODEL_OPTIMIZER:
+    #    load_checkpoint(torch.load(LOAD_MODEL_FILE), model, optimizer)
 
     train_dataset = VOCDataset(
         "data/train.csv",
@@ -144,23 +138,23 @@ def main():
 
     train_loader = DataLoader(
         dataset=train_dataset,
-        batch_size=BATCH_SIZE,
-        num_workers=NUM_WORKERS,
-        pin_memory=PIN_MEMORY,
-        shuffle=True,
-        drop_last=True,
+        batch_size=p.t_loader_batch_size,
+        num_workers=p.t_loader_num_workers,
+        pin_memory=p.t_loader_pin_memory,
+        shuffle=p.t_loader_shuffle,
+        drop_last=p.t_loader_drop_last,
     )
 
     test_loader = DataLoader(
         dataset=test_dataset,
-        batch_size=BATCH_SIZE,
-        num_workers=NUM_WORKERS,
-        pin_memory=PIN_MEMORY,
-        shuffle=True,
-        drop_last=True,
+        batch_size=p.v_loader_batch_size,
+        num_workers=p.v_loader_num_workers,
+        pin_memory=p.v_loader_pin_memory,
+        shuffle=p.v_loader_shuffle,
+        drop_last=p.v_loader_drop_last,
     )
 
-    for epoch in range(EPOCHS):
+    for epoch in range(p.epoch_num):
         # for x, y in train_loader:
         #    x = x.to(DEVICE)
         #    for idx in range(8):
