@@ -1,8 +1,6 @@
 from core.train_starter import start_train
 from core.train_parameters import TrainParameters
 from core.train_param_enums import LoadStrategy, SaveStrategy
-import torch.optim as optim
-from models.Yolov1 import Yolov1
 from ray.tune import CLIReporter
 from ray import tune
 from dataset.dataset_helperr import DatasetHelper
@@ -10,15 +8,6 @@ from dataset.dataset_helperr import DatasetHelper
 def get_parameters():
     p = TrainParameters()
 
-    p.need_train = True
-    p.reg = 0.0001
-    p.optimizer = optim.Adam
-    p.model = Yolov1
-    p.model_name = 'best_net'
-    p.learning_rate = 1e-3
-    p.scheduler_epoch = 100
-    p.scheduler_coefficient = 0.1
-    p.epoch_num = 5
 
     p.load_strategy = LoadStrategy.MODEL_OPTIMIZER
     p.save_strategy = SaveStrategy.BEST_MODEL_OPTIMIZER
