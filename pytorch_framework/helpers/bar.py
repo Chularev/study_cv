@@ -23,3 +23,6 @@ class Bar:
 
     def reset(self, total=None):
         self.loop.reset(total)
+
+    def refresh(self):
+        self.loop.refresh()
