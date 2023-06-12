@@ -1,5 +1,4 @@
 import torch
-from losses.Yolov1 import YoloLoss
 from core.train_context import _TrainContext
 from helpers.bar import Bar
 
@@ -9,6 +8,9 @@ class Validator:
     def __init__(self, context: _TrainContext):
         self.c = context
         self.metrics = self.c.metric(self.c.device)
+
+        self.bar = Bar(self.c.val_loader)
+        self.bar.set('phase', 'validation')
 
     def metric_calc(self, target, model, train_idx):
         img, bboxes = target
@@ -29,9 +31,8 @@ class Validator:
     @torch.no_grad()
     def validate(self, epoch):
 
-        self.bar = Bar(self.c.val_loader)
-        self.bar.set('phase', 'validation')
         self.bar.set('epoch', epoch)
+        self.bar.start()
 
         self.c.model.eval()
 
@@ -48,8 +49,7 @@ class Validator:
             self.bar.set('ave_metric', ave_metric)
             self.bar.update()
 
-        self.bar = None
-        torch.cuda.empty_cache()
+        self.bar.stop()
 
         metric = self.metrics.compute()
         return metric['map'].item()

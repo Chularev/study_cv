@@ -1,10 +1,19 @@
 from tqdm import tqdm
-
+import torch
 
 class Bar:
-    def __init__(self, loop):
+    def __init__(self, loaded):
         self.map = {}
-        self.loop = tqdm(loop, leave=True)
+        self.loader = loaded
+        self.loop = None
+
+    def start(self):
+        self.loop = tqdm(self.loader, leave=True)
+
+    def stop(self):
+        self.loop = None
+        torch.cuda.empty_cache()
+
 
     def set(self, key, value):
         self.map[key] = value
