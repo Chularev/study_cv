@@ -11,6 +11,7 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 from models.Yolov1 import Yolov1
 from dataset.vocdataset import VOCDataset
+from  core.trainer import Trainer
 from helpers.utils import (
     non_max_suppression,
     mean_average_precision,
@@ -37,7 +38,7 @@ def validation_fn(
     threshold,
     pred_format="cells",
     box_format="midpoint",
-    device="cuda:0",
+    device=c.device,
 ):
     all_pred_boxes = []
     all_true_boxes = []
@@ -47,8 +48,8 @@ def validation_fn(
     train_idx = 0
 
     for batch_idx, (x, labels) in enumerate(loader):
-        x = x.to(device)
-        labels = labels.to(device)
+        x = x.to(device,  torch.float)
+        labels = labels.to(device,  torch.float)
 
         with torch.no_grad():
             predictions = model(x)
@@ -88,26 +89,6 @@ def validation_fn(
     return mean_avg_prec
 
 
-def train_fn(train_loader, model, optimizer, loss_fn):
-    loop = tqdm(train_loader, leave=True)
-    mean_loss = []
-
-    for batch_idx, (x, y) in enumerate(loop):
-        x, y = x.to(c.device), y.to(c.device)
-        out = model(x)
-        loss = loss_fn(out, y)
-        loss = loss['YoloV1']
-        mean_loss.append(loss.item())
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-        # update progress bar
-        loop.set_postfix(loss=loss.item())
-
-    print(f"Mean loss was {sum(mean_loss)/len(mean_loss)}")
-
-
 def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     if not torch.cuda.is_available():
@@ -116,43 +97,8 @@ def main():
 
 
 
-    model = Yolov1(split_size=7, num_boxes=2, num_classes=20).to(c.device)
-    optimizer = optim.Adam(
-        model.parameters(), lr=p.learning_rate, weight_decay=p.weight_decay
-    )
-    loss_fn = YoloLoss()
-
-   # if p.load_strategy == LoadStrategy.MODEL_OPTIMIZER:
-    #    load_checkpoint(torch.load(LOAD_MODEL_FILE), model, optimizer)
-
-    train_dataset = VOCDataset(
-        "data/train.csv",
-        transform=Aug.train(),
-        img_dir=IMG_DIR,
-        label_dir=LABEL_DIR,
-    )
-
-    test_dataset = VOCDataset(
-        "data/test.csv", transform=Aug.validation(), img_dir=IMG_DIR, label_dir=LABEL_DIR,
-    )
-
-    train_loader = DataLoader(
-        dataset=train_dataset,
-        batch_size=p.t_loader_batch_size,
-        num_workers=p.t_loader_num_workers,
-        pin_memory=p.t_loader_pin_memory,
-        shuffle=p.t_loader_shuffle,
-        drop_last=p.t_loader_drop_last,
-    )
-
-    test_loader = DataLoader(
-        dataset=test_dataset,
-        batch_size=p.v_loader_batch_size,
-        num_workers=p.v_loader_num_workers,
-        pin_memory=p.v_loader_pin_memory,
-        shuffle=p.v_loader_shuffle,
-        drop_last=p.v_loader_drop_last,
-    )
+    trainer = Trainer(c)
+    c.model.to(c.device)
 
     for epoch in range(p.epoch_num):
         # for x, y in train_loader:
@@ -166,7 +112,7 @@ def main():
         #    sys.exit()
 
         mean_avg_prec = validation_fn(
-            train_loader, model, iou_threshold=0.5, threshold=0.4
+            c.val_loader, c.model, iou_threshold=0.5, threshold=0.4
         )
 
 
@@ -181,7 +127,7 @@ def main():
         #    import time
         #    time.sleep(10)
 
-        train_fn(train_loader, model, optimizer, loss_fn)
+        trainer.train(epoch)
 
 
 if __name__ == "__main__":
