@@ -35,11 +35,8 @@ def get_loaders(datasets, p:TrainParameters) -> Dict[str, torch.utils.data.DataL
 def covert_to_TrainParameters(parameters) -> TrainParameters:
     return parameters['params']
 
+def create_context_from_params(p: TrainParameters, datasets):
 
-def start_train(parameters, datasets, checkpoint_dir=None):
-    # define training and validation dataset loaders
-
-    p = covert_to_TrainParameters(parameters)
     loaders = get_loaders(datasets, p)
     context = _TrainContext()
 
@@ -63,15 +60,20 @@ def start_train(parameters, datasets, checkpoint_dir=None):
     context.metric_value_stop = p.metric_value_stop
     context.checkpoint_frequency = p.checkpoint_frequency
 
-
     context.metric = p.metric
-
-
 
     context.epoch_num = p.epoch_num
 
     context.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     context.logger = Logger('TensorBoard')
+    return context
+
+def start_train(parameters, datasets):
+    # define training and validation dataset loaders
+
+    p = covert_to_TrainParameters(parameters)
+
+    context = create_context_from_params(p, datasets)
 
     looper = Looper(context)
     looper.train_loop()

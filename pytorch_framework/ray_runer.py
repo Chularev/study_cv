@@ -27,7 +27,6 @@ if __name__ == "__main__":
             syncer=None  # Disable syncing
         ),
         name="YoloV1",
-        local_dir="/home/alex/workspace/experiments/",
         num_samples=1,
         config={'params': get_parameters()},
         resources_per_trial={"cpu": 3, "gpu": 1},

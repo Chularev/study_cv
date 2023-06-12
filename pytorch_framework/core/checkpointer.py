@@ -72,7 +72,7 @@ class Checkpointer:
         self.best_metric = metric
 
         checkpoint = {
-            'model': self.c.model.state_dict(),
+            'model_state': self.c.model.state_dict(),
             'metric': self.best_metric
         }
 
@@ -87,7 +87,7 @@ class Checkpointer:
         self.best_metric = metric
 
         checkpoint = {
-            "state_dict": self.c.model.state_dict(),
+            "model_state": self.c.model.state_dict(),
             "optimizer_state": self.c.optimizer.state_dict(),
             "metric": self.best_metric
         }
