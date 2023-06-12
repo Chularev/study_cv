@@ -8,13 +8,23 @@ from core.train_context import _TrainContext
 from core.train_parameters import TrainParameters
 from core.train_loop import Looper
 
-def get_loaders(datasets) -> Dict[str, torch.utils.data.DataLoader]:
+def get_loaders(datasets, p:TrainParameters) -> Dict[str, torch.utils.data.DataLoader]:
     return {
         'train': torch.utils.data.DataLoader(
-            datasets['train'], batch_size=16, shuffle=True
+            datasets['train'],
+            batch_size=p.t_loader_batch_size,
+            num_workers=p.t_loader_num_workers,
+            pin_memory=p.t_loader_pin_memory,
+            shuffle=p.t_loader_shuffle,
+            drop_last=p.t_loader_drop_last,
         ),
         'val': torch.utils.data.DataLoader(
-            datasets['val'], batch_size=32, shuffle=True
+            datasets['val'],
+            batch_size=p.v_loader_batch_size,
+            num_workers=p.v_loader_num_workers,
+            pin_memory=p.v_loader_pin_memory,
+            shuffle=p.v_loader_shuffle,
+            drop_last=p.v_loader_drop_last,
         )
     }
 
@@ -30,7 +40,7 @@ def start_train(parameters, datasets, checkpoint_dir=None):
     # define training and validation dataset loaders
 
     p = covert_to_TrainParameters(parameters)
-    loaders = get_loaders(datasets)
+    loaders = get_loaders(datasets, p)
     context = _TrainContext()
 
     context.train_loader = loaders['train']
