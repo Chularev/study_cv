@@ -49,9 +49,11 @@ def create_context_from_params(p: TrainParameters, datasets):
         context.model.parameters(), lr=p.learning_rate, weight_decay=p.reg
     )
 
-    context.scheduler = optim.lr_scheduler.StepLR(
-        context.optimizer, step_size=p.scheduler_epoch, gamma=p.scheduler_coefficient
-    )
+    context.scheduler = None
+    if p.scheduler:
+        context.scheduler = optim.lr_scheduler.StepLR(
+            context.optimizer, step_size=p.scheduler_epoch, gamma=p.scheduler_coefficient
+        )
 
     # Checkpoint
     context.load_strategy = p.load_strategy

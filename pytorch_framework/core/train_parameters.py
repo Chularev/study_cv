@@ -14,6 +14,7 @@ class TrainParameters:
     scheduler_epoch = 100
     scheduler_coefficient = 0.1
     weight_decay = 0
+    scheduler = None
     epoch_num = 1000
 
     # Checkpoint
