@@ -32,7 +32,7 @@ class TrainParameters:
     l_load_strategy = LoadStrategy.MODEL_OPTIMIZER
     l_save_strategy = SaveStrategy.BEST_MODEL_OPTIMIZER
     l_metric_type = MetricType.METRIC
-    l_metric_value_stop = 0.9
+    l_metric_value_stop = 0
     l_checkpoint_frequency = 5
 
     # Loaders
