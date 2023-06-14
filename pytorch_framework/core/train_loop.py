@@ -4,7 +4,7 @@ from core.train_context import _TrainContext
 from core.trainer import Trainer
 from core.validator_metric import ValidatorMetric
 from core.validator_loss import ValidatorLoss
-from core.checkpointers.checkpointer_base import BaseCheckpointer
+from core.checkpointers.base_checkpointer import BaseCheckpointer
 
 
 class Looper:
