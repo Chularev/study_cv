@@ -19,6 +19,10 @@ class Logger(object):
         step = self.get_step(name)
         self.logger.add_scalar(name, value, step)
 
+    def add_scalars(self, name, value):
+        step = self.get_step(name)
+        self.logger.add_scalars(name, value, step)
+
     def add_image(self, name, img):
         step = self.get_step(name)
         self.logger.add_image(name, img, step)
