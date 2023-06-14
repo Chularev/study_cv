@@ -30,7 +30,7 @@ class Trainer:
         return sum(losses.values())
 
     @torch.enable_grad()
-    def train(self, epoch):
+    def step(self, epoch):
 
         self.bar.set('epoch', epoch)
         self.bar.start()

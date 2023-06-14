@@ -29,7 +29,7 @@ class ValidatorMetric:
         return sum(metrics.values())
 
     @torch.no_grad()
-    def validate(self, epoch):
+    def step(self, epoch):
 
         self.bar.set('epoch', epoch)
         self.bar.start()
