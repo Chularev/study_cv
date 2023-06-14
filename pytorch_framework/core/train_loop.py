@@ -21,6 +21,9 @@ class Looper:
         self.c.model = self.c.model.to(self.c.device)
         self.checkpointer.load()
 
+        if self.checkpointer.is_finish(self.checkpointer.best_metric):
+            return
+
         for epoch in range(self.c.epoch_num):
 
             if epoch % self.c.checkpoint_frequency == 0 and epoch > 0:
