@@ -5,6 +5,7 @@ import os
 from core.train_context import _TrainContext
 from core.trainer import Trainer
 from core.validator_metric import ValidatorMetric
+from core.validator_loss import ValidatorLoss
 from core.checkpointer import Checkpointer
 
 
@@ -13,6 +14,7 @@ class Looper:
         self.c = context
         self.trainer = Trainer(context)
         self.validator_metric = ValidatorMetric(context)
+        self.validator_loss = ValidatorLoss(context)
         self.checkpointer = Checkpointer(context)
 
     def train_loop(self):
@@ -38,4 +40,7 @@ class Looper:
 
 
             loss = self.trainer.train(epoch)
-            self.c.logger.add_scalar('Train/epoch/loss', loss)
+            self.c.logger.add_scalar('Train/epoch/loss_train', loss)
+
+            loss = self.validator_loss.validate(epoch)
+            self.c.logger.add_scalar('Train/epoch/loss_train', loss)
