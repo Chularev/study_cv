@@ -68,7 +68,7 @@ def create_context_from_params(p: TrainParameters, datasets):
     return context
 
 def create_loss_checkpointer(p: TrainParameters, train_context: _TrainContext):
-    if not p.metric_checkpointer:
+    if not p.loss_checkpointer:
         return None
     c_context = _CheckpointContext()
 

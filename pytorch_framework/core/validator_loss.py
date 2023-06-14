@@ -9,6 +9,7 @@ class ValidatorLoss:
     def __init__(self, context: _TrainContext):
         self.c = context
         self.losses = YoloLoss()
+        self.checkpointer = context.loss_checkpointer
 
         self.bar = Bar(self.c.val_loader)
         self.bar.set('phase', 'validator_loss')
@@ -29,9 +30,7 @@ class ValidatorLoss:
 
         return sum(losses.values())
 
-    @torch.no_grad()
-    def step(self, epoch):
-
+    def _loop(self, epoch):
         self.bar.set('epoch', epoch)
         self.bar.start()
 
@@ -53,3 +52,21 @@ class ValidatorLoss:
         self.bar.stop()
 
         return loss_accum / len(self.c.val_loader)
+
+    @torch.no_grad()
+    def step(self, epoch):
+        loss = self._loop(epoch)
+
+        if not self.checkpointer:
+            return True
+
+        if epoch % self.checkpointer.checkpoint_frequency == 0 and epoch > 0:
+
+            if self.checkpointer.is_finish(loss):
+                return False
+
+            self.checkpointer.save(loss)
+
+        return True
+
+
