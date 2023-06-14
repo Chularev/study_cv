@@ -107,6 +107,8 @@ def start_train(parameters, datasets):
     torch.manual_seed(p.seed)
 
     context = create_context_from_params(p, datasets)
+
+    context.type_load_model = p.type_load_model
     context.metric_checkpointer = create_metric_checkpointer(p, context)
     context.loss_checkpointer = create_loss_checkpointer(p, context)
 

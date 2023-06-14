@@ -18,5 +18,6 @@ class _TrainContext:
     metric = None
 
     # Checkpoints
+    type_load_model = None
     metric_checkpointer = None
     loss_checkpointer = None

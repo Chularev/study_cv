@@ -102,6 +102,9 @@ class BaseCheckpointer:
 
         return result
 
+    def is_need_train(self):
+        return not self.is_finish(self.best_metric)
+
 if __name__ == "__main__":
     n = {'hgjkl;': 0, 'll;': 5, '7': 8}
     context,j,k = n

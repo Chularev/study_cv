@@ -21,5 +21,5 @@ class MetricType(Enum):
 
 @unique
 class TypeLoadModel(Enum):
-    METRIC = 0
-    LOSS = auto()
+    BEST_METRIC = 0
+    BEST_LOSS = auto()

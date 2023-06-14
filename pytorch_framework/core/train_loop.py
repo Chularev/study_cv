@@ -4,7 +4,7 @@ from core.train_context import _TrainContext
 from core.trainer import Trainer
 from core.validator_metric import ValidatorMetric
 from core.validator_loss import ValidatorLoss
-from core.checkpointers.base_checkpointer import BaseCheckpointer
+from core.train_param_enums import TypeLoadModel
 
 
 class Looper:
@@ -14,14 +14,25 @@ class Looper:
         self.validator_metric = ValidatorMetric(context)
         self.validator_loss = ValidatorLoss(context)
 
+    def load_model(self):
+        if self.c.type_load_model == TypeLoadModel.BEST_METRIC:
+            self.c.metric_checkpointer.load()
+            if not self.c.metric_checkpointer.is_need_train():
+                return False
+        else:
+            self.c.loss_checkpointer.load()
+            if not self.c.loss_checkpointer.is_need_train():
+                return False
+        return True
+
     def train_loop(self):
         torch.cuda.empty_cache()
 
         self.c.model = self.c.model.to(self.c.device)
-        self.c.metric_checkpointer.load()
 
-        if self.c.metric_checkpointer.is_finish(self.c.metric_checkpointer.best_metric):
-            return
+        if not self.load_model():
+            return False
+
 
         for epoch in range(self.c.epoch_num):
 
