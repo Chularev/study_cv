@@ -13,27 +13,26 @@ class Looper:
         self.trainer = Trainer(context)
         self.validator_metric = ValidatorMetric(context)
         self.validator_loss = ValidatorLoss(context)
-        self.checkpointer = BaseCheckpointer(context)
 
     def train_loop(self):
         torch.cuda.empty_cache()
 
         self.c.model = self.c.model.to(self.c.device)
-        self.checkpointer.load()
+        self.c.metric_checkpointer.load()
 
-        if self.checkpointer.is_finish(self.checkpointer.best_metric):
+        if self.c.metric_checkpointer.is_finish(self.c.metric_checkpointer.best_metric):
             return
 
         for epoch in range(self.c.epoch_num):
 
-            if epoch % self.c.checkpoint_frequency == 0 and epoch > 0:
+            if epoch % self.c.metric_checkpointer.c.checkpoint_frequency == 0 and epoch > 0:
                 metric = self.validator_metric.step(epoch)
                 self.c.logger.add_scalar('Validation/epoch/metric', metric)
 
-                if self.checkpointer.is_finish(metric):
+                if self.c.metric_checkpointer.is_finish(metric):
                     break
 
-                self.checkpointer.save(metric)
+                self.c.metric_checkpointer.save(metric)
 
             loss = self.trainer.step(epoch)
             self.c.logger.add_scalar('Train/epoch/loss_train', loss)

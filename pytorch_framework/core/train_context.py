@@ -19,12 +19,4 @@ class _TrainContext:
 
     # Checkpoints
     metric_checkpointer = None
-
-    '''
-    load_strategy = None
-    save_strategy = None
-    checkpoint_frequency = None
-    metric_type = None
-    metric_value_stop = None
-    '''
-
+    loss_checkpointer = None

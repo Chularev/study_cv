@@ -7,6 +7,10 @@ import torch.optim as optim
 from core.train_context import _TrainContext
 from core.train_parameters import TrainParameters
 from core.train_loop import Looper
+from core.checkpointers.checkpoint_context import _CheckpointContext
+from core.checkpointers.base_checkpointer import BaseCheckpointer
+from core.train_param_enums import MetricType
+from helpers.constants import CHECKPOINT_FOLDER
 
 def get_loaders(datasets, p:TrainParameters) -> Dict[str, torch.utils.data.DataLoader]:
     return {
@@ -55,13 +59,6 @@ def create_context_from_params(p: TrainParameters, datasets):
             context.optimizer, step_size=p.scheduler_epoch, gamma=p.scheduler_coefficient
         )
 
-    # Checkpoint
-    context.load_strategy = p.load_strategy
-    context.save_strategy = p.save_strategy
-    context.metric_type = p.metric_type
-    context.metric_value_stop = p.metric_value_stop
-    context.checkpoint_frequency = p.checkpoint_frequency
-
     context.metric = p.metric
 
     context.epoch_num = p.epoch_num
@@ -69,10 +66,38 @@ def create_context_from_params(p: TrainParameters, datasets):
     context.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     context.logger = Logger('TensorBoard')
     return context
-def create_metric_checkpointer(p: TrainParameters):
-    if not p.metric:
+
+def create_loss_checkpointer(p: TrainParameters, train_context: _TrainContext):
+    if not p.metric_checkpointer:
         return None
-    return True
+    c_context = _CheckpointContext()
+
+    c_context.save_strategy = p.l_save_strategy
+    c_context.load_strategy = p.l_load_strategy
+    c_context.checkpoint_frequency = p.l_checkpoint_frequency
+    c_context.metric_type = MetricType.LOSS
+    c_context.file = 'model_loss.pth.tar'
+    c_context.file_name = CHECKPOINT_FOLDER + c_context.file
+    c_context.metric_value_stop = p.l_metric_value_stop
+
+    checkpointer = BaseCheckpointer(c_context, train_context)
+    return checkpointer
+
+def create_metric_checkpointer(p: TrainParameters, train_context: _TrainContext):
+    if not p.metric_checkpointer:
+        return None
+    c_context = _CheckpointContext()
+
+    c_context.save_strategy = p.m_save_strategy
+    c_context.load_strategy = p.m_load_strategy
+    c_context.checkpoint_frequency = p.m_checkpoint_frequency
+    c_context.metric_type = MetricType.METRIC
+    c_context.file = 'model_metric.pth.tar'
+    c_context.file_name = CHECKPOINT_FOLDER + c_context.file
+    c_context.metric_value_stop = p.m_metric_value_stop
+
+    checkpointer = BaseCheckpointer(c_context, train_context)
+    return checkpointer
 
 def start_train(parameters, datasets):
     # define training and validation dataset loaders
@@ -82,7 +107,8 @@ def start_train(parameters, datasets):
     torch.manual_seed(p.seed)
 
     context = create_context_from_params(p, datasets)
-    context.metric_checkpointer = create_metric_checkpointer(p)
+    context.metric_checkpointer = create_metric_checkpointer(p, context)
+    context.loss_checkpointer = create_loss_checkpointer(p, context)
 
     looper = Looper(context)
     looper.train_loop()
