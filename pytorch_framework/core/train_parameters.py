@@ -18,7 +18,7 @@ class TrainParameters:
     metric = MyMetric
 
     # Checkpoints
-    type_load_model = TypeLoadModel.METRIC
+    type_load_model = TypeLoadModel.BEST_METRIC
     # Metric
     metric_checkpointer = True
     m_load_strategy = LoadStrategy.MODEL_OPTIMIZER
