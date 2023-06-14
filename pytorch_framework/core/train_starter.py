@@ -46,7 +46,7 @@ def create_context_from_params(p: TrainParameters, datasets):
     context.model = p.model(split_size=7, num_boxes=2, num_classes=20)
 
     context.optimizer = p.optimizer(
-        context.model.parameters(), lr=p.learning_rate, weight_decay=p.reg
+        context.model.parameters(), lr=p.learning_rate, weight_decay=p.weight_decay
     )
 
     context.scheduler = None

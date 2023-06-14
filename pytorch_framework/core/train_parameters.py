@@ -6,11 +6,10 @@ from models.Yolov1 import Yolov1
 class TrainParameters:
     need_train = True
     seed = 123
-    reg = 0.0001
     optimizer = optim.Adam
     model = Yolov1
     model_name = 'best_net'
-    learning_rate = 1e-3
+    learning_rate = 2e-5
     scheduler_epoch = 100
     scheduler_coefficient = 0.1
     weight_decay = 0
