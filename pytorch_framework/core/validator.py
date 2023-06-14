@@ -52,4 +52,5 @@ class Validator:
         self.bar.stop()
 
         metric = self.metrics.compute()
+        self.metrics.reset()
         return metric['map'].item()
