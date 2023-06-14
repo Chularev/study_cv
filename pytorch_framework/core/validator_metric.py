@@ -10,7 +10,7 @@ class ValidatorMetric:
         self.metrics = self.c.metric(self.c.device)
 
         self.bar = Bar(self.c.val_loader)
-        self.bar.set('phase', 'validation')
+        self.bar.set('phase', 'validation_metric')
 
     def metric_calc(self, target, model, train_idx):
         img, bboxes = target

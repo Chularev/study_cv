@@ -25,7 +25,7 @@ class ValidatorLoss:
         for key in losses.keys():
             item = losses[key].item()
             self.bar.set(key, item)
-            self.c.logger.add_scalar('Train/batch/loss/{}'.format(key), item)
+            self.c.logger.add_scalar('Train/batch/loss/{}_val'.format(key), item)
 
         return sum(losses.values())
 
@@ -42,10 +42,10 @@ class ValidatorLoss:
             loss_value = self.loss_calc(target, self.c.model)
 
             loss_accum += loss_value.item()
-            self.c.logger.add_scalar('Train/batch/loss/sum', loss_value.item())
+            self.c.logger.add_scalar('Train/batch/loss/sum_val', loss_value.item())
 
             ave_loss = loss_accum / (i_step + 1)
-            self.c.logger.add_scalar('Train/batch/loss/average', ave_loss)
+            self.c.logger.add_scalar('Train/batch/loss/average_val', ave_loss)
 
             self.bar.set('ave_loss', ave_loss)
             self.bar.update()
