@@ -3,7 +3,7 @@ from core.train_context import _TrainContext
 from helpers.bar import Bar
 
 
-class Validator:
+class ValidatorMetric:
 
     def __init__(self, context: _TrainContext):
         self.c = context
