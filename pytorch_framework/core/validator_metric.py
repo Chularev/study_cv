@@ -8,6 +8,7 @@ class ValidatorMetric:
     def __init__(self, context: _TrainContext):
         self.c = context
         self.metrics = self.c.metric(self.c.device)
+        self.checkpointer = self.c.metric_checkpointer
 
         self.bar = Bar(self.c.val_loader)
         self.bar.set('phase', 'validation_metric')
@@ -55,13 +56,13 @@ class ValidatorMetric:
 
     @torch.no_grad()
     def step(self, epoch):
-        if epoch % self.c.metric_checkpointer.c.checkpoint_frequency == 0 and epoch > 0:
+        if epoch % self.checkpointer.checkpoint_frequency == 0 and epoch > 0:
             metric = self._loop(epoch)
             self.c.logger.add_scalar('Validation/epoch/metric', metric)
 
-            if self.c.metric_checkpointer.is_finish(metric):
+            if self.checkpointer.is_finish(metric):
                 return False
 
-            self.c.metric_checkpointer.save(metric)
+            self.checkpointer.save(metric)
 
         return True
