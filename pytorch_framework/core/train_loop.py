@@ -23,7 +23,7 @@ class Looper:
 
         for epoch in range(self.c.epoch_num):
 
-            if epoch % self.c.checkpoint_frequency == 0:
+            if epoch % self.c.checkpoint_frequency == 0 and epoch > 0:
                 metric = self.validator.validate(epoch)
                 self.c.logger.add_scalar('Validation/epoch/metric', metric)
 
