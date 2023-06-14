@@ -11,6 +11,7 @@ class BaseCheckpointer:
 
     def __init__(self, context: _CheckpointContext, t_context: _TrainContext):
         self.c = context
+        self.checkpoint_frequency = context.checkpoint_frequency
         self.tc = t_context
         self.best_metric = 0
         
