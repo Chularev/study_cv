@@ -33,20 +33,13 @@ class Looper:
         if not self.load_model():
             return False
 
-
         for epoch in range(self.c.epoch_num):
 
-            if epoch % self.c.metric_checkpointer.c.checkpoint_frequency == 0 and epoch > 0:
-                metric = self.validator_metric.step(epoch)
-                self.c.logger.add_scalar('Validation/epoch/metric', metric)
-
-                if self.c.metric_checkpointer.is_finish(metric):
-                    break
-
-                self.c.metric_checkpointer.save(metric)
+            if not self.validator_metric.step(epoch):
+                break
 
             loss = self.trainer.step(epoch)
             self.c.logger.add_scalar('Train/epoch/loss_train', loss)
 
-            loss = self.validator_loss.step(epoch)
-            self.c.logger.add_scalar('Train/epoch/loss_train', loss)
+            if not self.validator_loss.step(epoch):
+                break

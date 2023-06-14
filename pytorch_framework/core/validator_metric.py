@@ -23,14 +23,12 @@ class ValidatorMetric:
         metrics = self.metrics(prediction, bboxes, img.shape[0], train_idx)
         for key in metrics.keys():
             item = metrics[key].item()
-            self.bar.set(key,item)
+            self.bar.set(key, item)
             self.c.logger.add_scalar('Validation/batch/metric/{}'.format(key), item)
 
         return sum(metrics.values())
 
-    @torch.no_grad()
-    def step(self, epoch):
-
+    def _loop(self, epoch):
         self.bar.set('epoch', epoch)
         self.bar.start()
 
@@ -54,3 +52,16 @@ class ValidatorMetric:
         metric = self.metrics.compute()
         self.metrics.reset()
         return metric['map'].item()
+
+    @torch.no_grad()
+    def step(self, epoch):
+        if epoch % self.c.metric_checkpointer.c.checkpoint_frequency == 0 and epoch > 0:
+            metric = self._loop(epoch)
+            self.c.logger.add_scalar('Validation/epoch/metric', metric)
+
+            if self.c.metric_checkpointer.is_finish(metric):
+                return False
+
+            self.c.metric_checkpointer.save(metric)
+
+        return True
