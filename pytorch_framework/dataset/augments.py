@@ -20,7 +20,7 @@ class Augments:
     def train():
         return A.Compose([
                 A.Resize(width=448, height=448),
-                A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+               # A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
                 ToTensorV2(p=1.0),
             ],
             bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
@@ -30,7 +30,7 @@ class Augments:
     def validation():
         return A.Compose([
             A.Resize(width=448, height=448),
-            A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+            #A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
             ToTensorV2(p=1.0),
             ],
             bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
@@ -40,7 +40,7 @@ class Augments:
     def predict():
         return A.Compose([
                     A.Resize(width=448, height=448),
-                    A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+                    #A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
                     ToTensorV2(p=1.0),
             ],
             bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])

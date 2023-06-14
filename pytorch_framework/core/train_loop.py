@@ -39,7 +39,7 @@ class Looper:
                 break
 
             loss = self.trainer.step(epoch)
-            self.c.logger.add_scalar('Train/epoch/loss_train', loss)
+            self.c.logger.add_scalar('Train/epoch/loss', {'train': loss})
 
             if not self.validator_loss.step(epoch):
                 break
