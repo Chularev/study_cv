@@ -4,7 +4,7 @@ import os
 
 from core.train_context import _TrainContext
 from core.trainer import Trainer
-from core.validatormetric import ValidatorMetric
+from core.validator_metric import ValidatorMetric
 from core.checkpointer import Checkpointer
 
 
