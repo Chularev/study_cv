@@ -69,6 +69,10 @@ def create_context_from_params(p: TrainParameters, datasets):
     context.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     context.logger = Logger('TensorBoard')
     return context
+def create_metric_checkpointer(p: TrainParameters):
+    if not p.metric:
+        return None
+    return True
 
 def start_train(parameters, datasets):
     # define training and validation dataset loaders
@@ -78,6 +82,7 @@ def start_train(parameters, datasets):
     torch.manual_seed(p.seed)
 
     context = create_context_from_params(p, datasets)
+    context.metric_checkpointer = create_metric_checkpointer(p)
 
     looper = Looper(context)
     looper.train_loop()

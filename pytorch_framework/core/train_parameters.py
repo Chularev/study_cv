@@ -1,4 +1,4 @@
-from core.train_param_enums import LoadStrategy, SaveStrategy, MetricType
+from core.train_param_enums import LoadStrategy, SaveStrategy, MetricType, TypeLoadModel
 from metrics.metrics import MyMetric
 import torch.optim as optim
 from models.Yolov1 import Yolov1
@@ -15,16 +15,25 @@ class TrainParameters:
     weight_decay = 0
     scheduler = None
     epoch_num = 1000
+    metric = MyMetric
 
     # Checkpoints
+    type_load_model = TypeLoadModel.METRIC
     # Metric
     metric_checkpointer = True
-    load_strategy = LoadStrategy.MODEL_OPTIMIZER
-    save_strategy = SaveStrategy.BEST_MODEL_OPTIMIZER
-    metric_type = MetricType.METRIC
-    metric = MyMetric
-    metric_value_stop = 0.9
-    checkpoint_frequency = 5
+    m_load_strategy = LoadStrategy.MODEL_OPTIMIZER
+    m_save_strategy = SaveStrategy.BEST_MODEL_OPTIMIZER
+    m_metric_type = MetricType.METRIC
+    m_metric_value_stop = 0.9
+    m_checkpoint_frequency = 5
+
+    # Loss
+    loss_checkpointer = True
+    l_load_strategy = LoadStrategy.MODEL_OPTIMIZER
+    l_save_strategy = SaveStrategy.BEST_MODEL_OPTIMIZER
+    l_metric_type = MetricType.METRIC
+    l_metric_value_stop = 0.9
+    l_checkpoint_frequency = 5
 
     # Loaders
     # Train Loader

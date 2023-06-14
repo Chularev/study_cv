@@ -18,3 +18,8 @@ class SaveStrategy(Enum):
 class MetricType(Enum):
     METRIC = 0
     LOSS = auto()
+
+@unique
+class TypeLoadModel(Enum):
+    METRIC = 0
+    LOSS = auto()
