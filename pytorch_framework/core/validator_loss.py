@@ -57,7 +57,7 @@ class ValidatorLoss:
     def step(self, epoch):
         loss = self._loop(epoch)
 
-        self.c.logger.add_scalar('Train/epoch/loss', {'val': loss})
+        self.c.epoch_result['val_loss'] = loss
 
         if not self.checkpointer:
             return True

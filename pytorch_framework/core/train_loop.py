@@ -38,8 +38,9 @@ class Looper:
             if not self.validator_metric.step(epoch):
                 break
 
-            loss = self.trainer.step(epoch)
-            self.c.logger.add_scalar('Train/epoch/loss', {'train': loss})
+            self.trainer.step(epoch)
 
             if not self.validator_loss.step(epoch):
                 break
+
+            self.c.logger.add_scalars('epoch', self.c.epoch_result, epoch)

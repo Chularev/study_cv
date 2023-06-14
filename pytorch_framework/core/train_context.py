@@ -21,3 +21,8 @@ class _TrainContext:
     type_load_model = None
     metric_checkpointer = None
     loss_checkpointer = None
+
+    epoch_result = {
+        'val_loss': 0,
+        'train_loss': 0
+    }

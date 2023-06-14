@@ -59,4 +59,5 @@ class Trainer:
 
         self.bar.stop()
 
-        return loss_accum / len(self.c.train_loader)
+        self.c.epoch_result['train_loss'] = loss_accum / len(self.c.train_loader)
+        return True
