@@ -1,6 +1,7 @@
 import os
 import torch
 
+from core.checkpointers.checkpoint_context import _CheckpointContext
 from core.train_context import _TrainContext
 from core.train_param_enums import LoadStrategy, SaveStrategy, MetricType
 from helpers.constants import CHECKPOINT_FOLDER
@@ -8,15 +9,14 @@ from helpers.constants import CHECKPOINT_FOLDER
 
 class BaseCheckpointer:
 
-    def __init__(self, context: _TrainContext):
+    def __init__(self, context: _CheckpointContext, t_context: _TrainContext):
         self.c = context
+        self.tc = t_context
         self.best_metric = 0
-        self.file_name = 'model.pth.tar'
-        self.file = CHECKPOINT_FOLDER + self.file_name
         
     def load(self):
 
-        if not os.path.exists(self.file):
+        if not os.path.exists(self.c.file):
             print("Model is not exist")
             return False
 
@@ -25,14 +25,14 @@ class BaseCheckpointer:
             return False
 
        # checkpoint = os.path.join(CHECKPOINT_FILE)
-        checkpoint = torch.load(self.file)
+        checkpoint = torch.load(self.c.file)
 
         self.best_metric = checkpoint['metric']
 
         if self.c.load_strategy == LoadStrategy.MODEL_OPTIMIZER:
-            self.c.optimizer.load_state_dict(checkpoint['optimizer_state'])
+            self.tc.optimizer.load_state_dict(checkpoint['optimizer_state'])
 
-        self.c.model.load_state_dict(checkpoint['model_state'])
+        self.tc.model.load_state_dict(checkpoint['model_state'])
 
         print("Model was loaded. Current metric is ", self.best_metric)
         return True
@@ -47,7 +47,7 @@ class BaseCheckpointer:
     def _save_checkpoint(self, checkpoint):
         self._create_recursive_dir()
         self._remove_file()
-        torch.save(checkpoint, self.file)
+        torch.save(checkpoint, self.c.file)
 
         print('Model saved current metric is ', self.best_metric)
 
@@ -56,8 +56,8 @@ class BaseCheckpointer:
             os.makedirs(CHECKPOINT_FOLDER)
 
     def _remove_file(self):
-        if os.path.exists(self.file):
-            os.remove(self.file)
+        if os.path.exists(self.c.file):
+            os.remove(self.c.file)
 
     def save(self, metric):
         if self.c.save_strategy == SaveStrategy.NONE:
@@ -72,12 +72,12 @@ class BaseCheckpointer:
         self.best_metric = metric
 
         checkpoint = {
-            'model_state': self.c.model.state_dict(),
+            'model_state': self.tc.model.state_dict(),
             'metric': self.best_metric
         }
 
         if self.c.save_strategy == SaveStrategy.BEST_MODEL_OPTIMIZER or self.c.save_strategy == SaveStrategy.MODEL_OPTIMIZER:
-            checkpoint['optimizer_state'] = self.c.optimizer.state_dict()
+            checkpoint['optimizer_state'] = self.tc.optimizer.state_dict()
 
         self._save_checkpoint(checkpoint)
 
@@ -87,8 +87,8 @@ class BaseCheckpointer:
         self.best_metric = metric
 
         checkpoint = {
-            "model_state": self.c.model.state_dict(),
-            "optimizer_state": self.c.optimizer.state_dict(),
+            "model_state": self.tc.model.state_dict(),
+            "optimizer_state": self.tc.optimizer.state_dict(),
             "metric": self.best_metric
         }
         self._save_checkpoint(checkpoint)
