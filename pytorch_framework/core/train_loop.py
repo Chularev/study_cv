@@ -1,12 +1,10 @@
 import torch
-import torch.optim as optim
-import os
 
 from core.train_context import _TrainContext
 from core.trainer import Trainer
 from core.validator_metric import ValidatorMetric
 from core.validator_loss import ValidatorLoss
-from core.checkpointer import Checkpointer
+from core.checkpointers.checkpointer_base import BaseCheckpointer
 
 
 class Looper:
@@ -15,7 +13,7 @@ class Looper:
         self.trainer = Trainer(context)
         self.validator_metric = ValidatorMetric(context)
         self.validator_loss = ValidatorLoss(context)
-        self.checkpointer = Checkpointer(context)
+        self.checkpointer = BaseCheckpointer(context)
 
     def train_loop(self):
         torch.cuda.empty_cache()

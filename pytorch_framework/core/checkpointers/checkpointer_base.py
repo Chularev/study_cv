@@ -6,7 +6,7 @@ from core.train_param_enums import LoadStrategy, SaveStrategy, MetricType
 from helpers.constants import CHECKPOINT_FOLDER
 
 
-class Checkpointer:
+class BaseCheckpointer:
 
     def __init__(self, context: _TrainContext):
         self.c = context
