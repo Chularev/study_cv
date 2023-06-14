@@ -17,9 +17,14 @@ class _TrainContext:
     epoch_num = None
     metric = None
 
-    # Checkpoint
+    # Checkpoints
+    metric_checkpointer = None
+
+    '''
     load_strategy = None
     save_strategy = None
     checkpoint_frequency = None
     metric_type = None
     metric_value_stop = None
+    '''
+

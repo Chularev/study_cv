@@ -16,7 +16,9 @@ class TrainParameters:
     scheduler = None
     epoch_num = 1000
 
-    # Checkpoint
+    # Checkpoints
+    # Metric
+    metric_checkpointer = True
     load_strategy = LoadStrategy.MODEL_OPTIMIZER
     save_strategy = SaveStrategy.BEST_MODEL_OPTIMIZER
     metric_type = MetricType.METRIC
