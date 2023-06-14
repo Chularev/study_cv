@@ -37,8 +37,6 @@ class Looper:
 
                 self.checkpointer.save(metric)
 
-
-
             loss = self.trainer.step(epoch)
             self.c.logger.add_scalar('Train/epoch/loss_train', loss)
 
