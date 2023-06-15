@@ -76,8 +76,7 @@ def create_loss_checkpointer(p: TrainParameters, train_context: _TrainContext):
     c_context.load_strategy = p.l_load_strategy
     c_context.checkpoint_frequency = p.l_checkpoint_frequency
     c_context.metric_type = MetricType.LOSS
-    c_context.file = 'model_loss.pth.tar'
-    c_context.file_name = CHECKPOINT_FOLDER + c_context.file
+    c_context.file = CHECKPOINT_FOLDER + 'model_loss.pth.tar'
     c_context.metric_value_stop = p.l_metric_value_stop
 
     checkpointer = BaseCheckpointer(c_context, train_context)
@@ -92,8 +91,7 @@ def create_metric_checkpointer(p: TrainParameters, train_context: _TrainContext)
     c_context.load_strategy = p.m_load_strategy
     c_context.checkpoint_frequency = p.m_checkpoint_frequency
     c_context.metric_type = MetricType.METRIC
-    c_context.file = 'model_metric.pth.tar'
-    c_context.file_name = CHECKPOINT_FOLDER + c_context.file
+    c_context.file = CHECKPOINT_FOLDER + 'model_metric.pth.tar'
     c_context.metric_value_stop = p.m_metric_value_stop
 
     checkpointer = BaseCheckpointer(c_context, train_context)
