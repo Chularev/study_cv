@@ -8,6 +8,7 @@ TRAIN_CSV_FILE = ROOT_DIR + "/data/train.csv"
 VAL_CSV_FILE = ROOT_DIR + "/data/test.csv"
 CHECKPOINT_FOLDER = '/home/alex/workspace/experiments/best_model/'
 LOG_DIR = '/home/alex/workspace/experiments/logs/'
+IMG_AUG_PATH = '/home/alex/workspace/projects/study_cv/pytorch_framework/data/data/images/001414.jpg'
 
 
 if __name__ == "__main__":

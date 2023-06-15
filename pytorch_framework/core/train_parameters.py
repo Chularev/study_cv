@@ -11,8 +11,8 @@ class TrainParameters:
     model_name = 'best_net'
     learning_rate = 2e-5
     scheduler_epoch = 100
-    scheduler_coefficient = 0.1
-    weight_decay = 0
+    scheduler_coefficient = 0.9
+    weight_decay = 0.01
     scheduler = None
     epoch_num = 1000
     metric = MyMetric

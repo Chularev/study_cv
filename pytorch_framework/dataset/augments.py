@@ -3,26 +3,26 @@ import albumentations as A
 import torch
 from helpers.viewer import Viewer
 from helpers.logger import Logger
+from helpers.constants import IMG_AUG_PATH
 import cv2
 class Augments:
 
     @staticmethod
     def get_all_augmentations():
         return [
-            A.Resize(256, 256),
+            A.Resize(448, 448),
             A.HorizontalFlip(p=0.5),
             A.VerticalFlip(p=0.5),
             A.ShiftScaleRotate(p=0.5),
-            A.RandomBrightnessContrast(p=0.3)
+            A.RandomBrightnessContrast(brightness_limit=1, contrast_limit=1, p=1.0)
         ]
 
     @staticmethod
     def train():
-        return A.Compose([
-                A.Resize(width=448, height=448),
-               # A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-                ToTensorV2(p=1.0),
-            ],
+        transform = Augments.get_all_augmentations()
+        transform.append(ToTensorV2(p=1.0))
+        return A.Compose(
+            transform,
             bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
         )
 
@@ -50,9 +50,9 @@ class Augments:
 
 if __name__ == "__main__":
     aug = Augments()
-    logger = Logger('TensorBoard')
+    logger = Logger('Augments')
 
-    image = cv2.imread('/mnt/heap/imges/coco/validation/data/000000161861.jpg')
+    image = cv2.imread(IMG_AUG_PATH)
 
     img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
