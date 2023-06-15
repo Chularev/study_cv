@@ -44,7 +44,7 @@ class TrainParameters:
     t_loader_drop_last = True
 
     # Val loader
-    v_loader_batch_size = 32
+    v_loader_batch_size = 16
     v_loader_num_workers = 2
     v_loader_pin_memory = True
     v_loader_shuffle = True
