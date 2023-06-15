@@ -14,7 +14,9 @@ class Augments:
             A.HorizontalFlip(p=0.5),
             A.VerticalFlip(p=0.5),
             A.ShiftScaleRotate(p=0.5),
-            A.RandomBrightnessContrast(brightness_limit=1, contrast_limit=1, p=1.0)
+            A.ToGray(p=0.5),
+            A.Blur(always_apply=False, p=0.5, blur_limit=(3, 16)),
+            A.PixelDropout(always_apply=False, p=1.0, dropout_prob=0.26, per_channel=0, drop_value=(0, 0, 0), mask_drop_value=None)
         ]
 
     @staticmethod
