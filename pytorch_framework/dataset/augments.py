@@ -16,7 +16,7 @@ class Augments:
             A.ShiftScaleRotate(p=0.5),
             A.ToGray(p=0.5),
             A.Blur(always_apply=False, p=0.5, blur_limit=(3, 16)),
-            A.PixelDropout(always_apply=False, p=1.0, dropout_prob=0.26, per_channel=0, drop_value=(0, 0, 0), mask_drop_value=None)
+            A.PixelDropout(always_apply=False, p=0.5, dropout_prob=0.26, per_channel=0, drop_value=(0, 0, 0), mask_drop_value=None)
         ]
 
     @staticmethod
