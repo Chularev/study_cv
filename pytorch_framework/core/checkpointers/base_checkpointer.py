@@ -13,7 +13,12 @@ class BaseCheckpointer:
         self.c = context
         self.checkpoint_frequency = context.checkpoint_frequency
         self.tc = t_context
-        self.best_metric = 0
+
+        if self.c.metric_type == MetricType.METRIC:
+            self.best_metric = -float("inf")
+        else:
+            self.best_metric = float("inf")
+
         
     def load(self):
 
