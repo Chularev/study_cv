@@ -16,12 +16,14 @@ class BaseCheckpointer:
 
         if self.c.metric_type == MetricType.METRIC:
             self.current_metric = -float("inf")
+            self.file = CHECKPOINT_FOLDER + 'model_metric.pth.tar'
         else:
             self.current_metric = float("inf")
+            self.file = CHECKPOINT_FOLDER + 'model_loss.pth.tar'
         
     def load(self):
 
-        if not os.path.exists(self.c.file):
+        if not os.path.exists(self.file):
             print("Model is not exist")
             return False
 
@@ -30,7 +32,7 @@ class BaseCheckpointer:
             return False
 
        # checkpoint = os.path.join(CHECKPOINT_FILE)
-        checkpoint = torch.load(self.c.file)
+        checkpoint = torch.load(self.file)
 
         self.current_metric = checkpoint['metric']
 
@@ -54,13 +56,13 @@ class BaseCheckpointer:
             os.makedirs(CHECKPOINT_FOLDER)
 
     def _remove_file(self):
-        if os.path.exists(self.c.file):
-            os.remove(self.c.file)
+        if os.path.exists(self.file):
+            os.remove(self.file)
 
     def _save_checkpoint(self, checkpoint):
         self._create_recursive_dir()
         self._remove_file()
-        torch.save(checkpoint, self.c.file)
+        torch.save(checkpoint, self.file)
 
         print('Model saved current metric is ', self.current_metric)
 
