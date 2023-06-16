@@ -21,7 +21,7 @@ class BaseCheckpointer:
         else:
             self.current_metric = float("inf")
             self.file = CHECKPOINT_FOLDER + 'model_loss.pth.tar'
-            self.log_file = CHECKPOINT_FOLDER + 'test_metric.json'
+            self.log_file = CHECKPOINT_FOLDER + 'log_loss.json'
         
     def load(self):
 
