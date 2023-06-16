@@ -43,4 +43,4 @@ class Looper:
             if not self.validator_loss.step(epoch):
                 break
 
-            self.c.logger.add_scalars('epoch', self.c.epoch_result, epoch)
+            self.c.logger.add_scalars('epoch', self.c.epoch_result)
