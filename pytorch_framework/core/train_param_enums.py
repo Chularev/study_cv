@@ -9,10 +9,8 @@ class LoadStrategy(Enum):
 @unique
 class SaveStrategy(Enum):
     NONE = 0
-    MODEL = auto()
-    MODEL_OPTIMIZER = auto()
+    FREQUENCY = auto()
     BEST_MODEL = auto()
-    BEST_MODEL_OPTIMIZER = auto()
 
 @unique
 class MetricType(Enum):

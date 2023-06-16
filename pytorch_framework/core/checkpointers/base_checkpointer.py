@@ -18,7 +18,6 @@ class BaseCheckpointer:
             self.best_metric = -float("inf")
         else:
             self.best_metric = float("inf")
-
         
     def load(self):
 
@@ -50,13 +49,6 @@ class BaseCheckpointer:
         # metric is loss
         return template > current
 
-    def _save_checkpoint(self, checkpoint):
-        self._create_recursive_dir()
-        self._remove_file()
-        torch.save(checkpoint, self.c.file)
-
-        print('Model saved current metric is ', self.best_metric)
-
     def _create_recursive_dir(self):
         if not os.path.exists(CHECKPOINT_FOLDER):
             os.makedirs(CHECKPOINT_FOLDER)
@@ -65,29 +57,12 @@ class BaseCheckpointer:
         if os.path.exists(self.c.file):
             os.remove(self.c.file)
 
-    def save(self, metric):
-        if self.c.save_strategy == SaveStrategy.NONE:
-            print('Model was not save because save strategy is None')
-            return False
+    def _save_checkpoint(self, checkpoint):
+        self._create_recursive_dir()
+        self._remove_file()
+        torch.save(checkpoint, self.c.file)
 
-        if self.c.save_strategy == SaveStrategy.BEST_MODEL_OPTIMIZER or self.c.save_strategy == SaveStrategy.BEST_MODEL:
-            if not self._check_metric(self.best_metric, metric):
-                print("Model was not save because current metric is ", metric, ' but the best metric is ', self.best_metric)
-                return False
-
-        self.best_metric = metric
-
-        checkpoint = {
-            'model_state': self.tc.model.state_dict(),
-            'metric': self.best_metric
-        }
-
-        if self.c.save_strategy == SaveStrategy.BEST_MODEL_OPTIMIZER or self.c.save_strategy == SaveStrategy.MODEL_OPTIMIZER:
-            checkpoint['optimizer_state'] = self.tc.optimizer.state_dict()
-
-        self._save_checkpoint(checkpoint)
-
-        return True
+        print('Model saved current metric is ', self.best_metric)
 
     def _save_on_disk(self, metric):
         self.best_metric = metric
@@ -98,6 +73,19 @@ class BaseCheckpointer:
             "metric": self.best_metric
         }
         self._save_checkpoint(checkpoint)
+
+    def save(self, metric):
+        if self.c.save_strategy == SaveStrategy.NONE:
+            print('Model was not save because save strategy is None')
+            return False
+
+        if self.c.save_strategy == SaveStrategy.BEST_MODEL:
+            if not self._check_metric(self.best_metric, metric):
+                print("Model was not save because current metric is ", metric, ' but the best metric is ', self.best_metric)
+                return False
+
+        self._save_on_disk(metric)
+        return True
 
     def is_finish(self, metric):
 
