@@ -22,7 +22,7 @@ class TrainParameters:
     # Metric
     metric_checkpointer = True
     m_load_strategy = LoadStrategy.MODEL_OPTIMIZER
-    m_save_strategy = SaveStrategy.BEST_MODEL_OPTIMIZER
+    m_save_strategy = SaveStrategy.BEST_MODEL
     m_metric_type = MetricType.METRIC
     m_metric_value_stop = 0.9
     m_checkpoint_frequency = 5
@@ -30,7 +30,7 @@ class TrainParameters:
     # Loss
     loss_checkpointer = True
     l_load_strategy = LoadStrategy.MODEL_OPTIMIZER
-    l_save_strategy = SaveStrategy.BEST_MODEL_OPTIMIZER
+    l_save_strategy = SaveStrategy.BEST_MODEL
     l_metric_type = MetricType.METRIC
     l_metric_value_stop = 0
     l_checkpoint_frequency = 5
