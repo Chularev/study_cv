@@ -15,9 +15,9 @@ class BaseCheckpointer:
         self.tc = t_context
 
         if self.c.metric_type == MetricType.METRIC:
-            self.best_metric = -float("inf")
+            self.current_metric = -float("inf")
         else:
-            self.best_metric = float("inf")
+            self.current_metric = float("inf")
         
     def load(self):
 
@@ -32,14 +32,14 @@ class BaseCheckpointer:
        # checkpoint = os.path.join(CHECKPOINT_FILE)
         checkpoint = torch.load(self.c.file)
 
-        self.best_metric = checkpoint['metric']
+        self.current_metric = checkpoint['metric']
 
         if self.c.load_strategy == LoadStrategy.MODEL_OPTIMIZER:
             self.tc.optimizer.load_state_dict(checkpoint['optimizer_state'])
 
         self.tc.model.load_state_dict(checkpoint['model_state'])
 
-        print("Model was loaded. Current metric is ", self.best_metric)
+        print("Model was loaded. Current metric is ", self.current_metric)
         return True
 
     def _check_metric(self, template, current):
@@ -62,15 +62,15 @@ class BaseCheckpointer:
         self._remove_file()
         torch.save(checkpoint, self.c.file)
 
-        print('Model saved current metric is ', self.best_metric)
+        print('Model saved current metric is ', self.current_metric)
 
     def _save_on_disk(self, metric):
-        self.best_metric = metric
+        self.current_metric = metric
 
         checkpoint = {
             "model_state": self.tc.model.state_dict(),
             "optimizer_state": self.tc.optimizer.state_dict(),
-            "metric": self.best_metric
+            "metric": self.current_metric
         }
         self._save_checkpoint(checkpoint)
 
@@ -80,8 +80,8 @@ class BaseCheckpointer:
             return False
 
         if self.c.save_strategy == SaveStrategy.BEST_MODEL:
-            if not self._check_metric(self.best_metric, metric):
-                print("Model was not save because current metric is ", metric, ' but the best metric is ', self.best_metric)
+            if not self._check_metric(self.current_metric, metric):
+                print("Model was not save because current metric is ", metric, ' but the best metric is ', self.current_metric)
                 return False
 
         self._save_on_disk(metric)
@@ -92,12 +92,12 @@ class BaseCheckpointer:
         result = self._check_metric(self.c.metric_value_stop, metric)
         if result:
             self._save_on_disk(metric)
-            print('Model saved current metric is ', self.best_metric, ' train finished')
+            print('Model saved current metric is ', self.current_metric, ' train finished')
 
         return result
 
     def is_need_train(self):
-        return not self.is_finish(self.best_metric)
+        return not self.is_finish(self.current_metric)
 
 if __name__ == "__main__":
     n = {'hgjkl;': 0, 'll;': 5, '7': 8}
