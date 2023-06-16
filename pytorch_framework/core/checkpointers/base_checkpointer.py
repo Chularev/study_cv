@@ -42,6 +42,7 @@ class BaseCheckpointer:
             self.tc.optimizer.load_state_dict(checkpoint['optimizer_state'])
 
         self.tc.model.load_state_dict(checkpoint['model_state'])
+        self.tc.logger.load(self.log_file)
 
         print("Model was loaded. Current metric is ", self.current_metric)
         return True
@@ -64,7 +65,9 @@ class BaseCheckpointer:
     def _save_checkpoint(self, checkpoint):
         self._create_recursive_dir()
         self._remove_file()
+
         torch.save(checkpoint, self.file)
+        self.tc.logger.save(self.log_file)
 
         print('Model saved current metric is ', self.current_metric)
 

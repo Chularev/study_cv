@@ -1,5 +1,6 @@
 from torch.utils.tensorboard import SummaryWriter
 from helpers.constants import LOG_DIR
+import json
 
 
 class Logger(object):
@@ -30,3 +31,11 @@ class Logger(object):
     def add_grid_images(self, name, imgs):
         step = self.get_step(name)
         self.logger.add_images(name, imgs, step)
+
+    def load(self, path):
+        with open(path, 'r') as f:
+            self.values = json.load(f)
+
+    def save(self, path):
+        with open(path, 'w') as f:
+            json.dump(self.values, f)
