@@ -17,9 +17,11 @@ class BaseCheckpointer:
         if self.c.metric_type == MetricType.METRIC:
             self.current_metric = -float("inf")
             self.file = CHECKPOINT_FOLDER + 'model_metric.pth.tar'
+            self.log_file = CHECKPOINT_FOLDER + 'log_metric.json'
         else:
             self.current_metric = float("inf")
             self.file = CHECKPOINT_FOLDER + 'model_loss.pth.tar'
+            self.log_file = CHECKPOINT_FOLDER + 'test_metric.json'
         
     def load(self):
 
