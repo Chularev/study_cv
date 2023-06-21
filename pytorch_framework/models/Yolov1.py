@@ -20,16 +20,20 @@ architecture_config = [
     "M",
     (1, 128, 1, 0),
     (3, 256, 1, 1),
+    "D",
     (1, 256, 1, 0),
     (3, 512, 1, 1),
     "M",
     [(1, 256, 1, 0), (3, 512, 1, 1), 4],
     (1, 512, 1, 0),
+    "D",
     (3, 1024, 1, 1),
     "M",
     [(1, 512, 1, 0), (3, 1024, 1, 1), 2],
+    "D",
     (3, 1024, 1, 1),
     (3, 1024, 2, 1),
+    "D",
     (3, 1024, 1, 1),
     (3, 1024, 1, 1),
 ]
@@ -71,8 +75,11 @@ class Yolov1(nn.Module):
                 ]
                 in_channels = x[1]
 
-            elif type(x) == str:
+            elif type(x) == str and x == 'M':
                 layers += [nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))]
+
+            elif type(x) == str and x == 'D':
+                layers += [nn.Dropout(p=0.0)]
 
             elif type(x) == list:
                 conv1 = x[0]
