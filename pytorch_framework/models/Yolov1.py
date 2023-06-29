@@ -78,9 +78,6 @@ class Yolov1(nn.Module):
             elif type(x) == str and x == 'M':
                 layers += [nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))]
 
-            elif type(x) == str and x == 'D':
-                layers += [nn.Dropout(p=0.0)]
-
             elif type(x) == list:
                 conv1 = x[0]
                 conv2 = x[1]

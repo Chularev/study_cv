@@ -9,19 +9,20 @@ class Augments:
 
     @staticmethod
     def get_all_augmentations():
+
         return [
             A.Resize(448, 448),
             A.HorizontalFlip(p=0.5),
-            A.VerticalFlip(p=0.5),
-            A.ShiftScaleRotate(p=0.5),
-            A.ToGray(p=0.5),
-            A.Blur(always_apply=False, p=0.5, blur_limit=(3, 16)),
-            A.PixelDropout(always_apply=False, p=0.5, dropout_prob=0.26, per_channel=0, drop_value=(0, 0, 0), mask_drop_value=None)
+
+            A.Perspective(always_apply=False, p=0.9, scale=(0.05, 0.1), keep_size=1, pad_mode=0, pad_val=(0, 0, 0), mask_pad_val=0, fit_output=0, interpolation=0),
+            #A.PiecewiseAffine(always_apply=False, p=0.5, scale=(0.03, 0.05), nb_rows=(4, 4), nb_cols=(4, 4), interpolation=0, mask_interpolation=0, cval=0, cval_mask=0, mode='constant', absolute_scale=0, keypoints_threshold=0.01)
+
         ]
 
     @staticmethod
     def train():
         transform = Augments.get_all_augmentations()
+        transform.append(A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)))
         transform.append(ToTensorV2(p=1.0))
         return A.Compose(
             transform,
@@ -32,7 +33,7 @@ class Augments:
     def validation():
         return A.Compose([
             A.Resize(width=448, height=448),
-            #A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+            A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
             ToTensorV2(p=1.0),
             ],
             bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
@@ -41,11 +42,10 @@ class Augments:
     @staticmethod
     def predict():
         return A.Compose([
-                    A.Resize(width=448, height=448),
-                    #A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-                    ToTensorV2(p=1.0),
-            ],
-            bbox_params=A.BboxParams(format='yolo', label_fields=['class_labels'])
+            A.Resize(width=448, height=448),
+            A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+            ToTensorV2(p=1.0),
+            ]
         )
 
 
