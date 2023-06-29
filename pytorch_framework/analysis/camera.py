@@ -19,11 +19,11 @@ if __name__ == "__main__":
 
 
         # Display the resulting frame
-        frame2 = predictor.opencv_img(frame)
+        frame = predictor.opencv_img(frame)
 
 
         # Display the image
-        ax.imshow(frame2)
+        ax.imshow(frame)
         plt.pause(0.001)
 
        # frame  = cv2.resize(frame, (height, width), interpolation = cv2.INTER_AREA)

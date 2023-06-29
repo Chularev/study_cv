@@ -28,7 +28,6 @@ class Predictor:
 
         image = cv2.imread(path)
         img = self.opencv_img(image)
-        img = self.viewer.convert_from_cv2_to_image(img)
 
 
         # Create figure and axes
@@ -49,8 +48,7 @@ class Predictor:
         bboxes = non_max_suppression(bboxes[0], iou_threshold=0.5, threshold=0.4, box_format="midpoint")
 
         img = self.viewer.convert_from_cv2_to_image(image)
-        img = plot_image(img, bboxes)
-        return self.viewer.convert_from_image_to_cv2(img)
+        return plot_image(img, bboxes)
 
 
 if __name__ == "__main__":
