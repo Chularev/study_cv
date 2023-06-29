@@ -214,7 +214,10 @@ def plot_image(image, boxes):
     # box[1] is y midpoint, box[3] is height
 
     # Create a Rectangle potch
+    classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+               "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
     for box in boxes:
+        c_class = int(box[0])
         box = box[2:]
         assert len(box) == 4, "Got more values than in x, y, w, h, in a box!"
         upper_left_x = box[0] - box[2] / 2
@@ -227,8 +230,18 @@ def plot_image(image, boxes):
             edgecolor="r",
             facecolor="none",
         )
+
+        ax.add_artist(rect)
+        rx, ry = rect.get_xy()
+        cx = rx + rect.get_width() / 2.0
+        cy = ry + rect.get_height() - 16
+
+        ax.annotate(classes[c_class], (cx, cy), color='r', weight='bold',
+                    fontsize=16, ha='center', va='center')
+
         # Add the patch to the Axes
-        ax.add_patch(rect)
+        #ax.add_patch(rect)
+
 
     plt.show()
 
