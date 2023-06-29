@@ -36,8 +36,8 @@ class Predictor:
         bboxes = cellboxes_to_boxes(prediction)
         bboxes = non_max_suppression(bboxes[0], iou_threshold=0.5, threshold=0.4, box_format="midpoint")
 
-        #img = self.viewer.convert_from_cv2_to_image(image)
-        plot_image(x_data[0].permute(1,2,0).to("cpu"), bboxes)
+        img = self.viewer.convert_from_cv2_to_image(image)
+        plot_image(img, bboxes)
 
 if __name__ == "__main__":
 
