@@ -6,6 +6,7 @@ from models.Yolov1 import Yolov1
 from dataset.augments import Augments
 from helpers.utils import cellboxes_to_boxes, non_max_suppression,plot_image
 from helpers.viewer import Viewer
+import matplotlib.pyplot as plt
 class Predictor:
     def __init__(self, path):
 
@@ -26,6 +27,17 @@ class Predictor:
     def predict_img(self, path):
 
         image = cv2.imread(path)
+        img = self.opencv_img(image)
+        img = self.viewer.convert_from_cv2_to_image(img)
+
+
+        # Create figure and axes
+        fig, ax = plt.subplots(1)
+        # Display the image
+        ax.imshow(img)
+        plt.show()
+
+    def opencv_img(self, image):
         x_data = self.transforms(image=image)
         x_data = x_data['image']
         x_data = x_data.to(self.device, torch.float)
@@ -37,7 +49,9 @@ class Predictor:
         bboxes = non_max_suppression(bboxes[0], iou_threshold=0.5, threshold=0.4, box_format="midpoint")
 
         img = self.viewer.convert_from_cv2_to_image(image)
-        plot_image(img, bboxes)
+        img = plot_image(img, bboxes)
+        return self.viewer.convert_from_image_to_cv2(img)
+
 
 if __name__ == "__main__":
 

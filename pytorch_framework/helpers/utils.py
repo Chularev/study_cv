@@ -1,8 +1,13 @@
+import io
+
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from collections import Counter
+
+from PIL import Image
+
 
 def intersection_over_union(boxes_preds, boxes_labels, box_format="midpoint"):
     """
@@ -242,8 +247,12 @@ def plot_image(image, boxes):
         # Add the patch to the Axes
         #ax.add_patch(rect)
 
+    buf = io.BytesIO()
+    plt.savefig(buf, format='jpeg')
+    buf.seek(0)
+    plt.close()
 
-    plt.show()
+    return Image.open(buf)
 
 def convert_cellboxes(predictions, S=7):
     """
