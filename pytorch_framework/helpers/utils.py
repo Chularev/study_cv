@@ -204,7 +204,14 @@ def mean_average_precision(
 
     return sum(average_precisions) / len(average_precisions)
 
+def random_color():
+    return list(np.random.choice(range(256), size=3) / 256)
 
+classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+               "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
+colors = []
+for i in range(len(classes)):
+    colors.append(random_color())
 def plot_image(image, boxes):
     """Plots predicted bounding boxes on the image"""
     im = np.array(image)
@@ -219,8 +226,7 @@ def plot_image(image, boxes):
     # box[1] is y midpoint, box[3] is height
 
     # Create a Rectangle potch
-    classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
-               "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
+
     for box in boxes:
         c_class = int(box[0])
         box = box[2:]
@@ -232,7 +238,7 @@ def plot_image(image, boxes):
             box[2] * width,
             box[3] * height,
             linewidth=1,
-            edgecolor="r",
+            edgecolor=colors[c_class],
             facecolor="none",
         )
 

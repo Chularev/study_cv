@@ -56,4 +56,4 @@ if __name__ == "__main__":
     predictor = Predictor('/home/alex/workspace/experiments/best_model/model_metric.pth.tar')
 
     img_path = '/home/alex/workspace/projects/study_cv/pytorch_framework/data/data/images/'
-    predictor.predict_img(img_path + '000227.jpg')
+    predictor.predict_img(img_path + '2008_006796.jpg')
