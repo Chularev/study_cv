@@ -20,7 +20,7 @@ class Predictor:
 
         self.model.eval()
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        self.model.to(self.device)
+        #self.model.to(self.device)
 
         self.transforms = Augments.predict()
 
@@ -39,7 +39,7 @@ class Predictor:
     def opencv_img(self, image):
         x_data = self.transforms(image=image)
         x_data = x_data['image']
-        x_data = x_data.to(self.device, torch.float)
+        #x_data = x_data.to(self.device, torch.float)
         x_data = x_data.unsqueeze(0)
         prediction = self.model(x_data)
 

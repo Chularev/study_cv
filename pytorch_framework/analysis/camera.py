@@ -11,6 +11,8 @@ if __name__ == "__main__":
     vid = cv2.VideoCapture(0)
     fig, ax = plt.subplots(1)
 
+    freq = 5
+    need = freq
     while (True):
 
         # Capture the video frame
@@ -19,12 +21,16 @@ if __name__ == "__main__":
 
 
         # Display the resulting frame
-        frame = predictor.opencv_img(frame)
+        if need == freq:
+            need = 0
+            frame = predictor.opencv_img(frame)
 
 
-        # Display the image
-        ax.imshow(frame)
-        plt.pause(0.001)
+            # Display the image
+            ax.imshow(frame)
+            plt.pause(0.001)
+
+        need = need + 1
 
        # frame  = cv2.resize(frame, (height, width), interpolation = cv2.INTER_AREA)
         #cv2.imshow('frame', frame2)
