@@ -1,6 +1,9 @@
 from analysis.predictor import Predictor
 import matplotlib.pyplot as plt
+import matplotlib
 import cv2
+
+matplotlib.use('TKAgg')
 
 if __name__ == "__main__":
 
