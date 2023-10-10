@@ -6,6 +6,7 @@ import io
 from PIL import Image
 
 from analysis.my_profile import my_profile
+from helpers.viewer import Viewer
 
 
 class Utilis_plot_image:
@@ -15,6 +16,8 @@ class Utilis_plot_image:
         self.colors = []
         for i in range(len(self.classes)):
             self.colors.append(self.random_color())
+
+        self.viewer = Viewer()
 
     def random_color(self):
         return list(np.random.choice(range(256), size=3) / 256)
@@ -29,6 +32,7 @@ class Utilis_plot_image:
     @my_profile
     def plot_image_new(self, image, boxes):
         """Plots predicted bounding boxes on the image"""
+        image = self.viewer.convert_from_cv2_to_image(image)
         im = np.array(image)
         height, width, _ = im.shape
 
@@ -78,6 +82,7 @@ class Utilis_plot_image:
     @my_profile
     def plot_image_old(self, image, boxes):
         """Plots predicted bounding boxes on the image"""
+        image = self.viewer.convert_from_cv2_to_image(image)
         im = np.array(image)
         height, width, _ = im.shape
 
