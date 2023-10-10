@@ -4,7 +4,8 @@ import cv2
 import torch
 from models.Yolov1 import Yolov1
 from dataset.augments import Augments
-from helpers.utils import cellboxes_to_boxes, non_max_suppression,plot_image
+from helpers.utils import cellboxes_to_boxes, non_max_suppression
+from helpers.utilis_plot_image import Utilis_plot_image
 from helpers.viewer import Viewer
 import matplotlib.pyplot as plt
 class Predictor:
@@ -14,6 +15,7 @@ class Predictor:
         torch.set_grad_enabled(False)
 
         self.viewer = Viewer()
+        self.utilis_plot_image = Utilis_plot_image()
 
         self.model = Yolov1(split_size=7, num_boxes=2, num_classes=20)
         self.model.load_state_dict(checkpoint['model_state'])
@@ -48,7 +50,7 @@ class Predictor:
         bboxes = non_max_suppression(bboxes[0], iou_threshold=0.5, threshold=0.4, box_format="midpoint")
 
         img = self.viewer.convert_from_cv2_to_image(image)
-        return plot_image(img, bboxes)
+        return self.utilis_plot_image.plot_image(img, bboxes)
 
 
 if __name__ == "__main__":

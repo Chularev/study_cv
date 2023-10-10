@@ -1,12 +1,5 @@
-import io
-
 import torch
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 from collections import Counter
-
-from PIL import Image
 
 
 def intersection_over_union(boxes_preds, boxes_labels, box_format="midpoint"):
@@ -204,61 +197,6 @@ def mean_average_precision(
 
     return sum(average_precisions) / len(average_precisions)
 
-def random_color():
-    return list(np.random.choice(range(256), size=3) / 256)
-
-classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
-               "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
-colors = []
-for i in range(len(classes)):
-    colors.append(random_color())
-def plot_image(image, boxes):
-    """Plots predicted bounding boxes on the image"""
-    im = np.array(image)
-    height, width, _ = im.shape
-
-    # Create figure and axes
-    fig, ax = plt.subplots(1)
-    # Display the image
-    ax.imshow(im)
-
-    # box[0] is x midpoint, box[2] is width
-    # box[1] is y midpoint, box[3] is height
-
-    # Create a Rectangle potch
-
-    for box in boxes:
-        c_class = int(box[0])
-        box = box[2:]
-        assert len(box) == 4, "Got more values than in x, y, w, h, in a box!"
-        upper_left_x = box[0] - box[2] / 2
-        upper_left_y = box[1] - box[3] / 2
-        rect = patches.Rectangle(
-            (upper_left_x * width, upper_left_y * height),
-            box[2] * width,
-            box[3] * height,
-            linewidth=1,
-            edgecolor=colors[c_class],
-            facecolor="none",
-        )
-
-        ax.add_artist(rect)
-        rx, ry = rect.get_xy()
-        cx = rx + rect.get_width() / 2.0
-        cy = ry + rect.get_height() - 16
-
-        ax.annotate(classes[c_class], (cx, cy), color='r', weight='bold',
-                    fontsize=16, ha='center', va='center')
-
-        # Add the patch to the Axes
-        #ax.add_patch(rect)
-
-    buf = io.BytesIO()
-    plt.savefig(buf, format='jpeg')
-    buf.seek(0)
-    plt.close()
-
-    return Image.open(buf)
 
 def convert_cellboxes(predictions, S=7):
     """
