@@ -21,7 +21,6 @@ class main_loop:
 
         self.i_max = 10
 
-    @my_profile
     def loop(self):
         i = 0
         while (True):
