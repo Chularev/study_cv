@@ -32,19 +32,8 @@ class main_loop:
 
             frame = self.predictor.opencv_img(frame)
 
-            frame = self.viewer.convert_from_cv2_to_image(frame)
-            # Display the image
-            self.ax.imshow(frame)
-            plt.pause(0.001)
+            cv2.imshow("frame", frame)
 
-            # frame  = cv2.resize(frame, (height, width), interpolation = cv2.INTER_AREA)
-            # cv2.imshow('frame', frame2)
-            # the 'q' button is set as the
-            # quitting button you may use any
-            # desired button of your choice
-            if i == self.i_max:
-                break
-            i = i + 1
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
