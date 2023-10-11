@@ -1,13 +1,6 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import io
 
-from PIL import Image
-
-from analysis.my_profile import my_profile
-from helpers.viewer import Viewer
 
 
 class Utilis_plot_image:
@@ -17,8 +10,6 @@ class Utilis_plot_image:
         self.colors = []
         for i in range(len(self.classes)):
             self.colors.append(self.random_color())
-
-        self.viewer = Viewer()
 
     def random_color(self):
         color = list(np.random.choice(range(255), size=3))
@@ -37,4 +28,4 @@ class Utilis_plot_image:
             x2, y2 = int(x1 + w), int(y1 + h)
             cv2.rectangle(image, (x1,y1), (x2,y2), color=self.colors[c_class], thickness=1)
 
-        return self.viewer.convert_from_cv2_to_image(image)
+        return image

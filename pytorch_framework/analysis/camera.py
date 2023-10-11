@@ -4,6 +4,7 @@ from analysis.predictor import Predictor
 import matplotlib.pyplot as plt
 from analysis.my_profile import my_profile
 import matplotlib
+from helpers.viewer import Viewer
 import cv2
 
 matplotlib.use('TKAgg')
@@ -16,6 +17,7 @@ class main_loop:
         # define a video capture object
         self.vid = cv2.VideoCapture(0)
         self.fig, self.ax = plt.subplots(1)
+        self.viewer = Viewer()
 
         self.i_max = 10
 
@@ -30,6 +32,7 @@ class main_loop:
 
             frame = self.predictor.opencv_img(frame)
 
+            frame = self.viewer.convert_from_cv2_to_image(frame)
             # Display the image
             self.ax.imshow(frame)
             plt.pause(0.001)
